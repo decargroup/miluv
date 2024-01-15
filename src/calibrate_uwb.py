@@ -12,52 +12,59 @@ import matplotlib
 # Set the plotting environment
 set_plotting_env()
 
-# The configuration file
-config_file = 'data/bias_calibration_tags1/config.config'
+# The configuration files
+config_files = [
+    'data/bias_calibration_anchors0/config.config',
+    'data/bias_calibration_anchors1/config.config',
+    'data/bias_calibration_tags0/config.config',
+    'data/bias_calibration_tags1/config.config',
+]
 
-# Parse through the configuration file
-parser = ConfigParser(interpolation=ExtendedInterpolation())
-parser.read(config_file)
+for config in config_files:
+    # Parse through the configuration file
+    parser = ConfigParser(interpolation=ExtendedInterpolation())
+    parser.read(config)
 
-# Create a RosMachine object for every machine
-machines = {}
-for i,machine in enumerate(parser['MACHINES']):
-    machine_id = parser['MACHINES'][machine]
-    machines[machine_id] = RosMachine(parser, i)
-# %%
-# Process and merge the data from all the machines
-data = PostProcess(machines)
+    # Create a RosMachine object for every machine
+    machines = {}
+    for i,machine in enumerate(parser['MACHINES']):
+        machine_id = parser['MACHINES'][machine]
+        machines[machine_id] = RosMachine(parser, i)
 
-# Instantiate a UwbCalibrate object, and remove static extremes
-calib = UwbCalibrate(data, rm_static=True)
+    # Process and merge the data from all the machines
+    data = PostProcess(machines)
 
-# Compute the raw bias measurements
-bias_raw = np.array(calib.df['bias'])
+    # Instantiate a UwbCalibrate object, and remove static extremes
+    calib = UwbCalibrate(data, rm_static=True)
 
-# Correct antenna delays
-calib.calibrate_antennas(inplace=True, loss='huber')
+    # Compute the raw bias measurements
+    bias_raw = np.array(calib.df['bias'])
 
-# Compute the antenna-delay-corrected measurements
-bias_antenna_delay = np.array(calib.df['bias'])
+    # Correct antenna delays
+    calib.calibrate_antennas(inplace=True, loss='huber')
 
-# Correct power-correlated bias
-calib.fit_power_model(
-    inplace = True,
-    visualize = True
-)
+    # Compute the antenna-delay-corrected measurements
+    bias_antenna_delay = np.array(calib.df['bias'])
 
-# Compute the fully-calibrated measurements
-bias_fully_calib = np.array(calib.df['bias'])
-# %%
-# Plot the measurements pre- and post-correction.
-plt.figure()
-bins = np.linspace(-0.5,1,100)
-plt.hist(bias_raw,bins=bins, alpha=0.5, density=True)
-plt.hist(bias_antenna_delay, bins=bins, alpha=0.5, density=True)
-plt.hist(bias_fully_calib, bins=bins, alpha=0.5, density=True)
+    # Correct power-correlated bias
+    calib.fit_power_model(
+        inplace = True,
+    )
 
-plt.show()
+    # Compute the fully-calibrated measurements
+    bias_fully_calib = np.array(calib.df['bias'])
 
-print(calib.delays)
+    # Save the calibration results
+    calib_results = {
+        'delays': calib.delays,
+        'bias_spl': calib.bias_spl,
+        'std_spl': calib.std_spl,
+    }
+    save(
+        calib_results, 
+        config.split('/config')[0] + '/calib_results.pickle'
+    )
+
+    
 
 # %%
