@@ -1,11 +1,25 @@
 import sys
-from os import listdir, mkdir
+from os import listdir, mkdir, rename
 from os.path import join
 import rospy
 import rosbag
 import cv2
 from cv_bridge import CvBridge
 from bagpy import bagreader
+
+def rename_files(files, path):
+    new_files = []
+    for file in files:
+        if "ifo001" in file:
+            rename(join(path, file), join(path, "ifo001.bag"))
+            new_files.append("ifo001.bag")
+        elif "ifo002" in file:
+            rename(join(path, file), join(path, "ifo002.bag"))
+            new_files.append("ifo002.bag")
+        elif "ifo003" in file:
+            rename(join(path, file), join(path, "ifo003.bag"))
+            new_files.append("ifo003.bag")
+    return new_files
 
 def write_imgs(input_bag, dir_main):
     bridge = CvBridge()
@@ -44,8 +58,8 @@ if __name__ == '__main__':
         sys.exit(1)
     
     path = sys.argv[1]
-
     files = [f for f in listdir(path) if f.endswith('.bag')]
+    files = rename_files(files, path)
 
     rospy.init_node('image_uncompress_node')
     
