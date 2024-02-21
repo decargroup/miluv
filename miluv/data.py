@@ -25,11 +25,11 @@ class Miluv:
         robot_ids = ["ifo001", "ifo002", "ifo003"]
         self.data = {id: {} for id in robot_ids}
         for id in robot_ids:    
-            if imu is "both" or imu is "px4":
+            if imu == "both" or imu == "px4":
                 self.data[id].update({"imu_px4": []})
                 self.data[id]["imu_px4"] = self.read_csv("imu_px4", id)
             
-            if imu is "both" or imu is "cam":
+            if imu == "both" or imu == "cam":
                 self.data[id].update({"imu_cam": []})
                 self.data[id]["imu_cam"] = self.read_csv("imu_cam", id)
             
@@ -68,3 +68,4 @@ class Miluv:
             topic + ".csv"
         )
         return pd.read_csv(path)
+        
