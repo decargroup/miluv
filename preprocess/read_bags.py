@@ -54,7 +54,7 @@ def write_csvs(input_bag):
 if __name__ == '__main__':
     # TODO: Allow user-defined image compression type
     if len(sys.argv) != 2:
-        print("Not enough arguments. Usage: python read_bags.py input_bag")
+        print("Not enough arguments. Usage: python read_bags.py path_to_bags")
         sys.exit(1)
     
     path = sys.argv[1]
