@@ -83,8 +83,6 @@ def cleanup_csvs(dir):
     for file in files:
         if "imu" in file and "camera" in file:
             process_csv(dir, file, imu, "imu_cam")
-        elif "imu" in file and "mavros" in file:
-            process_csv(dir, file, imu, "imu_px4")
         elif "mag" in file:
             process_csv(dir, file, mag, "mag")
         elif "hrlv" in file:
@@ -95,10 +93,12 @@ def cleanup_csvs(dir):
             process_csv(dir, file, uwb_range, "uwb_range")
         elif "passive" in file:
             process_csv(dir, file, uwb_passive, "uwb_passive")
+        elif "imu" in file and "mavros" in file:
+            process_csv(dir, file, imu, "imu_px4")
 
 def process_csv(dir, file, headers, name):
     df = pd.read_csv(join(dir, file))
-    merge_time(df)
+    df = merge_time(df)
     df = df[headers]
     df.to_csv(join(dir, name + ".csv"), index=False)
     remove(join(dir, file))
