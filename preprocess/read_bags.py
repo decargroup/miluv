@@ -53,9 +53,13 @@ def write_csvs(input_bag):
 
 if __name__ == '__main__':
     # TODO: Allow user-defined image compression type
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         print("Not enough arguments. Usage: python read_bags.py path_to_bags")
         sys.exit(1)
+    if len(sys.argv) < 3:
+        vision = True
+    else:
+        vision = eval(sys.argv[2])
     
     path = sys.argv[1]
     files = [f for f in listdir(path) if f.endswith('.bag')]
@@ -64,13 +68,15 @@ if __name__ == '__main__':
     rospy.init_node('image_uncompress_node')
     
     for file in files:
-        mkdir(join(path, file.split(".")[0]))
-        mkdir(join(path, file.split(".")[0] + "/infra1"))
-        mkdir(join(path, file.split(".")[0] + "/infra2"))
-        mkdir(join(path, file.split(".")[0] + "/bottom"))
-        mkdir(join(path, file.split(".")[0] + "/color"))
-
-        write_imgs(join(path, file), join(path, file.split(".")[0]) + "/")
+        if vision:
+            mkdir(join(path, file.split(".")[0]))
+            mkdir(join(path, file.split(".")[0] + "/infra1"))
+            mkdir(join(path, file.split(".")[0] + "/infra2"))
+            mkdir(join(path, file.split(".")[0] + "/bottom"))
+            mkdir(join(path, file.split(".")[0] + "/color"))
+            
+            write_imgs(join(path, file), join(path, file.split(".")[0]) + "/")
+            
         write_csvs(join(path, file))
 
         
