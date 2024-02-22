@@ -1,7 +1,6 @@
 import sys
 from os import listdir, mkdir, rename
 from os.path import join
-import rospy
 import rosbag
 import cv2
 from cv_bridge import CvBridge
@@ -24,8 +23,6 @@ def rename_files(files, path):
 def write_imgs(input_bag, dir_main):
     bridge = CvBridge()
     for topic, msg, t in rosbag.Bag(input_bag).read_messages():
-        if rospy.is_shutdown():
-            break
         if msg._type == 'sensor_msgs/CompressedImage':
             if "infra1" in topic:
                 dir = dir_main + "infra1/"
@@ -39,13 +36,11 @@ def write_imgs(input_bag, dir_main):
                 cv_image = bridge.compressed_imgmsg_to_cv2(msg)
                 cv2.imwrite(dir + str(msg.header.stamp) + '.jpeg', cv_image)
             except Exception as e:
-                rospy.logwarn('Error uncompressing image: {}'.format(e))
+                Warning('Error uncompressing image: {}'.format(e))
 
 def write_csvs(input_bag):
     b = bagreader(input_bag)
     for topic in b.topics:
-        if rospy.is_shutdown():
-            break
         if "camera" in topic and "imu" not in topic:
             continue
         else:
@@ -64,8 +59,6 @@ if __name__ == '__main__':
     path = sys.argv[1]
     files = [f for f in listdir(path) if f.endswith('.bag')]
     files = rename_files(files, path)
-
-    rospy.init_node('image_uncompress_node')
     
     for file in files:
         if vision:
