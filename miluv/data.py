@@ -1,6 +1,7 @@
 
 import pandas as pd
 import os
+from wrappers import MocapTrajectory
 
 # TODO: look into dataclasses
 class Miluv:
