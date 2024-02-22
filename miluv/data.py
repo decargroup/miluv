@@ -1,4 +1,5 @@
 import pandas as pd
+from PIL import Image
 import os
 
 
@@ -10,7 +11,12 @@ class Miluv:
         exp_name: str,
         exp_dir: str = "./data",
         imu: str = "both",
-        cam: str = "both",
+        cam: dict = {
+            "color": True,
+            "bottom": True,
+            "infra1": True,
+            "infra2": True
+        },
         uwb: bool = True,
         height: bool = True,
         mag: bool = True,
@@ -21,6 +27,8 @@ class Miluv:
         # TODO: Add checks for valid exp dir and name
         self.exp_name = exp_name
         self.exp_dir = exp_dir
+
+        self.cam = cam
 
         # TODO: read robots from configs
         robot_ids = ["ifo001", "ifo002", "ifo003"]
@@ -66,9 +74,16 @@ class Miluv:
                             topic + ".csv")
         return pd.read_csv(path)
 
-    def closest_timestamp(self, robot_id: str, sensor: str, timestamp: float):
-        return min(self.data[robot_id][sensor]["timestamp"],
-                   key=lambda x: abs(x - timestamp))
+    def closest_past_timestamp(self, robot_id: str, sensor: str,
+                               timestamp: float):
+        if sensor != "bottom" and sensor != "color" and sensor != "infra1" and sensor != "infra2":
+            return min(self.data[robot_id][sensor]["timestamp"],
+                       key=lambda x: abs(x - timestamp))
+        else:
+            all_imgs = os.listdir(
+                os.path.join(self.exp_dir, self.exp_name, robot_id, sensor))
+            all_imgs = [int(img.split(".")[0]) for img in all_imgs]
+            return min(all_imgs, key=lambda x: abs(x - timestamp))
 
     def data_from_timestamp(self, timestamp: int):
 
@@ -81,8 +96,8 @@ class Miluv:
                         self.data[robot_id][sensor]["timestamp"] == timestamp]
                 else:
                     return self.data[robot_id][sensor].loc[
-                        self.data[robot_id][sensor]["timestamp"] ==
-                        self.closest_timestamp(robot_id, sensor, timestamp)]
+                        self.data[robot_id][sensor]["timestamp"] == self.
+                        closest_past_timestamp(robot_id, sensor, timestamp)]
 
             data_by_robot = {}
             for sensor in self.data[robot_id]:
@@ -98,8 +113,16 @@ class Miluv:
 
         return data_by_timestamp
 
-    def img_from_timestamp(self, timestamp: int):
-        pass
+    def imgs_from_timestamp(self, robot_id: str, timestamp: int):
+        for cam in self.cam:
+            if cam:
+                img_path = os.path.join(
+                    self.exp_dir, self.exp_name, robot_id, cam,
+                    str(self.closest_past_timestamp(robot_id, cam, timestamp))
+                    + ".jpeg")
+                img = Image.open(img_path)
+                img.show()
+                print(img_path)
 
 
 if __name__ == "__main__":
@@ -109,4 +132,4 @@ if __name__ == "__main__":
         height=False,
     )
 
-    print(mv.data_from_timestamp(1))
+    mv.imgs_from_timestamp("ifo001", 0)
