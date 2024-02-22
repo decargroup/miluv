@@ -6,6 +6,8 @@ import rosbag
 import cv2
 from cv_bridge import CvBridge
 from bagpy import bagreader
+import sys
+
 
 def write_imgs(input_bag, dir_main):
     bridge = CvBridge()
@@ -27,6 +29,7 @@ def write_imgs(input_bag, dir_main):
             except Exception as e:
                 rospy.logwarn('Error uncompressing image: {}'.format(e))
 
+
 def write_csvs(input_bag):
     b = bagreader(input_bag)
     for topic in b.topics:
@@ -37,18 +40,19 @@ def write_csvs(input_bag):
         else:
             b.message_by_topic(topic)
 
+
 if __name__ == '__main__':
     # TODO: Allow user-defined image compression type
     if len(sys.argv) != 2:
         print("Not enough arguments. Usage: python read_bags.py input_bag")
         sys.exit(1)
-    
+
     path = sys.argv[1]
 
     files = [f for f in listdir(path) if f.endswith('.bag')]
 
-    rospy.init_node('image_uncompress_node')
-    
+    # rospy.init_node('image_uncompress_node')
+
     for file in files:
         mkdir(join(path, file.split(".")[0]))
         mkdir(join(path, file.split(".")[0] + "/infra1"))
@@ -58,6 +62,3 @@ if __name__ == '__main__':
 
         write_imgs(join(path, file), join(path, file.split(".")[0]) + "/")
         write_csvs(join(path, file))
-
-        
-    
