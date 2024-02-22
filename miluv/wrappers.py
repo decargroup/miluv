@@ -90,7 +90,7 @@ class MocapTrajectory:
             ID when converting to ``pynav`` states.
         """
 
-        self.stamps = np.array(mocap["time"]).ravel()
+        self.stamps = np.array(mocap["timestamp"]).ravel()
         self.raw_position = np.array(mocap[["pose.position.x", 
                                             "pose.position.y", 
                                             "pose.position.z"]])
@@ -102,6 +102,10 @@ class MocapTrajectory:
 
         self._fit_position_spline(self.stamps, self.raw_position)
         self._fit_quaternion_spline(self.stamps, self.raw_quaternion)
+    
+    def __repr__(self):
+        return f"MocapTrajectory, frame_id: {self.frame_id}"
+
 
     def _fit_position_spline(self, stamps, pos):
 

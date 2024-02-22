@@ -1,5 +1,5 @@
 import sys
-from os import listdir, remove
+from os import listdir, remove, walk, rename
 from os.path import join
 import pandas as pd
 
@@ -20,10 +20,7 @@ mag = [
     "magnetic_field.y",
     "magnetic_field.z",
 ]
-height = [
-    "timestamp",
-    "range"
-]
+height = ["timestamp", "range"]
 mocap = [
     "timestamp",
     "pose.position.x",
@@ -35,46 +32,15 @@ mocap = [
     "pose.orientation.w",
 ]
 uwb_range = [
-    "timestamp",
-    "range",
-    "from_id",
-    "to_id",
-    "tx1",
-    "rx1",
-    "tx2",
-    "rx2",
-    "tx3",
-    "rx3",
-    "fpp1",
-    "fpp2",
-    "skew1",
-    "skew2"
+    "timestamp", "range", "from_id", "to_id", "tx1", "rx1", "tx2", "rx2",
+    "tx3", "rx3", "fpp1", "fpp2", "skew1", "skew2"
 ]
-uwb_passive= [
-    "timestamp",
-    "my_id",
-    "from_id",
-    "to_id",
-    "rx1",
-    "rx2",
-    "rx3",
-    "tx1_n",
-    "rx1_n",
-    "tx2_n",
-    "rx2_n",
-    "tx3_n",
-    "rx3_n",
-    "fpp1",
-    "fpp2",
-    "fpp3",
-    "skew1",
-    "skew2",
-    "skew3",
-    "fpp1_n",
-    "fpp2_n",
-    "skew1_n",
-    "skew2_n"
+uwb_passive = [
+    "timestamp", "my_id", "from_id", "to_id", "rx1", "rx2", "rx3", "tx1_n",
+    "rx1_n", "tx2_n", "rx2_n", "tx3_n", "rx3_n", "fpp1", "fpp2", "fpp3",
+    "skew1", "skew2", "skew3", "fpp1_n", "fpp2_n", "skew1_n", "skew2_n"
 ]
+
 
 def cleanup_csvs(dir):
     # Find all csv files
@@ -110,14 +76,60 @@ def merge_time(df):
     df["timestamp"] = df["timestamp"].astype(int)
     return df
 
+
+def find_min_timestamp(all_files):
+    min_timestamp = float('inf')
+    for file in all_files:
+        df = pd.read_csv(file)
+        if df["timestamp"][0] < min_timestamp:
+            min_timestamp = df["timestamp"][0]
+    return min_timestamp
+
+
+def shift_timestamps(all_csvs, all_jpegs):
+    min_timestamp = find_min_timestamp(all_csvs)
+
+    for file in all_csvs:
+        df = pd.read_csv(file)
+        df["timestamp"] = df["timestamp"] - min_timestamp
+        df.to_csv(file, index=False)
+
+    for file in all_jpegs:
+        img_timestamp = int(file.split(".")[0].split("/")[-1]) - min_timestamp
+
+        rename(
+            file, "/".join(file.split("/")[:-1]) + "/" + str(img_timestamp) +
+            ".jpeg")
+
+
 if __name__ == '__main__':
-    
+
     if len(sys.argv) != 2:
-        print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
+        print(
+            "Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
         sys.exit(1)
-    
+
     path = sys.argv[1]
     files = [f for f in listdir(path) if f.endswith('.bag')]
-    
+
     for file in files:
         cleanup_csvs(join(path, file.split(".")[0]))
+
+    
+    all_csvs = []
+    all_jpegs = []
+    for subdir, dirs, files in walk(path):
+        for file in files:
+            if file.endswith('.csv'):
+                # Collect names of all csv files
+                all_csvs.append(join(subdir, file))
+            elif file.endswith('.jpeg'):
+                # Collect names of all jpeg files
+                all_jpegs.append(join(subdir, file))
+
+
+    """
+    Shift timestamps so that the first timestamp is 0, 
+    and rename all images to their timestamp
+    """
+    shift_timestamps(all_csvs, all_jpegs)

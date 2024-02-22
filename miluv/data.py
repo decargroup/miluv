@@ -1,7 +1,7 @@
 
 import pandas as pd
 import os
-from wrappers import MocapTrajectory
+from miluv.wrappers import MocapTrajectory
 
 # TODO: look into dataclasses
 class Miluv:
@@ -51,9 +51,10 @@ class Miluv:
                 self.data[id].update({"baro": []})
                 self.data[id]["baro"] = self.read_csv("baro", id)
 
-            # TODO: replace this with adding gt to each robot's data by fitting a spline
             self.data[id].update({"mocap": []})
-            self.data[id]["mocap"] = self.read_csv("mocap", id)
+            self.data[id]["mocap"] = MocapTrajectory(
+                                     self.read_csv("mocap", id), 
+                                     frame_id=id)
 
         # TODO: Load timestamp-to-image mapping?
         # if cam is "both" or cam is "bottom":
