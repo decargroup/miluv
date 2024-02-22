@@ -74,6 +74,11 @@ for config in config_files:
     
 calib_results = merge_calib_results(calib_results_list)
 
+save(
+    calib_results, 
+    "config/uwb_calib.pickle"
+)
+
 plt.rc('legend', fontsize=40)
 print(calib_results['delays'])
 
@@ -90,13 +95,13 @@ axs[1].set_xticks(np.arange(0, 1.6, 0.2))
 
 bins = 200
 fig2 = plt.figure()
-fig2.hist(bias_raw, density=True, bins=bins, alpha=0.5, label='Raw')
-fig2.hist(bias_antenna_delay, density=True, bins=bins, alpha=0.5, label='Antenna-delay calibrated')
-fig2.hist(bias_fully_calib, density=True, bins=bins, alpha=0.5, label='Fully calibrated')
-fig2.xticks(np.arange(-0.4, 1, 0.2))
-fig2.xlabel('Bias [m]')
-fig2.xlim([-0.5, 1])
-fig2.legend()
+plt.hist(bias_raw, density=True, bins=bins, alpha=0.5, label='Raw')
+plt.hist(bias_antenna_delay, density=True, bins=bins, alpha=0.5, label='Antenna-delay calibrated')
+plt.hist(bias_fully_calib, density=True, bins=bins, alpha=0.5, label='Fully calibrated')
+plt.xticks(np.arange(-0.4, 1, 0.2))
+plt.xlabel('Bias [m]')
+plt.xlim([-0.5, 1])
+plt.legend()
 
 fig.savefig('figs/calib_results.pdf')
 fig2.savefig('figs/bias_histogram.pdf')
