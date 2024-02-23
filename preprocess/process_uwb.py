@@ -7,7 +7,6 @@ from configparser import ConfigParser, ExtendedInterpolation
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib
 import sys
 from os.path import join
 import os
@@ -130,13 +129,12 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
         sys.exit(1)
-    
     path = sys.argv[1]
     
     process_uwb(path)
 
+    # Remove the bagreader-generated UWB csv files
     robots = [f for f in os.listdir(path) if f.endswith('.bag')]
-
     for robot in robots:
         robot_id = robot.split('.')[0]
         robot_folder = os.path.join(path, robot_id)
