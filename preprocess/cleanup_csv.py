@@ -80,6 +80,7 @@ def merge_time(df):
 
 
 def find_min_timestamp(all_files):
+    """Find the minimum timestamp in all csv files."""
     min_timestamp = float('inf')
     for file in all_files:
         df = pd.read_csv(file)
@@ -88,7 +89,17 @@ def find_min_timestamp(all_files):
     return min_timestamp
 
 
-def shift_timestamps(all_csvs, all_jpegs):
+def shift_timestamps(path):
+    """Shift all timestamps by the minimum timestamp."""
+    all_csvs = []
+    all_jpegs = []
+    for subdir, dirs, files in walk(path):
+        for file in files:
+            if file.endswith('.csv'):
+                all_csvs.append(join(subdir, file))
+            elif file.endswith('.jpeg'):
+                all_jpegs.append(join(subdir, file))
+
     min_timestamp = find_min_timestamp(all_csvs)
     for file in all_csvs:
         df = pd.read_csv(file)
@@ -114,13 +125,4 @@ if __name__ == '__main__':
     for file in files:
         cleanup_csvs(join(path, file.split(".")[0]))
 
-    all_csvs = []
-    all_jpegs = []
-    for subdir, dirs, files in walk(path):
-        for file in files:
-            if file.endswith('.csv'):
-                all_csvs.append(join(subdir, file))
-            elif file.endswith('.jpeg'):
-                all_jpegs.append(join(subdir, file))
-
-    shift_timestamps(all_csvs, all_jpegs)
+    shift_timestamps(path)
