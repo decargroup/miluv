@@ -1,10 +1,15 @@
 
 import pandas as pd
 import os
-from miluv.wrappers import MocapTrajectory
+from miluv.wrappers import (
+    MocapTrajectory,
+    DataDict
+)
+import numpy as np
+from typing import List
 
 # TODO: look into dataclasses
-class Miluv:
+class DataLoader:
     def __init__(
         self,
         exp_name: str,
@@ -24,7 +29,8 @@ class Miluv:
         
         # TODO: read robots from configs
         robot_ids = ["ifo001", "ifo002", "ifo003"]
-        self.data = {id: {} for id in robot_ids}
+        self.data = {id: DataDict() for id in robot_ids}
+
         for id in robot_ids:    
             if imu == "both" or imu == "px4":
                 self.data[id].update({"imu_px4": []})
@@ -51,7 +57,7 @@ class Miluv:
                 self.data[id].update({"baro": []})
                 self.data[id]["baro"] = self.read_csv("baro", id)
 
-            self.data[id].update({"mocap": []})
+            self.data[id].update({"mocap": MocapTrajectory})
             self.data[id]["mocap"] = MocapTrajectory(
                                      self.read_csv("mocap", id), 
                                      frame_id=id)
@@ -70,4 +76,3 @@ class Miluv:
             topic + ".csv"
         )
         return pd.read_csv(path)
-        
