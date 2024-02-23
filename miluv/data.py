@@ -70,59 +70,83 @@ class Miluv:
         #     self.load_imgs("front")
 
     def read_csv(self, topic: str, robot_id) -> pd.DataFrame:
+        """Read a csv file for a given robot and topic."""
         path = os.path.join(self.exp_dir, self.exp_name, robot_id,
                             topic + ".csv")
         return pd.read_csv(path)
 
     def closest_past_timestamp(self, robot_id: str, sensor: str,
-                               timestamp: float):
+                               timestamp: float) -> int:
+        """Return the closest timestamp in the past for a given sensor."""
+        not_over = None
         if sensor != "bottom" and sensor != "color" and sensor != "infra1" and sensor != "infra2":
-            return min(self.data[robot_id][sensor]["timestamp"],
-                       key=lambda x: abs(x - timestamp))
+            not_over = [
+                ts for ts in self.data[robot_id][sensor]["timestamp"]
+                if ts <= timestamp
+            ]
         else:
             all_imgs = os.listdir(
                 os.path.join(self.exp_dir, self.exp_name, robot_id, sensor))
             all_imgs = [int(img.split(".")[0]) for img in all_imgs]
-            return min(all_imgs, key=lambda x: abs(x - timestamp))
+            not_over = [ts for ts in all_imgs if ts <= timestamp]
 
-    def data_from_timestamp(self, timestamp: int):
+        if not_over == []:
+            return None
+        return max(not_over)
 
-        def data_from_timestamp_robot(robot_id: str, timestamp: float):
-
-            def data_from_timestamp_sensor(sensor: str, timestamp: float):
-                if timestamp in self.data[robot_id][sensor][
-                        "timestamp"].values:
-                    return self.data[robot_id][sensor].loc[
-                        self.data[robot_id][sensor]["timestamp"] == timestamp]
-                else:
-                    return self.data[robot_id][sensor].loc[
-                        self.data[robot_id][sensor]["timestamp"] == self.
-                        closest_past_timestamp(robot_id, sensor, timestamp)]
-
-            data_by_robot = {}
-            for sensor in self.data[robot_id]:
-                data_by_robot[sensor] = data_from_timestamp_sensor(
-                    sensor, timestamp)
-
-            return data_by_robot
-
+    def data_from_timestamp(self, timestamp: int) -> dict:
+        """Return all data from a given timestamp."""
         data_by_timestamp = {}
         for robot_id in self.data:
-            data_by_timestamp[robot_id] = data_from_timestamp_robot(
+            data_by_timestamp[robot_id] = self.data_from_timestamp_robot(
                 robot_id, timestamp)
 
         return data_by_timestamp
 
-    def imgs_from_timestamp(self, robot_id: str, timestamp: int):
+    def data_from_timestamp_robot(self, robot_id: str,
+                                  timestamp: float) -> dict:
+        """Return all data from a given timestamp for a given robot."""
+        data_by_robot = {}
+        for sensor in self.data[robot_id]:
+            data_by_robot[sensor] = self.data_from_timestamp_sensor(
+                robot_id, sensor, timestamp)
+
+        return data_by_robot
+
+    def data_from_timestamp_sensor(self, robot_id: str, sensor: str,
+                                   timestamp: float) -> dict:
+        """Return all data from a given timestamp for a given sensor for a given robot."""
+        if timestamp in self.data[robot_id][sensor]["timestamp"].values:
+            return self.data[robot_id][sensor].loc[self.data[robot_id][sensor]
+                                                   ["timestamp"] == timestamp]
+        else:
+            return self.data[robot_id][sensor].loc[
+                self.data[robot_id][sensor]["timestamp"] ==
+                self.closest_past_timestamp(robot_id, sensor, timestamp)]
+
+    def imgs_from_timestamp(self, timestamp: int) -> dict:
+        """Return all images from a given timestamp."""
+        img_by_timestamp = {}
+        for robot_id in self.data:
+            img_by_timestamp[robot_id] = self.imgs_from_timestamp_robot(
+                robot_id, timestamp)
+        return img_by_timestamp
+
+    def imgs_from_timestamp_robot(self, robot_id: str, timestamp: int) -> dict:
+        """Return all images from a given timestamp for a given robot."""
+        img_by_robot = {}
         for cam in self.cam:
             if cam:
-                img_path = os.path.join(
-                    self.exp_dir, self.exp_name, robot_id, cam,
-                    str(self.closest_past_timestamp(robot_id, cam, timestamp))
-                    + ".jpeg")
+                img_ts = self.closest_past_timestamp(robot_id, cam, timestamp)
+                if img_ts is None:
+                    print("No", cam, "image found for timestamp", timestamp)
+                    continue
+                img_path = os.path.join(self.exp_dir, self.exp_name, robot_id,
+                                        cam,
+                                        str(img_ts) + ".jpeg")
                 img = Image.open(img_path)
-                img.show()
-                print(img_path)
+                img_by_robot[cam] = img
+        return img_by_robot
 
 
 if __name__ == "__main__":
@@ -132,4 +156,6 @@ if __name__ == "__main__":
         height=False,
     )
 
-    mv.imgs_from_timestamp("ifo001", 0)
+    imgs = mv.imgs_from_timestamp(10000000000)
+    imgs["ifo001"]["color"].show()
+    print("done")
