@@ -1,3 +1,6 @@
 data/*
 *.pyc
 miluv.egg*
+figs
+TODO
+.vscode

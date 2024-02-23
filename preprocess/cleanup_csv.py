@@ -34,47 +34,6 @@ mocap = [
     "pose.orientation.z",
     "pose.orientation.w",
 ]
-uwb_range = [
-    "timestamp",
-    "range",
-    "from_id",
-    "to_id",
-    "tx1",
-    "rx1",
-    "tx2",
-    "rx2",
-    "tx3",
-    "rx3",
-    "fpp1",
-    "fpp2",
-    "skew1",
-    "skew2"
-]
-uwb_passive= [
-    "timestamp",
-    "my_id",
-    "from_id",
-    "to_id",
-    "rx1",
-    "rx2",
-    "rx3",
-    "tx1_n",
-    "rx1_n",
-    "tx2_n",
-    "rx2_n",
-    "tx3_n",
-    "rx3_n",
-    "fpp1",
-    "fpp2",
-    "fpp3",
-    "skew1",
-    "skew2",
-    "skew3",
-    "fpp1_n",
-    "fpp2_n",
-    "skew1_n",
-    "skew2_n"
-]
 
 def cleanup_csvs(dir):
     # Find all csv files
@@ -89,10 +48,6 @@ def cleanup_csvs(dir):
             process_csv(dir, file, height, "height")
         elif "vrpn" in file:
             process_csv(dir, file, mocap, "mocap")
-        elif "range" in file:
-            process_csv(dir, file, uwb_range, "uwb_range")
-        elif "passive" in file:
-            process_csv(dir, file, uwb_passive, "uwb_passive")
         elif "imu" in file and "mavros" in file:
             process_csv(dir, file, imu, "imu_px4")
 

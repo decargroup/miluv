@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # TODO: look into dataclasses
-class Miluv:
+class DataLoader:
     def __init__(
         self,
         exp_name: str,
