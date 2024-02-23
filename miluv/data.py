@@ -11,7 +11,12 @@ class DataLoader:
         exp_name: str,
         exp_dir: str = "./data",
         imu: str = "both",
-        cam: str = "both",
+        cam: dict = {
+            "color": True,
+            "bottom": True,
+            "infra1": True,
+            "infra2": True
+        },
         uwb: bool = True,
         height: bool = True,
         mag: bool = True,
@@ -53,13 +58,13 @@ class DataLoader:
                 self.data[id]["baro"] = self.read_csv("baro", id)
 
             # TODO: replace this with adding gt to each robot's data by fitting a spline
-            self.data[id].update({"mocap": []})
-            self.data[id]["mocap"] = self.read_csv("mocap", id)
+            # self.data[id].update({"mocap": []})
+            # self.data[id]["mocap"] = self.read_csv("mocap", id)
 
         # TODO: Load timestamp-to-image mapping?
-        # if cam is "both" or cam is "bottom":
+        # if cam == "both" or cam == "bottom":
         #     self.load_imgs("bottom")
-        # if cam is "both" or cam is "front":
+        # if cam == "both" or cam == "front":
         #     self.load_imgs("front")
 
     def read_csv(self, topic: str, robot_id) -> pd.DataFrame:
