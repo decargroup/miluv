@@ -92,35 +92,56 @@ class DataLoader:
             return None
         return max(not_over)
 
-    def data_from_timestamp(self, timestamp: int) -> dict:
+    def data_from_timestamp(
+        self,
+        timestamps: list,
+        robot_ids=None,
+        sensors=None,
+    ) -> dict:
         """Return all data from a given timestamp."""
+        if robot_ids is None:
+            robot_ids = self.data.keys()
+        if sensors is None:
+            sensors = self.data['ifo001'].keys()
+
+        def data_from_timestamp_robot(robot_id: str,
+                                      timestamps: float) -> dict:
+            """Return all data from a given timestamp for a given robot."""
+            data_by_robot = {}
+            for sensors in self.data[robot_id]:
+                data_by_robot[sensors] = data_from_timestamp_sensor(
+                    robot_id, sensors, timestamps)
+
+            return data_by_robot
+
+        def data_from_timestamp_sensor(robot_id: str, sensor: str,
+                                       timestamps: float) -> dict:
+            """Return all data from a given timestamp for a given sensor for a given robot."""
+            col_names = self.data[robot_id][sensor].columns
+            df = pd.DataFrame(columns=col_names)
+            for timestamp in timestamps:
+                if timestamp in self.data[robot_id][sensor][
+                        "timestamp"].values:
+                    df = pd.concat([
+                        df if not df.empty else None, self.data[robot_id]
+                        [sensor].loc[self.data[robot_id][sensor]["timestamp"]
+                                     == timestamp]
+                    ])
+                else:
+                    df = pd.concat([
+                        df if not df.empty else None, self.data[robot_id]
+                        [sensor].loc[self.data[robot_id][sensor]["timestamp"]
+                                     == self.closest_past_timestamp(
+                                         robot_id, sensor, timestamp)]
+                    ])
+            return df
+
         data_by_timestamp = {}
-        for robot_id in self.data:
-            data_by_timestamp[robot_id] = self.data_from_timestamp_robot(
-                robot_id, timestamp)
+        for robot_id in robot_ids:
+            data_by_timestamp[robot_id] = data_from_timestamp_robot(
+                robot_id, timestamps)
 
         return data_by_timestamp
-
-    def data_from_timestamp_robot(self, robot_id: str,
-                                  timestamp: float) -> dict:
-        """Return all data from a given timestamp for a given robot."""
-        data_by_robot = {}
-        for sensor in self.data[robot_id]:
-            data_by_robot[sensor] = self.data_from_timestamp_sensor(
-                robot_id, sensor, timestamp)
-
-        return data_by_robot
-
-    def data_from_timestamp_sensor(self, robot_id: str, sensor: str,
-                                   timestamp: float) -> dict:
-        """Return all data from a given timestamp for a given sensor for a given robot."""
-        if timestamp in self.data[robot_id][sensor]["timestamp"].values:
-            return self.data[robot_id][sensor].loc[self.data[robot_id][sensor]
-                                                   ["timestamp"] == timestamp]
-        else:
-            return self.data[robot_id][sensor].loc[
-                self.data[robot_id][sensor]["timestamp"] ==
-                self.closest_past_timestamp(robot_id, sensor, timestamp)]
 
     def imgs_from_timestamp(self, timestamp: int) -> dict:
         """Return all images from a given timestamp."""
@@ -153,3 +174,5 @@ if __name__ == "__main__":
         baro=False,
         height=False,
     )
+
+    print("done!")
