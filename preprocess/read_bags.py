@@ -1,6 +1,6 @@
 import sys
 from os import listdir, mkdir, rename
-from os.path import join
+from os.path import join, isdir
 import rosbag
 import cv2
 from cv_bridge import CvBridge
@@ -61,6 +61,11 @@ if __name__ == '__main__':
     files = rename_files(files, path)
     
     for file in files:
+        print(f"Reading bag file {file}")
+        if isdir(join(path, file.split(".")[0])):
+            print(f"Folder already exists for bag file {file}. Skipping bag reading...")
+            continue
+        
         if vision:
             mkdir(join(path, file.split(".")[0]))
             mkdir(join(path, file.split(".")[0] + "/infra1"))
