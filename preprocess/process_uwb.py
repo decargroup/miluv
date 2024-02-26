@@ -1,42 +1,158 @@
 # %%
 from pyuwbcalib.machine import RosMachine
 from pyuwbcalib.postprocess import PostProcess
-from pyuwbcalib.utils import load, set_plotting_env, read_anchor_positions
+from pyuwbcalib.utils import load, read_anchor_positions
 from pyuwbcalib.uwbcalibrate import ApplyCalibration
-from configparser import ConfigParser, ExtendedInterpolation
-import numpy as np
-import matplotlib.pyplot as plt
-import numpy as np
 import sys
 from os.path import join
 import os
+import pandas as pd
+import yaml
 
-# Set the plotting environment
-set_plotting_env()
+def get_experiment_info(path):
+    exp_name = path.split('/')[-1]
+    df = pd.read_csv(join("config", "experiments.csv"))
+    row: pd.DataFrame = df[df["experiment"] == exp_name]
+    return row.to_dict(orient="records")[0]
 
+def get_anchors(anchor_constellation):
+    with open('config/uwb/anchors.yaml', 'r') as file:
+        return yaml.safe_load(file)[anchor_constellation]
+    
+def generate_config(exp_info):
+    params = {
+        "max_ts_value": "2**32",
+        "ts_to_ns": "1e9 * (1.0 / 499.2e6 / 128.0)",
+        "ds_twr": "True",
+        "passive_listening": "True",
+        "fpp_exists": "True",
+        "rxp_exists": "False",
+        "std_exists": "False",
+    }
+    
+    pose_path = {
+        "directory": f"data/{exp_info['experiment']}/",
+    }
+    for i in range(exp_info["num_robots"]):
+        pose_path.update({
+            f"{i}": f"ifo00{i+1}.bag"
+        })
+        
+    uwb_path = pose_path.copy()
+    anchors = get_anchors(str(exp_info["anchor_constellation"]))
+    machines = {}
+    for i in range(exp_info["num_robots"]):
+        machines.update({f"{i}": f"ifo00{i+1}"})
+    
+    tags = {}
+    for i in range(exp_info["num_robots"]):
+        if exp_info["num_tags_per_robot"] == 2:
+            tags.update({f"{i}": f"[{(i+1)*10}, {(i+1)*10 + 1}]"})
+        elif exp_info["num_tags_per_robot"] == 1:
+            tags.update({f"{i}": f"[{(i+1)*10}]"})
+        
+    moment_arms = {
+        "10": "[0.13189,-0.17245,-0.05249]",
+        "11": "[-0.17542,0.15712,-0.05307]",
+        "20": "[0.16544,-0.15085,-0.03456]",
+        "21": "[-0.15467,0.16972,-0.01680]",
+        "30": "[0.16685,-0.18113,-0.05576]",
+        "31": "[-0.13485,0.15468,-0.05164]",
+    }
+    
+    pose_topic = {}
+    for i in range(exp_info["num_robots"]):
+        pose_topic.update({
+            f"{i}": f"/ifo00{i+1}/vrpn_client_node/ifo00{i+1}/pose"
+        })
+        
+    uwb_topic = {}
+    for i in range(exp_info["num_robots"]):
+        uwb_topic.update({
+            f"{i}": f"/ifo00{i+1}/uwb/range"
+        })
+        
+    listening_topic = {}
+    for i in range(exp_info["num_robots"]):
+        listening_topic.update({
+            f"{i}": f"/ifo00{i+1}/uwb/passive"
+        })
+    
+    uwb_message = {
+        "from_id": "from_id",
+        "to_id": "to_id",
+        "tx1": "tx1",
+        "rx1": "rx1",
+        "tx2": "tx2",
+        "rx2": "rx2",
+        "tx3": "tx3",
+        "rx3": "rx3",
+        "fpp1": "fpp1",
+        "fpp2": "fpp2",
+    }
+    
+    listening_message = {
+        "my_id": "my_id",
+        "from_id": "from_id",
+        "to_id": "to_id",
+        "covariance": "covariance",
+        "rx1": "rx1",
+        "rx2": "rx2",
+        "rx3": "rx3",
+        "tx1_n": "tx1_n",
+        "rx1_n": "rx1_n",
+        "tx2_n": "tx2_n",
+        "rx2_n": "rx2_n",
+        "tx3_n": "tx3_n",
+        "rx3_n": "rx3_n",
+        "fpp1": "pr1",
+        "fpp2": "pr2",
+        "fpp3": "pr3",
+        "fpp1_n": "pr1_n",
+        "fpp2_n": "pr2_n ",
+    }
+    
+    return {
+        "PARAMS": params,
+        "POSE_PATH": pose_path,
+        "UWB_PATH": uwb_path,
+        "ANCHORS": anchors,
+        "MACHINES": machines,
+        "TAGS": tags,
+        "MOMENT_ARMS": moment_arms,
+        "POSE_TOPIC": pose_topic,
+        "UWB_TOPIC": uwb_topic,
+        "LISTENING_TOPIC": listening_topic,
+        "UWB_MESSAGE": uwb_message,
+        "LISTENING_MESSAGE": listening_message
+    }
+    
+    
 def process_uwb(path):
     # The configuration files
     # TODO: must dynamically load the appropriate config file based on # of robots + if has anchors 
-    config = join(path, "uwb_config.config")
+    # config = join(path, "uwb_config.config")
 
-    parser = ConfigParser(interpolation=ExtendedInterpolation())
-    parser.read(config)
+    # parser = ConfigParser(interpolation=ExtendedInterpolation())
+    # parser.read(config)
+    exp_info = get_experiment_info(path)
+    uwb_config = generate_config(exp_info)
 
     # Read anchor positions
-    anchor_positions = read_anchor_positions(parser)
+    anchor_positions = read_anchor_positions(uwb_config)
 
     # Create a RosMachine object for every machine
     machines = {}
-    for i,machine in enumerate(parser['MACHINES']):
-        machine_id = parser['MACHINES'][machine]
-        machines[machine_id] = RosMachine(parser, i)
+    for i,machine in enumerate(uwb_config['MACHINES']):
+        machine_id = uwb_config['MACHINES'][machine]
+        machines[machine_id] = RosMachine(uwb_config, i)
 
     # Process and merge the data from all the machines
     data = PostProcess(machines, anchor_positions)
 
     # Load the UWB calibration results
     calib_results = load(
-        "config/uwb_calib.pickle",
+        "config/uwb/uwb_calib.pickle",
     )
 
     # Apply the calibration
