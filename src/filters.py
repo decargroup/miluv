@@ -199,27 +199,6 @@ class ExtendedKalmanFilter:
                 dx = K @ z
                 dx = dx.ravel()
                 x.state = x.state.plus(dx.ravel())
-
-                # dx_attitude = dx[0:3]
-                # dx_velocity = dx[3:6]
-                # dx_position = dx[6:9]
-
-                # for value in x.state.value:
-                #     if isinstance(value, SE23State):
-                #         pose_state = value
-                
-                # pose_state.attitude = pose_state.attitude @ SO3.Exp(-dx_attitude)
-                # pose_state.velocity = pose_state.velocity - dx_velocity
-                # pose_state.position = pose_state.position - dx_position
-                
-                # if self.bias:
-                #     dx_bias = dx[9:15]
-                #     bias_state = x.state.get_state_by_id('bias')
-                #     bias_state.value = bias_state.value - dx_bias
-                #     x.state.value = [pose_state, bias_state]
-                # else:
-                #     x.state.value = [pose_state]
-
                 x.covariance = (np.identity(x.state.dof) - K @ G) @ P
                 x.symmetrize()
 

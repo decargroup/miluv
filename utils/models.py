@@ -4,7 +4,7 @@ from utils.states import (
     CompositeState,
 )
 
-from typing import Any, List
+from typing import Any, List, Union
 from pymlg import SO2, SO3
 from utils.states import (
     State,
@@ -127,7 +127,7 @@ class ProcessModel(ABC):
 
     def evaluate_with_jacobian(
         self, x: State, u: Input, dt: float
-    ) -> (State, np.ndarray):
+    ) -> Union[State, np.ndarray]:
         """
         Evaluates the process model and simultaneously returns the Jacobian as
         its second output argument. This is useful to override for
@@ -230,7 +230,7 @@ class BodyFrameIMU(ProcessModel):
     
     def evaluate_with_jacobian(
         self, x: State, u: Input, dt: float
-    ) -> (State, np.ndarray):
+    ) -> Union[State, np.ndarray]:
         
         return self.evaluate(x, u, dt), self.jacobian(x, u, dt)
     
@@ -330,7 +330,7 @@ class MeasurementModel(ABC):
         """
         return self.jacobian_fd(x)
 
-    def evaluate_with_jacobian(self, x: State) -> (np.ndarray, np.ndarray):
+    def evaluate_with_jacobian(self, x: State) -> Union[np.ndarray, np.ndarray]:
         """
         Evaluates the measurement model and simultaneously returns the Jacobian
         as its second output argument. This is useful to override for

@@ -115,14 +115,14 @@ class DataLoader:
             for sensor in sensors:
                 indices = []
                 for s in stamps:
-                    index = self.get_index(s, id, sensor)
+                    index = self._get_index(s, id, sensor)
                     indices.append(index)
                 indices_dict[sensor] = indices
                 data[sensor] = data[sensor].loc[indices_dict[sensor]]
             out[id] = data
         return out
 
-    def get_index(self, stamp: float, robot_id: str, topic: str, ) -> int:
+    def _get_index(self, stamp: float, robot_id: str, topic: str, ) -> int:
         """
         Get the index of the closest earlier time to the query time.
 
