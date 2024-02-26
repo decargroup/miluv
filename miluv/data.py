@@ -27,6 +27,7 @@ class DataLoader:
         # TODO: Add checks for valid exp dir and name
         self.exp_name = exp_name
         self.exp_dir = exp_dir
+        self.cam = cam
 
         # TODO: read robots from configs
         robot_ids = ["ifo001", "ifo002", "ifo003"]
@@ -99,23 +100,18 @@ class DataLoader:
         sensors=None,
     ) -> dict:
         """Return all data from a given timestamp."""
-        if robot_ids is None:
-            robot_ids = self.data.keys()
-        if sensors is None:
-            sensors = self.data['ifo001'].keys()
 
-        def data_from_timestamp_robot(robot_id: str,
-                                      timestamps: float) -> dict:
+        def data_from_timestamp_robot(robot_id: str, timestamps: list) -> dict:
             """Return all data from a given timestamp for a given robot."""
             data_by_robot = {}
-            for sensors in self.data[robot_id]:
-                data_by_robot[sensors] = data_from_timestamp_sensor(
-                    robot_id, sensors, timestamps)
+            for sensor in sensors:
+                data_by_robot[sensor] = data_from_timestamp_sensor(
+                    robot_id, sensor, timestamps)
 
             return data_by_robot
 
         def data_from_timestamp_sensor(robot_id: str, sensor: str,
-                                       timestamps: float) -> dict:
+                                       timestamps: list) -> dict:
             """Return all data from a given timestamp for a given sensor for a given robot."""
             col_names = self.data[robot_id][sensor].columns
             df = pd.DataFrame(columns=col_names)
@@ -136,6 +132,11 @@ class DataLoader:
                     ])
             return df
 
+        if robot_ids is None:
+            robot_ids = self.data.keys()
+        if sensors is None:
+            sensors = self.data['ifo001'].keys()
+
         data_by_timestamp = {}
         for robot_id in robot_ids:
             data_by_timestamp[robot_id] = data_from_timestamp_robot(
@@ -143,29 +144,48 @@ class DataLoader:
 
         return data_by_timestamp
 
-    def imgs_from_timestamp(self, timestamp: int) -> dict:
+    def imgs_from_timestamps(self,
+                             timestamps: list,
+                             robot_ids=None,
+                             cams=None) -> dict:
         """Return all images from a given timestamp."""
-        img_by_timestamp = {}
-        for robot_id in self.data:
-            img_by_timestamp[robot_id] = self.imgs_from_timestamp_robot(
-                robot_id, timestamp)
-        return img_by_timestamp
 
-    def imgs_from_timestamp_robot(self, robot_id: str, timestamp: int) -> dict:
-        """Return all images from a given timestamp for a given robot."""
-        img_by_robot = {}
-        for cam in self.cam:
-            if cam:
-                img_ts = self.closest_past_timestamp(robot_id, cam, timestamp)
-                if img_ts is None:
-                    print("No", cam, "image found for timestamp", timestamp)
-                    continue
-                img_path = os.path.join(self.exp_dir, self.exp_name, robot_id,
-                                        cam,
-                                        str(img_ts) + ".jpeg")
-                img = Image.open(img_path)
-                img_by_robot[cam] = img
-        return img_by_robot
+        def imgs_from_timestamp_robot(robot_id: str, cams: list,
+                                      timestamps: list) -> dict:
+            """Return all images from a given timestamp for a given robot."""
+            img_by_robot = {}
+            for cam in cams:
+                valid_ts = []
+                imgs = []
+                for timestamp in timestamps:
+                    if cam:
+                        img_ts = self.closest_past_timestamp(
+                            robot_id, cam, timestamp)
+                        if img_ts is None:
+                            print("No", cam, "image found for timestamp",
+                                  timestamp, "for robot_id", robot_id)
+                            continue
+                        img_path = os.path.join(self.exp_dir, self.exp_name,
+                                                robot_id, cam,
+                                                str(img_ts) + ".jpeg")
+                        imgs.append(Image.open(img_path))
+                        valid_ts.append(img_ts)
+                img_by_robot[cam] = pd.DataFrame({
+                    "timestamp": valid_ts,
+                    "image": imgs
+                })
+            return img_by_robot
+
+        if robot_ids is None:
+            robot_ids = self.data.keys()
+        if cams is None:
+            cams = self.cam.keys()
+
+        img_by_timestamp = {}
+        for robot_id in robot_ids:
+            img_by_timestamp[robot_id] = imgs_from_timestamp_robot(
+                robot_id, cams, timestamps)
+        return img_by_timestamp
 
 
 if __name__ == "__main__":
