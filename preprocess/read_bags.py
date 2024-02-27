@@ -23,21 +23,6 @@ def rename_files(files, path):
     return new_files
 
 
-def rename_files(files, path):
-    new_files = []
-    for file in files:
-        if "ifo001" in file:
-            rename(join(path, file), join(path, "ifo001.bag"))
-            new_files.append("ifo001.bag")
-        elif "ifo002" in file:
-            rename(join(path, file), join(path, "ifo002.bag"))
-            new_files.append("ifo002.bag")
-        elif "ifo003" in file:
-            rename(join(path, file), join(path, "ifo003.bag"))
-            new_files.append("ifo003.bag")
-    return new_files
-
-
 def write_imgs(input_bag, dir_main):
     bridge = CvBridge()
     for topic, msg, t in rosbag.Bag(input_bag).read_messages():
