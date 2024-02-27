@@ -134,5 +134,3 @@ for i in range(len(query_stamps)):
         ]
     
     input_data.append(CompositeInput(u))
-    
-a=2
