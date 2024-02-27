@@ -1,5 +1,5 @@
 import pandas as pd
-from PIL import Image
+import cv2
 import os
 
 
@@ -11,12 +11,12 @@ class DataLoader:
         exp_name: str,
         exp_dir: str = "./data",
         imu: str = "both",
-        cam: dict = {
-            "color": True,
-            "bottom": True,
-            "infra1": True,
-            "infra2": True
-        },
+        cam: list = [
+            "color",
+            "bottom",
+            "infra1",
+            "infra2",
+        ],
         uwb: bool = True,
         height: bool = True,
         mag: bool = True,
@@ -30,7 +30,11 @@ class DataLoader:
         self.cam = cam
 
         # TODO: read robots from configs
-        robot_ids = ["ifo001", "ifo002", "ifo003"]
+        robot_ids = [
+            "ifo001",
+            "ifo002",
+            "ifo003",
+        ]
         self.data = {id: {} for id in robot_ids}
         for id in robot_ids:
             if imu == "both" or imu == "px4":
@@ -168,7 +172,7 @@ class DataLoader:
                         img_path = os.path.join(self.exp_dir, self.exp_name,
                                                 robot_id, cam,
                                                 str(img_ts) + ".jpeg")
-                        imgs.append(Image.open(img_path))
+                        imgs.append(cv2.imread(img_path))
                         valid_ts.append(img_ts)
                 img_by_robot[cam] = pd.DataFrame({
                     "timestamp": valid_ts,
@@ -179,7 +183,7 @@ class DataLoader:
         if robot_ids is None:
             robot_ids = self.data.keys()
         if cams is None:
-            cams = self.cam.keys()
+            cams = self.cam
 
         img_by_timestamp = {}
         for robot_id in robot_ids:
