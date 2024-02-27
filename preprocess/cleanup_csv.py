@@ -50,17 +50,13 @@ def cleanup_csvs(dir):
     for file in files:
         if "imu" in file and "camera" in file:
             process_csv(dir, file, imu, "imu_cam")
-        elif "mag" in file:
+        elif "mag" in file and file != "mag.csv":
             process_csv(dir, file, mag, "mag")
         elif "hrlv" in file:
             process_csv(dir, file, height, "height")
         elif "vrpn" in file:
             process_csv(dir, file, mocap, "mocap")
-        elif "range" in file:
-            process_csv(dir, file, uwb_range, "uwb_range")
-        elif "passive" in file:
-            process_csv(dir, file, uwb_passive, "uwb_passive")
-        elif "imu" in file and "mavros" in file:
+        elif "imu" in file and "mavros" in file and "raw" in file:
             process_csv(dir, file, imu, "imu_px4")
 
 
