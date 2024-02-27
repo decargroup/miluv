@@ -5,6 +5,8 @@ import rosbag
 import cv2
 from cv_bridge import CvBridge
 from bagpy import bagreader
+import sys
+
 
 def rename_files(files, path):
     new_files = []
@@ -19,6 +21,22 @@ def rename_files(files, path):
             rename(join(path, file), join(path, "ifo003.bag"))
             new_files.append("ifo003.bag")
     return new_files
+
+
+def rename_files(files, path):
+    new_files = []
+    for file in files:
+        if "ifo001" in file:
+            rename(join(path, file), join(path, "ifo001.bag"))
+            new_files.append("ifo001.bag")
+        elif "ifo002" in file:
+            rename(join(path, file), join(path, "ifo002.bag"))
+            new_files.append("ifo002.bag")
+        elif "ifo003" in file:
+            rename(join(path, file), join(path, "ifo003.bag"))
+            new_files.append("ifo003.bag")
+    return new_files
+
 
 def write_imgs(input_bag, dir_main):
     bridge = CvBridge()
@@ -38,6 +56,7 @@ def write_imgs(input_bag, dir_main):
             except Exception as e:
                 Warning('Error uncompressing image: {}'.format(e))
 
+
 def write_csvs(input_bag):
     b = bagreader(input_bag)
     for topic in b.topics:
@@ -45,6 +64,7 @@ def write_csvs(input_bag):
             continue
         else:
             b.message_by_topic(topic)
+
 
 if __name__ == '__main__':
     # TODO: Allow user-defined image compression type
@@ -55,11 +75,11 @@ if __name__ == '__main__':
         vision = True
     else:
         vision = eval(sys.argv[2])
-    
+
     path = sys.argv[1]
     files = [f for f in listdir(path) if f.endswith('.bag')]
     files = rename_files(files, path)
-    
+
     for file in files:
         if vision:
             mkdir(join(path, file.split(".")[0]))
@@ -67,10 +87,7 @@ if __name__ == '__main__':
             mkdir(join(path, file.split(".")[0] + "/infra2"))
             mkdir(join(path, file.split(".")[0] + "/bottom"))
             mkdir(join(path, file.split(".")[0] + "/color"))
-            
-            write_imgs(join(path, file), join(path, file.split(".")[0]) + "/")
-            
-        write_csvs(join(path, file))
 
-        
-    
+            write_imgs(join(path, file), join(path, file.split(".")[0]) + "/")
+
+        write_csvs(join(path, file))
