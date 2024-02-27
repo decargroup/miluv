@@ -90,7 +90,7 @@ class MocapTrajectory:
             ID when converting to ``pynav`` states.
         """
 
-        self.stamps = np.array(mocap["timestamp"]).ravel()/1e9
+        self.stamps = np.array(mocap["timestamp"]).ravel()
         self.raw_position = np.array(mocap[["pose.position.x", 
                                             "pose.position.y", 
                                             "pose.position.z"]])

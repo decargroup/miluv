@@ -77,7 +77,7 @@ class DataLoader:
         return pd.read_csv(path)
     
 
-    def by_stamps(self, stamps, 
+    def by_timestamps(self, stamps, 
                   robot_id:List = None, 
                   sensors:List = None):
         """
@@ -110,7 +110,9 @@ class DataLoader:
                 sensors = list(self.data[id].keys() - ["mocap"])
 
             indices_dict = {}
-            data = self.data[id].copy()
+            data = {sensor: self.data[id][sensor].copy() 
+                    for sensor in sensors}
+
 
             for sensor in sensors:
                 indices = []
@@ -119,8 +121,104 @@ class DataLoader:
                     indices.append(index)
                 indices_dict[sensor] = indices
                 data[sensor] = data[sensor].loc[indices_dict[sensor]]
+
             out[id] = data
+
         return out
+    
+    def by_timerange(self, 
+                    start_time: float, 
+                    end_time: float,
+                    robot_id:List = None, 
+                    sensors:List = None):
+            """
+            Get the data within a time range.
+    
+            Parameters
+            ----------
+            start_time : float
+                Start time of the range
+            end_time : float
+                End time of the range
+    
+            Returns
+            -------
+            Data
+                data within the time range
+            """
+            start_time = start_time
+            end_time = end_time
+    
+            if robot_id is None:
+                robot_id = self.data.keys()
+    
+            robot_id = [robot_id] if type(robot_id) is str else robot_id
+            sensors = [sensors] if type(sensors) is str else sensors
+    
+            out = {}
+            for id in robot_id:
+                if sensors is None:
+                    sensors = list(self.data[id].keys() - ["mocap"])
+    
+                data = {sensor: self.data[id][sensor].copy() 
+                        for sensor in sensors}
+    
+                for sensor in sensors:
+                    mask = (data[sensor]["timestamp"] >= start_time
+                            ) & (data[sensor]["timestamp"] <= end_time)
+                    
+                    data[sensor] = data[sensor].loc[mask]
+    
+                out[id] = data
+    
+            return out
+
+    def get_timerange(self, 
+                   robot_id:List = None, 
+                   sensors: List = None,
+                   seconds = False) -> float:
+        """
+        Get the start time of the data for a robot.
+
+        Parameters
+        ----------
+        robot_id : str
+            The robot ID
+
+        Returns
+        -------
+        float
+            Start time of the data
+        """
+        start_times = []
+        end_times = []
+
+        if robot_id is None:
+            robot_id = self.data.keys()
+
+        robot_id = [robot_id] if type(robot_id) is str else robot_id
+        sensors = [sensors] if type(sensors) is str else sensors
+
+
+        for id in robot_id:
+            if sensors is None:
+                sensors = list(self.data[id].keys() - ["mocap"])
+            
+            for sensor in sensors:
+                start_times.append(self.data[id][sensor]["timestamp"].iloc[0])
+                end_times.append(self.data[id][sensor]["timestamp"].iloc[-1])
+
+        start_time = max(start_times)
+        end_time = min(end_times)
+
+
+        if seconds:
+            start_time = start_time/1e9
+            end_time = end_time/1e9
+
+
+        return (start_time, end_time)
+        
 
     def _get_index(self, stamp: float, robot_id: str, topic: str, ) -> int:
         """

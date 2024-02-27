@@ -4,10 +4,45 @@ from typing import List, Tuple
 import matplotlib.patches as patches
 import mpl_toolkits.mplot3d.art3d as art3d
 import itertools
+import pandas as pd
 from utils.states import (
     State, 
     StateWithCovariance
 )
+from miluv.data import DataLoader
+
+def merge_range(self: DataLoader, 
+                robot_id:List=None, 
+                sensors:List=None):
+
+
+    if robot_id is None:
+        robot_id = list(self.data.keys())
+
+    if sensors is None:
+        sensors = ["uwb_range", "uwb_passive"]
+    
+    sensors = [sensors] if type(sensors) is str else sensors
+
+
+    # create a pd dataframe with all the range data
+    out = {sensor: [] for sensor in sensors}
+
+
+    for id in robot_id:
+        for sensor in sensors:
+            if sensor in self.data[id]:
+                out[sensor].append(self.data[id][sensor])
+
+    out = {sensor: pd.concat(out[sensor]) for sensor in sensors}
+
+    # sort the data by timestamp
+    for sensor in sensors:
+        out[sensor] = out[sensor].sort_values(by="timestamp")
+
+    return out
+
+
 
 class GaussianResult:
     """
