@@ -95,7 +95,7 @@ class DataLoader:
             data is at the lower bound of the time window
             data is not interpolated
         """
-        stamps = np.array(stamps) * 1e9
+        stamps = np.array(stamps)
 
         if robot_id is None:
             robot_id = self.data.keys()

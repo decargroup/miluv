@@ -4,7 +4,6 @@ from utils.models import (
     MeasurementModel,
     RangeRelativePose,
     RangePoseToPose,
-    TagHolder,
 )
 
 class Measurement:

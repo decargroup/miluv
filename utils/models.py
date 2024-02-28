@@ -195,17 +195,17 @@ class BodyFrameIMU(ProcessModel):
         A[3:6, 0:3] = - x.attitude @ SO3.wedge(u_accel)
         A[6:9, 3:6] = np.eye(len(x.velocity))
 
-        if bias:
-            A[0:3, 9:12] = np.eye(len(u_gyro))
-            A[3:6, 12:15] = x.attitude
+        # if bias:
+        A[0:3, 9:12] = np.eye(len(u_gyro))
+        A[3:6, 12:15] = x.attitude
 
         L = np.zeros((len(A), len(self._Q)))
         L[0:3, 0:3] = - np.eye(len(u_gyro))
         L[3:6, 3:6] = - x.attitude
         
-        if bias:
-            L[9:12, 6:9] = -np.eye(len(u_gyro))
-            L[12:15, 9:12] = -np.eye(len(u_accel))
+        # if bias:
+        L[9:12, 6:9] = -np.eye(len(u_gyro))
+        L[12:15, 9:12] = -np.eye(len(u_accel))
 
         return A, L
     

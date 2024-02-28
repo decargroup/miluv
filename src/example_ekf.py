@@ -40,13 +40,17 @@ from utils.models import (
 )
 
 from miluv.data import DataLoader
+from src.filters import ExtendedKalmanFilter
+import time
+from tqdm import tqdm
 
 # Set the plotting environment
 set_plotting_env()
+plt.rcParams.update({'font.size': 10})  
 
 # plots
 trajectory_plot = False
-error_plot = False
+error_plot = True
 save_fig = False
 
 
@@ -134,3 +138,55 @@ for i in range(len(query_stamps)):
         ]
     
     input_data.append(CompositeInput(u))
+
+
+""" Run the filter """
+x = StateWithCovariance(x0, P0)
+
+# Try an EKF or an IterEKF
+ekf = ExtendedKalmanFilter(process_model, 
+                        reject_outliers=True)
+
+
+results_list = []
+init_stamp = time.time()
+for k in tqdm(range(len(input_data) - 1)):
+
+    u = input_data[k]
+
+    dt = input_data[k + 1].stamp - x.stamp
+    x = ekf.predict(x, u, dt)
+
+    results_list.append(GaussianResult(x, ground_truth[k]))
+
+print("Average filter computation frequency (Hz):")
+print(1 / ((time.time() - init_stamp) / len(input_data)))
+
+results = GaussianResultList(results_list)
+
+
+if error_plot:
+    fig, axs = plot_error(results)
+    titles = ["Attitude Error", 
+            "Velocity Error", 
+            "Position Error",]
+    y_labels = ["x (-)", "y (-)", "z (-)"]
+    titles.append("Gyro Bias Error")
+    titles.append("Accel Bias Error")
+
+    for ax in axs:
+        for a in ax:
+            if a in axs[-1,:]:
+                a.set_xlabel("Time (s)")
+    j = 0
+    for a in axs[0,:]:
+        a.set_title(titles[j])
+        j += 1
+        if j == len(titles):
+            j = 0
+    
+    for i, a in enumerate(axs[:,0]):
+        a.set_ylabel(y_labels[i])
+    if save_fig:
+        plt.savefig(f'./figures/' + init_stamp + '.png')
+    plt.show()
