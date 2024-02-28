@@ -18,6 +18,19 @@ def get_experiment_info(path):
 def get_anchors(anchor_constellation):
     with open('config/uwb/anchors.yaml', 'r') as file:
         return yaml.safe_load(file)[anchor_constellation]
+
+def get_moment_arms(flatten=False):
+    with open('config/uwb/moment_arms.yaml', 'r') as file:
+        moment_arms = yaml.safe_load(file)
+
+    if flatten:
+        arms = {}
+        for robot, arm in moment_arms.items():
+            arms.update(arm)
+        return arms
+    else:
+        return moment_arms
+
     
 def generate_config(exp_info):
     params = {
@@ -51,14 +64,7 @@ def generate_config(exp_info):
         elif exp_info["num_tags_per_robot"] == 1:
             tags.update({f"{i}": f"[{(i+1)*10}]"})
         
-    moment_arms = {
-        "10": "[0.13189,-0.17245,-0.05249]",
-        "11": "[-0.17542,0.15712,-0.05307]",
-        "20": "[0.16544,-0.15085,-0.03456]",
-        "21": "[-0.15467,0.16972,-0.01680]",
-        "30": "[0.16685,-0.18113,-0.05576]",
-        "31": "[-0.13485,0.15468,-0.05164]",
-    }
+    moment_arms = get_moment_arms(flatten=True)
     
     pose_topic = {}
     for i in range(exp_info["num_robots"]):
@@ -242,10 +248,10 @@ def process_uwb(path):
 
 if __name__ == '__main__':
     
-    if len(sys.argv) != 2:
-        print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
-        sys.exit(1)
-    path = sys.argv[1]
+    # if len(sys.argv) != 2:
+    #     print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
+    #     sys.exit(1)
+    path = 'data/1c'
     
     process_uwb(path)
 

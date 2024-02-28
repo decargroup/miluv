@@ -6,6 +6,11 @@ from miluv.wrappers import (
 )
 import numpy as np
 from typing import List
+import copy
+from preprocess.process_uwb import (
+    get_anchors, 
+    get_moment_arms
+)
 
 
 # TODO: look into dataclasses
@@ -84,6 +89,9 @@ class DataLoader:
                             topic + ".csv")
         return pd.read_csv(path)
     
+    def copy(self):
+        return copy.deepcopy(self)
+    
 
     def by_timestamps(self, stamps, 
                   robot_id:List = None, 
@@ -112,7 +120,8 @@ class DataLoader:
         robot_id = [robot_id] if type(robot_id) is str else robot_id
         sensors = [sensors] if type(sensors) is str else sensors
 
-        out = {}
+        out = self.copy()
+        out.data = {id: {} for id in robot_id}
         for id in robot_id:
             if sensors is None:
                 sensors = list(self.data[id].keys() - ["mocap"])
@@ -130,7 +139,7 @@ class DataLoader:
                 indices_dict[sensor] = indices
                 data[sensor] = data[sensor].loc[indices_dict[sensor]]
 
-            out[id] = data
+            out.data[id] = data
 
         return out
     
@@ -163,7 +172,8 @@ class DataLoader:
             robot_id = [robot_id] if type(robot_id) is str else robot_id
             sensors = [sensors] if type(sensors) is str else sensors
     
-            out = {}
+            out = self.copy()
+            out.data = {id: {} for id in robot_id}
             for id in robot_id:
                 if sensors is None:
                     sensors = list(self.data[id].keys() - ["mocap"])
@@ -177,7 +187,7 @@ class DataLoader:
                     
                     data[sensor] = data[sensor].loc[mask]
     
-                out[id] = data
+                out.data[id] = data
     
             return out
 

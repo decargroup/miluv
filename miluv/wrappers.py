@@ -12,6 +12,34 @@ This module contains data wrappers for:
 - MocapTrajectory
 """
 
+class UWBTag:
+    """
+    A simple data container for UWB tag data.
+    """
+
+    def __init__(self, 
+                 tag_id: str, 
+                 parent_id: str,
+                 position: np.ndarray):
+        """
+        Parameters
+        ----------
+        tag_id : str
+            Tag ID
+        position : np.ndarray
+            Tag position
+        """
+        self.tag_id = tag_id
+        self.parent_id = parent_id
+        self.position = position
+
+
+    def __repr__(self):
+        return (f"UWBTag, 
+        tag_id: {self.tag_id}, 
+        parent_id: {self.parent_id}")
+
+
 def beye(dim: int, num: int) -> np.ndarray:
     """
     Batch identity matrix

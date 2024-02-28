@@ -170,15 +170,14 @@ class GaussianResultList:
         #:numpy.ndarray with shape (N,): true state value. type depends on implementation
         self.value_true = np.array([r.state_true.value for r in result_list])
 
-
 def plot_error(
     results: GaussianResultList,
-    axs: List[plt.Axes] = None,
     label: str = None,
     sharey: bool = False,
     color=None,
     bounds=True,
-) -> Tuple[plt.Figure, List[plt.Axes]]:
+    separate_figures = False,
+) -> List[Tuple[plt.Figure, List[plt.Axes]]]:
     """
     A generic three-sigma bound plotter.
 
@@ -197,13 +196,15 @@ def plot_error(
 
     Returns
     -------
-    plt.Figure
-        Handle to figure.
-    List[plt.Axes]
-        Handle to axes that were drawn on.
+    List[Tuple[plt.Figure, List[plt.Axes]]]
+        List of tuples, each containing a handle to figure and a list of handles to axes that were drawn on.
     """
+    if separate_figures:
+        no_of_plots = len(results.value[0])
+    else:
+        no_of_plots = 1
 
-    dim = results.error.shape[1]
+    dim = int(results.error.shape[1] / no_of_plots)
 
     if dim < 3:
         n_rows = dim
@@ -212,30 +213,31 @@ def plot_error(
 
     n_cols = int(np.ceil(dim / 3))
 
-    if axs is None:
+    figs_axes = [] 
+    for n in range(no_of_plots):
         fig, axs = plt.subplots(n_rows, n_cols, sharex=True, sharey=sharey)
-    else:
-        fig: plt.Figure = axs.ravel("F")[0].get_figure()
 
-    axs_og = axs
-    kwargs = {}
-    if color is not None:
-        kwargs["color"] = color
+        axs_og = axs
+        kwargs = {}
+        if color is not None:
+            kwargs["color"] = color
 
-    axs: List[plt.Axes] = axs.ravel("F")
-    for i in range(results.three_sigma.shape[1]):
-        if bounds:
-            axs[i].fill_between(
-                results.stamp,
-                results.three_sigma[:, i],
-                -results.three_sigma[:, i],
-                alpha=0.5,
-                **kwargs,
-            )
-        axs[i].plot(results.stamp, results.error[:, i], label=label, **kwargs)
+        axs: List[plt.Axes] = axs.ravel("F")
+        
+        for i in range(dim):
+            if bounds:
+                axs[i].fill_between(
+                    results.stamp,
+                    results.three_sigma[:, n*dim + i],
+                    -results.three_sigma[:, n*dim + i],
+                    alpha=0.5,
+                    **kwargs,
+                )
+            axs[i].plot(results.stamp, results.error[:, n*dim + i], label=label, **kwargs)
 
-    fig: plt.Figure = fig  # For type hinting
-    return fig, axs_og
+        fig: plt.Figure = fig  # For type hinting
+        figs_axes.append((fig, axs_og))
+    return figs_axes
 
 
 def plot_uav3d(state, 

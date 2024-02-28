@@ -12,6 +12,11 @@ from pyuwbcalib.utils import (
     read_anchor_positions
 )
 
+from utils.measurement import (
+    Measurement,
+    RangeData,
+)
+
 from utils.misc import (
     GaussianResult,
     GaussianResultList,
@@ -57,23 +62,26 @@ save_fig = False
 """ Get data """
 miluv = DataLoader("1c", baro=False)
 robots = list(miluv.data.keys())
-input_sensor = "imu_px4"
+input_sensor = ["imu_px4"]
 start_time, end_time = miluv.get_timerange(
                             sensors = input_sensor,
                             seconds=False)
 
-
 query_stamps = np.arange(start_time, end_time, 0.01*1e9)
 imus = miluv.by_timestamps(query_stamps, sensors=input_sensor)
-range_data = miluv.by_timerange(start_time, end_time, sensors=["uwb_range"])
-range_data = merge_range(miluv, 
-                         sensors=["uwb_range"]
-                         )
 
+range_data = RangeData(miluv)
+range_data = range_data.filter_by_bias( max_bias=0.3)
+range_data = range_data.by_timerange(start_time, 
+                                     end_time, 
+                                     sensors=["uwb_range"])
+range_data = range_data.merge_range(sensors=["uwb_range"],
+                                    seconds=True)
 
 
 pose = [miluv.data[robot]["mocap"].extended_pose_matrix(
                             query_stamps) for robot in robots]
+query_stamps = np.array(query_stamps)/1e9
 
 
 """ Create ground truth data """

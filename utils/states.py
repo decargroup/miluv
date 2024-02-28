@@ -52,25 +52,6 @@ class State(ABC):
         """
         pass
 
-    def plus_jacobian(self, dx: np.ndarray) -> np.ndarray:
-        """
-        Jacobian of the ``plus`` operator. For Lie groups, this is known as the
-        *group Jacobian*.
-        """
-        return self.plus_jacobian_fd(dx)
-
-    def minus_jacobian(self, x: "State") -> np.ndarray:
-        """
-        Jacobian of the ``minus`` operator with respect to self. That is, if
-
-            y = x1.minus(x2)
-
-        then this is the Jacobian of ``y`` with respect to ``x1``.
-        For Lie groups, this is the inverse of the *group Jacobian* evaluated at
-        ``dx = x1.minus(x2)``.
-        """
-        return self.minus_jacobian_fd(x)
-
     def __repr__(self):
         value_str = str(self.value).split("\n")
         value_str = "\n".join(["    " + s for s in value_str])
