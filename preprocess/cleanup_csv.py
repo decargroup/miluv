@@ -33,7 +33,6 @@ mocap = [
 ]
 barometer = ["timestamp", "fluid_pressure"]
 
-
 def cleanup_csvs(dir):
     # Find all csv files
     files = [f for f in listdir(dir) if f.endswith('.csv')]
@@ -115,20 +114,4 @@ if __name__ == '__main__':
     for file in files:
         cleanup_csvs(join(path, file.split(".")[0]))
 
-    all_csvs = []
-    all_jpegs = []
-    for subdir, dirs, files in walk(path):
-        for file in files:
-            if file.endswith('.csv'):
-                # Collect names of all csv files
-                all_csvs.append(join(subdir, file))
-            elif file.endswith('.jpeg'):
-                # Collect names of all jpeg files
-                all_jpegs.append(join(subdir, file))
-
-
-    """
-    Shift timestamps so that the first timestamp is 0, 
-    and rename all images to their timestamp
-    """
-    shift_timestamps(all_csvs, all_jpegs)
+    shift_timestamps(path)
