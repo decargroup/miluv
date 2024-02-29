@@ -3,11 +3,13 @@ import cv2
 import os
 from miluv.wrappers import (
     MocapTrajectory,
+    tags_to_df
 )
 import numpy as np
 from typing import List
 import copy
 from preprocess.process_uwb import (
+    get_experiment_info,
     get_anchors, 
     get_moment_arms
 )
@@ -37,8 +39,13 @@ class DataLoader:
         self.exp_name = exp_name
         self.exp_dir = exp_dir
         self.cam = cam
+        self.setup = {'uwb_tags': None,  'april_tags': None}
 
         # TODO: read robots from configs
+        exp_path = os.path.join(self.exp_dir, self.exp_name)
+        exp_info = get_experiment_info(exp_path)
+
+
         robot_ids = [
             "ifo001",
             "ifo002",
@@ -76,6 +83,13 @@ class DataLoader:
             self.data[id]["mocap"] = MocapTrajectory(
                                      self.read_csv("mocap", id), 
                                      frame_id=id)
+            
+        # Load anchors and moment arms from experiment info
+        anchors = get_anchors(exp_info["anchor_constellation"])
+        moment_arms = get_moment_arms()
+        # TODO: Add april tags to the data
+        (self.setup['uwb_tags'], 
+         self.setup['april_tags']) = tags_to_df(anchors, moment_arms)
 
         # TODO: Load timestamp-to-image mapping?
         # if cam == "both" or cam == "bottom":

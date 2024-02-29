@@ -12,33 +12,62 @@ This module contains data wrappers for:
 - MocapTrajectory
 """
 
-class UWBTag:
-    """
-    A simple data container for UWB tag data.
-    """
+def tags_to_df(anchors: Any = None, 
+               moment_arms: Any = None, 
+               april_tags: Any = None) -> pd.DataFrame:
 
-    def __init__(self, 
-                 tag_id: str, 
-                 parent_id: str,
-                 position: np.ndarray):
-        """
-        Parameters
-        ----------
-        tag_id : str
-            Tag ID
-        position : np.ndarray
-            Tag position
-        """
-        self.tag_id = tag_id
-        self.parent_id = parent_id
-        self.position = position
+    uwb_tags = None
+    april_tags = None
 
-
-    def __repr__(self):
-        return (f"UWBTag, 
-        tag_id: {self.tag_id}, 
-        parent_id: {self.parent_id}")
-
+    if anchors is not None:
+        tags = []
+        for key, value in anchors.items():
+            # parse value
+            value = value.strip('[]').split(',')
+            tags.append({
+                'tag_id': key,
+                'parent_id': 'world',
+                'position.x': value[0],
+                'position.y': value[1],
+                'position.z': value[2],
+            })
+        # Convert the data dictionary to a DataFrame
+        uwb_tags = pd.DataFrame(tags)
+    
+    if moment_arms is not None:
+        tags = []
+        for robot, arms in moment_arms.items():
+            for tag, value in arms.items():
+                value = value.strip('[]').split(',')
+                tags.append({
+                    'tag_id': tag,
+                    'parent_id': robot,
+                    'position.x': value[0],
+                    'position.y': value[1],
+                    'position.z': value[2],
+                })
+        tags = pd.DataFrame(tags)
+    if uwb_tags is not None:
+        uwb_tags = pd.concat([uwb_tags, tags], 
+                                    ignore_index=True)
+    else:
+        uwb_tags = tags
+    
+    if april_tags is not None:
+        tags = []
+        for key, value in april_tags.items():
+            # parse value
+            value = value.strip('[]').split(',')
+            tags.append({
+                'tag_id': key,
+                'parent_id': 'world',
+                'position.x': value[0],
+                'position.y': value[1],
+                'position.z': value[2],
+            })
+        # Convert the data dictionary to a DataFrame
+        april_tags = pd.DataFrame(tags)
+    return uwb_tags, april_tags
 
 def beye(dim: int, num: int) -> np.ndarray:
     """

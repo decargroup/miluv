@@ -75,8 +75,9 @@ range_data = range_data.filter_by_bias( max_bias=0.3)
 range_data = range_data.by_timerange(start_time, 
                                      end_time, 
                                      sensors=["uwb_range"])
-range_data = range_data.merge_range(sensors=["uwb_range"],
-                                    seconds=True)
+range_data = range_data.merge_range()
+measurements = range_data.to_measurements(
+    reference_id = 'world', merge = True)
 
 
 pose = [miluv.data[robot]["mocap"].extended_pose_matrix(

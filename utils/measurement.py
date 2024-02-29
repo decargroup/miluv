@@ -7,6 +7,7 @@ from utils.models import (
 )
 from miluv.data import DataLoader
 import pandas as pd
+import copy
 
 class Measurement:
     """
@@ -63,6 +64,7 @@ class RangeData(DataLoader):
         
         # remove all data which are not "uwb_range"
         data = dataloader.data
+        self.setup = dataloader.setup
 
         self._sensors = ["uwb_range"]
         self.data = {id: {sensor: data[id][sensor] 
@@ -74,16 +76,13 @@ class RangeData(DataLoader):
         """
         Create a copy of the RangeData object.
         """
-        out = RangeData(self)
-        return out
+        return copy.deepcopy(self)
                 
     def by_timestamps(self, 
                       stamps, 
                       robot_id: List = None, 
                       sensors: List = None):
-        
 
-        self._sensors = ["uwb_range"]
 
         if robot_id is None:
             robot_id = list(self.data.keys())
@@ -104,9 +103,6 @@ class RangeData(DataLoader):
                      end_time: float, 
                      robot_id: List = None, 
                      sensors: List = None):
-        
-
-        self._sensors = ["uwb_range"]
 
 
         if robot_id is None:
@@ -172,12 +168,11 @@ class RangeData(DataLoader):
 
         return out
     
-    def by_tags(self, tags :List) -> "RangeData":
+    def by_tags(self, tag_ids :List) -> "RangeData":
         """
         Get a RangeData object containing only the measurements between the
         specified pair of tags.
         """
-        tag_ids = [tag.id for tag in tags]
 
         out = self.copy()
 
@@ -201,13 +196,12 @@ class RangeData(DataLoader):
         if robot_id is None:
             robot_id = list(self.data.keys())
 
-
-        self._sensors = ["uwb_range"]
         if sensors is not None and not all(
             sensor in self._sensors for sensor in sensors):
                 
                 raise ValueError(f"Invalid sensor type. Must be one of {self._sensors}")
-        
+        else:
+            sensors = self._sensors
         sensors = [sensors] if type(sensors) is str else sensors
 
 
@@ -239,10 +233,9 @@ class RangeData(DataLoader):
 
     # TODO: Need to check
     def to_measurements(self, 
-                  tags: List, 
-                  reference_id: Any = None,
-                  variance: float = None, 
-                  state_id: Any = None) -> List[Measurement]:
+                  reference_id: Any = 'world',
+                  merge: bool = True,
+                  seconds: bool = False) -> List[Measurement]:
         """
         Convert to a list of measurements.
 
@@ -262,43 +255,53 @@ class RangeData(DataLoader):
             List of measurements.
         """
 
-        tag_dict = {t.id: t for t in tags}
+        if merge:
+            range_data = self.merge_range(seconds=seconds)
+        
         measurements = []
+        for data in range_data:
+            from_tag = self.uwb_tags.loc[self.uwb_tags["tag_id"] == data["from_id"]]
+            to_tag = self.uwb_tags.loc[self.uwb_tags["tag_id"] == data["to_id"]]
+            variance = data["std"]**2
 
-        for i, stamp in enumerate(self.stamps):
-            from_tag = tag_dict[self.from_id[i]]
-            to_tag = tag_dict[self.to_id[i]]
 
-            if variance is not None:
-                v = variance
-            else:
-                v = self.covariance[i]
+        # tag_dict = {t.id: t for t in tags}
+        # measurements = []
 
-            if from_tag.parent_id == reference_id:
-                model = RangeRelativePose(
-                    from_tag.position,
-                    to_tag.position,
-                    to_tag.parent_id,
-                    v,
-                )
-            elif to_tag.parent_id == reference_id:
-                model = RangeRelativePose(
-                    to_tag.position,
-                    from_tag.position,
-                    from_tag.parent_id,
-                    v,
-                )
-            else:
-                model = RangePoseToPose(
-                    from_tag.position,
-                    to_tag.position,
-                    from_tag.parent_id,
-                    to_tag.parent_id,
-                    v,
-                )
+        # for i, stamp in enumerate(self.stamps):
+        #     from_tag = tag_dict[self.from_id[i]]
+        #     to_tag = tag_dict[self.to_id[i]]
 
-            measurements.append(
-                Measurement(self.range[i], stamp, model, state_id=state_id)
-            )
+        #     if variance is not None:
+        #         v = variance
+        #     else:
+        #         v = self.covariance[i]
+
+        #     if from_tag.parent_id == reference_id:
+        #         model = RangeRelativePose(
+        #             from_tag.position,
+        #             to_tag.position,
+        #             to_tag.parent_id,
+        #             v,
+        #         )
+        #     elif to_tag.parent_id == reference_id:
+        #         model = RangeRelativePose(
+        #             to_tag.position,
+        #             from_tag.position,
+        #             from_tag.parent_id,
+        #             v,
+        #         )
+        #     else:
+        #         model = RangePoseToPose(
+        #             from_tag.position,
+        #             to_tag.position,
+        #             from_tag.parent_id,
+        #             to_tag.parent_id,
+        #             v,
+        #         )
+
+        #     measurements.append(
+        #         Measurement(self.range[i], stamp, model, state_id=state_id)
+        #     )
 
         return measurements
