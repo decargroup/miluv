@@ -32,6 +32,14 @@ mocap = [
     "pose.orientation.w",
 ]
 barometer = ["timestamp", "fluid_pressure"]
+cir = [
+    "timestamp",
+    "my_id",
+    "from_id",
+    "to_id",
+    "idx",
+    "cir",
+]
 
 def cleanup_csvs(dir):
     # Find all csv files
@@ -50,6 +58,8 @@ def cleanup_csvs(dir):
             process_csv(dir, file, barometer, "barometer")
         elif "imu" in file and "mavros" in file and "raw" in file:
             process_csv(dir, file, imu, "imu_px4")
+        elif "uwb" in file and "cir" in file:
+            process_cir(dir, file, cir)
 
 
 def process_csv(dir, file, headers, name):
@@ -57,6 +67,16 @@ def process_csv(dir, file, headers, name):
     df = merge_time(df)
     df = df[headers]
     df.to_csv(join(dir, name + ".csv"), index=False)
+    remove(join(dir, file))
+
+
+def process_cir(dir, file, headers):
+    df = pd.read_csv(join(dir, file))
+    df = merge_time(df)
+    cir_headers = [f"cir_{int(i)}" for i in range(1016)]
+    df["cir"] = df[cir_headers].values.tolist()
+    df = df[headers]
+    df.to_csv(join(dir, "uwb_cir.csv"), index=False)
     remove(join(dir, file))
 
 
