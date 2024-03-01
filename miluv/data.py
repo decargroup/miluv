@@ -18,9 +18,10 @@ class DataLoader:
             "infra2",
         ],
         uwb: bool = True,
+        cir: bool = True,
         height: bool = True,
         mag: bool = True,
-        baro: bool = True,
+        barometer: bool = True,
         # calib_uwb: bool = True,
     ):
 
@@ -45,10 +46,16 @@ class DataLoader:
                 self.data[id].update({"imu_cam": []})
                 self.data[id]["imu_cam"] = self.read_csv("imu_cam", id)
 
-            # TODO: UWB topics to be read depend on configs, for now range only
             if uwb:
                 self.data[id].update({"uwb_range": []})
                 self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
+                
+                self.data[id].update({"uwb_passive": []})
+                self.data[id]["uwb_passive"] = self.read_csv("uwb_passive", id)
+                
+            if cir:
+                self.data[id].update({"uwb_cir": []})
+                self.data[id]["uwb_cir"] = self.read_csv("uwb_cir", id)
 
             if height:
                 self.data[id].update({"height": []})
@@ -58,9 +65,9 @@ class DataLoader:
                 self.data[id].update({"mag": []})
                 self.data[id]["mag"] = self.read_csv("mag", id)
 
-            if baro:
-                self.data[id].update({"baro": []})
-                self.data[id]["baro"] = self.read_csv("baro", id)
+            if barometer:
+                self.data[id].update({"barometer": []})
+                self.data[id]["barometer"] = self.read_csv("barometer", id)
 
             # TODO: replace this with adding gt to each robot's data by fitting a spline
             # self.data[id].update({"mocap": []})
@@ -195,7 +202,7 @@ class DataLoader:
 if __name__ == "__main__":
     mv = DataLoader(
         "1c",
-        baro=False,
+        barometer=False,
         height=False,
     )
 
