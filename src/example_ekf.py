@@ -62,26 +62,32 @@ save_fig = False
 """ Get data """
 miluv = DataLoader("1c", baro=False)
 robots = list(miluv.data.keys())
-input_sensor = ["imu_px4"]
+input_sensor = "imu_px4"
 start_time, end_time = miluv.get_timerange(
                             sensors = input_sensor,
                             seconds=False)
 
 query_stamps = np.arange(start_time, end_time, 0.01*1e9)
+
+
+# Get input data
 imus = miluv.by_timestamps(query_stamps, sensors=input_sensor)
 
+# Get pose data
+pose = [miluv.data[robot]["mocap"].extended_pose_matrix(
+                            query_stamps) for robot in robots]
+
+# Get range data
 range_data = RangeData(miluv)
 range_data = range_data.filter_by_bias( max_bias=0.3)
 range_data = range_data.by_timerange(start_time, 
                                      end_time, 
                                      sensors=["uwb_range"])
-range_data = range_data.merge_range()
-measurements = range_data.to_measurements(
-    reference_id = 'world', merge = True)
+meas_data = range_data.to_measurements(
+    reference_id = 'world', merge = True, seconds=True)
 
 
-pose = [miluv.data[robot]["mocap"].extended_pose_matrix(
-                            query_stamps) for robot in robots]
+# Convert to seconds
 query_stamps = np.array(query_stamps)/1e9
 
 
@@ -130,20 +136,19 @@ Q = np.kron(np.eye(n_states), Q)
 input_data = []
 for i in range(len(query_stamps)):
     u = [IMU(
-            gyro = imus[robot][input_sensor].iloc[i][
-                ['angular_velocity.x', 
-                 'angular_velocity.y', 
-                 'angular_velocity.z']
-                 ].values, 
+        gyro = imus.data[robot][input_sensor].iloc[i][
+            ['angular_velocity.x', 
+             'angular_velocity.y', 
+             'angular_velocity.z']].values, 
 
-            accel= imus[robot][input_sensor].iloc[i][
-                ['linear_acceleration.x', 
-                 'linear_acceleration.y', 
-                 'linear_acceleration.z']].values,
+        accel= imus.data[robot][input_sensor].iloc[i][
+            ['linear_acceleration.x', 
+             'linear_acceleration.y', 
+             'linear_acceleration.z']].values,
 
-            stamp = query_stamps[i], 
-            state_id = robot)
-            for n, robot in enumerate(robots)
+        stamp = query_stamps[i], 
+        state_id = robot)
+        for n, robot in enumerate(robots)
         ]
     
     input_data.append(CompositeInput(u))
@@ -156,12 +161,23 @@ x = StateWithCovariance(x0, P0)
 ekf = ExtendedKalmanFilter(process_model, 
                         reject_outliers=True)
 
-
-results_list = []
+meas_idx = 0
+y = meas_data[meas_idx]
 init_stamp = time.time()
+results_list = []
 for k in tqdm(range(len(input_data) - 1)):
 
     u = input_data[k]
+            
+    # Fuse any measurements that have occurred.
+    while y.stamp < input_data[k + 1].stamp and meas_idx < len(meas_data):
+
+        x = ekf.correct(x, y, u)
+
+        # Load the next measurement
+        meas_idx += 1
+        if meas_idx < len(meas_data):
+            y = meas_data[meas_idx]
 
     dt = input_data[k + 1].stamp - x.stamp
     x = ekf.predict(x, u, dt)
@@ -175,27 +191,35 @@ results = GaussianResultList(results_list)
 
 
 if error_plot:
-    fig, axs = plot_error(results)
-    titles = ["Attitude Error", 
-            "Velocity Error", 
-            "Position Error",]
-    y_labels = ["x (-)", "y (-)", "z (-)"]
-    titles.append("Gyro Bias Error")
-    titles.append("Accel Bias Error")
-
-    for ax in axs:
-        for a in ax:
-            if a in axs[-1,:]:
-                a.set_xlabel("Time (s)")
-    j = 0
-    for a in axs[0,:]:
-        a.set_title(titles[j])
-        j += 1
-        if j == len(titles):
-            j = 0
+    separate_figs = True
+    figs = plot_error(results, 
+                      separate_figs=separate_figs)
+    titles = ["Att. Error", 
+              "Vel. Error", 
+              "Pos. Error",
+              "Gyro Bias Error",
+              "Accel Bias Error"]
     
-    for i, a in enumerate(axs[:,0]):
-        a.set_ylabel(y_labels[i])
-    if save_fig:
-        plt.savefig(f'./figures/' + init_stamp + '.png')
+    for fig, axs in figs:
+        for ax in axs:
+            for a in ax:
+                if a in axs[-1,:]:
+                    a.set_xlabel("Time (s)")
+        j = 0
+        for a in axs[0,:]:
+            a.set_title(titles[j])
+            j += 1
+            if j == len(titles):
+                j = 0
+
+    legend = list(miluv.data.keys())
+    
+    # Have one legend for each figure
+    for i, (fig, axs) in enumerate(figs):
+        for ax in axs:
+            for a in ax:
+                if a == axs[0,-1]:
+                    a.legend([legend[i]], handlelength=0)
+        if save_fig:
+            plt.savefig(f'./figures/error_' + legend[i] + '_' + init_stamp + '.png')
     plt.show()

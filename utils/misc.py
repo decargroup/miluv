@@ -176,7 +176,7 @@ def plot_error(
     sharey: bool = False,
     color=None,
     bounds=True,
-    separate_figures = False,
+    separate_figs = False,
 ) -> List[Tuple[plt.Figure, List[plt.Axes]]]:
     """
     A generic three-sigma bound plotter.
@@ -199,7 +199,7 @@ def plot_error(
     List[Tuple[plt.Figure, List[plt.Axes]]]
         List of tuples, each containing a handle to figure and a list of handles to axes that were drawn on.
     """
-    if separate_figures:
+    if separate_figs:
         no_of_plots = len(results.value[0])
     else:
         no_of_plots = 1

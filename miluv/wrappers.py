@@ -25,11 +25,11 @@ def tags_to_df(anchors: Any = None,
             # parse value
             value = value.strip('[]').split(',')
             tags.append({
-                'tag_id': key,
+                'tag_id': int(key),
                 'parent_id': 'world',
-                'position.x': value[0],
-                'position.y': value[1],
-                'position.z': value[2],
+                'position.x': float(value[0]),
+                'position.y': float(value[1]),
+                'position.z': float(value[2]),
             })
         # Convert the data dictionary to a DataFrame
         uwb_tags = pd.DataFrame(tags)
@@ -40,11 +40,11 @@ def tags_to_df(anchors: Any = None,
             for tag, value in arms.items():
                 value = value.strip('[]').split(',')
                 tags.append({
-                    'tag_id': tag,
+                    'tag_id': int(tag),
                     'parent_id': robot,
-                    'position.x': value[0],
-                    'position.y': value[1],
-                    'position.z': value[2],
+                    'position.x': float(value[0]),
+                    'position.y': float(value[1]),
+                    'position.z': float(value[2]),
                 })
         tags = pd.DataFrame(tags)
     if uwb_tags is not None:
@@ -59,11 +59,11 @@ def tags_to_df(anchors: Any = None,
             # parse value
             value = value.strip('[]').split(',')
             tags.append({
-                'tag_id': key,
+                'tag_id': int(key),
                 'parent_id': 'world',
-                'position.x': value[0],
-                'position.y': value[1],
-                'position.z': value[2],
+                'position.x': float(value[0]),
+                'position.y': float(value[1]),
+                'position.z': float(value[2]),
             })
         # Convert the data dictionary to a DataFrame
         april_tags = pd.DataFrame(tags)

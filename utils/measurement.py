@@ -259,49 +259,47 @@ class RangeData(DataLoader):
             range_data = self.merge_range(seconds=seconds)
         
         measurements = []
-        for data in range_data:
-            from_tag = self.uwb_tags.loc[self.uwb_tags["tag_id"] == data["from_id"]]
-            to_tag = self.uwb_tags.loc[self.uwb_tags["tag_id"] == data["to_id"]]
+        for i, data in range_data['uwb_range'].iterrows():
+
+
+            from_tag = self.setup['uwb_tags'].loc[
+                       self.setup['uwb_tags']['tag_id'] == data.from_id].iloc[0]
+            
+            to_tag = self.setup['uwb_tags'].loc[
+                     self.setup['uwb_tags']['tag_id'] == data.to_id].iloc[0]
+            
+            from_tag_pos = from_tag[['position.x',
+                                 'position.y',
+                                 'position.z']].tolist()
+            to_tag_pos = to_tag[['position.x',    
+                               'position.y',
+                               'position.z']].tolist()
+            
             variance = data["std"]**2
+            if from_tag.parent_id == reference_id:
+                model = RangeRelativePose(
+                    from_tag_pos,
+                    to_tag_pos,
+                    to_tag.parent_id,
+                    variance,
+                )
+            elif to_tag.parent_id == reference_id:
+                model = RangeRelativePose(
+                    to_tag_pos,
+                    from_tag_pos,
+                    from_tag.parent_id,
+                    variance,
+                )
+            else:
+                model = RangePoseToPose(
+                    from_tag_pos,
+                    to_tag_pos,
+                    from_tag.parent_id,
+                    to_tag.parent_id,
+                    variance,
+                )
 
-
-        # tag_dict = {t.id: t for t in tags}
-        # measurements = []
-
-        # for i, stamp in enumerate(self.stamps):
-        #     from_tag = tag_dict[self.from_id[i]]
-        #     to_tag = tag_dict[self.to_id[i]]
-
-        #     if variance is not None:
-        #         v = variance
-        #     else:
-        #         v = self.covariance[i]
-
-        #     if from_tag.parent_id == reference_id:
-        #         model = RangeRelativePose(
-        #             from_tag.position,
-        #             to_tag.position,
-        #             to_tag.parent_id,
-        #             v,
-        #         )
-        #     elif to_tag.parent_id == reference_id:
-        #         model = RangeRelativePose(
-        #             to_tag.position,
-        #             from_tag.position,
-        #             from_tag.parent_id,
-        #             v,
-        #         )
-        #     else:
-        #         model = RangePoseToPose(
-        #             from_tag.position,
-        #             to_tag.position,
-        #             from_tag.parent_id,
-        #             to_tag.parent_id,
-        #             v,
-        #         )
-
-        #     measurements.append(
-        #         Measurement(self.range[i], stamp, model, state_id=state_id)
-        #     )
-
+            measurements.append(
+                Measurement(data.gt_range, data.timestamp, model)
+            )
         return measurements
