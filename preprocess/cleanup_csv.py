@@ -3,7 +3,6 @@ from os import listdir, remove, walk, rename
 from os.path import join
 import pandas as pd
 
-# TODO: barometer and cir
 # headers to keep for every file
 imu = [
     "timestamp",
