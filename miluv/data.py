@@ -71,12 +71,12 @@ class DataLoader:
                 self.data[id].update({"uwb_range": []})
                 self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
                 
-                self.data[id].update({"uwb_passive": []})
-                self.data[id]["uwb_passive"] = self.read_csv("uwb_passive", id)
+                self.data[id].update({"uwb_range_passive": []})
+                self.data[id]["uwb_passive"] = self.read_csv("uwb_range_passive", id)
                 
-            if cir:
-                self.data[id].update({"uwb_cir": []})
-                self.data[id]["uwb_cir"] = self.read_csv("uwb_cir", id)
+            # if cir:
+            #     self.data[id].update({"uwb_cir": []})
+            #     self.data[id]["uwb_cir"] = self.read_csv("uwb_cir", id)
 
             if height:
                 self.data[id].update({"height": []})
