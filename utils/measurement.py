@@ -298,5 +298,4 @@ class RangeData(DataLoader):
             measurements.append(
                 Measurement(data.gt_range, data.timestamp, model)
             )
-        print(count)
         return measurements
