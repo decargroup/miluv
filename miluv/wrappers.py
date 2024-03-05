@@ -5,7 +5,7 @@ from abc import ABC
 from csaps import csaps
 from pymlg import SO3
 import pandas as pd
-
+from pymocap import MocapTrajectory
 
 """ 
 This module contains data wrappers for:
@@ -68,6 +68,8 @@ def tags_to_df(anchors: Any = None,
         # Convert the data dictionary to a DataFrame
         april_tags = pd.DataFrame(tags)
     return uwb_tags, april_tags
+
+
 
 def beye(dim: int, num: int) -> np.ndarray:
     """
@@ -148,13 +150,13 @@ class MocapTrajectory:
         """
 
         self.stamps = np.array(mocap["timestamp"]).ravel()
-        self.raw_position = np.array(mocap[["pose.position.x", 
-                                            "pose.position.y", 
-                                            "pose.position.z"]])
-        self.raw_quaternion = np.array(mocap[["pose.orientation.w", 
-                                              "pose.orientation.x", 
-                                              "pose.orientation.y", 
-                                              "pose.orientation.z"]])
+        self.raw_position = mocap[["pose.position.x", 
+                                "pose.position.y", 
+                                "pose.position.z"]].to_numpy()
+        self.raw_quaternion = mocap[["pose.orientation.w", 
+                                    "pose.orientation.x", 
+                                    "pose.orientation.y", 
+                                    "pose.orientation.z"]].to_numpy()
         self.frame_id = frame_id
 
         self._fit_position_spline(self.stamps, self.raw_position)

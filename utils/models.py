@@ -5,7 +5,7 @@ from utils.states import (
 )
 
 from typing import Any, List, Union
-from pymlg import SO2, SO3
+from pymlg import SO2, SO3, SE23
 from utils.states import (
     State,
     CompositeState,
@@ -21,6 +21,7 @@ from utils.inputs import (
     IMUState,
     CompositeInput
 )
+from math import factorial
 
 """
 Module containing:
@@ -172,15 +173,12 @@ class BodyFrameIMU(ProcessModel):
 
         g_a = np.array([0, 0, -9.81])
 
-        attitude = x.attitude
-        velocity = x.velocity
-        position = x.position
+        x_out = x.copy()
+        x_out.attitude = x.attitude @ SO3.Exp(u_gyro * dt)
+        x_out.velocity = x.velocity + dt * x.attitude @ u_accel + dt * g_a
+        x_out.position = x.position + dt * x.velocity
 
-        x.attitude = attitude @ SO3.Exp(u_gyro * dt)
-        x.velocity = velocity + dt * attitude @ u_accel + dt * g_a
-        x.position = position + dt * velocity
-
-        return x
+        return x_out
     
     def continuous_time_matrices(
             self, x: IMUState, u: IMU
@@ -195,17 +193,17 @@ class BodyFrameIMU(ProcessModel):
         A[3:6, 0:3] = - x.attitude @ SO3.wedge(u_accel)
         A[6:9, 3:6] = np.eye(len(x.velocity))
 
-        # if bias:
-        A[0:3, 9:12] = np.eye(len(u_gyro))
-        A[3:6, 12:15] = x.attitude
+        if bias:
+            A[0:3, 9:12] = np.eye(len(u_gyro))
+            A[3:6, 12:15] = x.attitude
 
         L = np.zeros((len(A), len(self._Q)))
         L[0:3, 0:3] = - np.eye(len(u_gyro))
         L[3:6, 3:6] = - x.attitude
         
-        # if bias:
-        L[9:12, 6:9] = -np.eye(len(u_gyro))
-        L[12:15, 9:12] = -np.eye(len(u_accel))
+        if bias:
+            L[9:12, 6:9] = -np.eye(len(u_gyro))
+            L[12:15, 9:12] = -np.eye(len(u_accel))
 
         return A, L
     
@@ -230,12 +228,356 @@ class BodyFrameIMU(ProcessModel):
     
     def evaluate_with_jacobian(
         self, x: State, u: Input, dt: float
-    ) -> Union[State, np.ndarray]:
+    ):
         
         return self.evaluate(x, u, dt), self.jacobian(x, u, dt)
     
     def __repr__(self):
         return f"{self.__class__.__name__} at {hex(id(self))}"
+
+
+def get_unbiased_imu(x: IMUState, u: IMU) -> IMU:
+    """
+    Removes bias from the measurement.
+
+    Parameters
+    ----------
+    x : IMUState
+        Contains the biases
+    u : IMU
+        IMU data correupted by bias
+
+    Returns
+    -------
+    Tuple[np.ndarray, np.ndarray]
+        unbiased gyro and accelerometer measurements
+    """
+
+    u = u.copy()
+    if hasattr(x, "bias_gyro"):
+        u.gyro = u.gyro.ravel() - x.bias_gyro.ravel()
+    if hasattr(x, "bias_accel"):
+        u.accel = u.accel.ravel() - x.bias_accel.ravel()
+
+    return u
+
+
+def N_matrix(phi_vec: np.ndarray):
+    """
+    The N matrix from Barfoot 2nd edition, equation 9.211
+    """
+    if np.linalg.norm(phi_vec) < SO3._small_angle_tol:
+        return np.identity(3)
+    else:
+        phi = np.linalg.norm(phi_vec)
+        a = phi_vec / phi
+        a = a.reshape((-1, 1))
+        a_wedge = SO3.wedge(a)
+        c = (1 - np.cos(phi)) / phi**2
+        s = (phi - np.sin(phi)) / phi**2
+        N = 2 * c * np.identity(3) + (1 - 2 * c) * (a @ a.T) + 2 * s * a_wedge
+        return N
+
+
+def M_matrix(phi_vec):
+    phi_mat = SO3.wedge(phi_vec)
+    M = np.sum(
+        [
+            (2 / factorial(n + 2)) * np.linalg.matrix_power(phi_mat, n)
+            for n in range(100)
+        ],
+        axis=0,
+    )
+    return M
+
+
+def adjoint_IE3(X):
+    """
+    Adjoint matrix of the "Incremental Euclidean Group".
+    """
+    R = X[:3, :3]
+    c = X[3, 4]
+    a = X[:3, 3].reshape((-1, 1))
+    b = X[:3, 4].reshape((-1, 1))
+    Ad = np.zeros((9, 9))
+    Ad[:3, :3] = R
+    Ad[3:6, :3] = SO3.wedge(a) @ R
+    Ad[3:6, 3:6] = R
+
+    Ad[6:9, :3] = -SO3.wedge(c * a - b) @ R
+    Ad[6:9, 3:6] = -c * R
+    Ad[6:9, 6:9] = R
+    return Ad
+
+
+def inverse_IE3(X):
+    """
+    Inverse matrix on the "Incremental Euclidean Group".
+    """
+
+    R = X[:3, :3]
+    c = X[3, 4]
+    a = X[:3, 3].reshape((-1, 1))
+    b = X[:3, 4].reshape((-1, 1))
+    X_inv = np.identity(5)
+    X_inv[:3, :3] = R.T
+    X_inv[:3, 3] = np.ravel(-R.T @ a)
+    X_inv[:3, 4] = np.ravel(R.T @ (c * a - b))
+    X_inv[3, 4] = np.ravel(-c)
+    return X_inv
+
+
+def U_matrix(omega, accel, dt: float):
+    phi = omega * dt
+    O = SO3.Exp(phi)
+    J = SO3.left_jacobian(phi)
+    a = accel.reshape((-1, 1))
+    V = N_matrix(phi)
+    U = np.identity(5)
+    U[:3, :3] = O
+    U[:3, 3] = np.ravel(dt * J @ a)
+    U[:3, 4] = np.ravel(dt**2 / 2 * V @ a)
+    U[3, 4] = dt
+    return U
+
+
+def U_tilde_matrix(omega, accel, dt: float):
+    phi = omega * dt
+    O = SO3.Exp(phi)
+    J = SO3.left_jacobian(phi)
+    a = accel.reshape((-1, 1))
+    V = N_matrix(phi)
+    U = np.identity(5)
+    U[:3, :3] = O
+    U[:3, 3] = np.ravel(dt * J @ a)
+    U[:3, 4] = np.ravel(dt**2 / 2 * V @ a)
+    return U
+
+
+def delta_matrix(dt: float):
+    U = np.identity(5)
+    U[3, 4] = dt
+    return U
+
+
+def U_matrix_inv(omega, accel, dt: float):
+    return inverse_IE3(U_matrix(omega, accel, dt))
+
+
+def G_matrix(gravity, dt):
+    G = np.identity(5)
+    G[:3, 3] = dt * gravity
+    G[:3, 4] = -0.5 * dt**2 * gravity
+    G[3, 4] = -dt
+    return G
+
+
+def G_matrix_inv(gravity, dt):
+    return inverse_IE3(G_matrix(gravity, dt))
+
+
+def L_matrix(unbiased_gyro, unbiased_accel, dt: float) -> np.ndarray:
+    """
+    Computes the jacobian of the nav state with respect to the input.
+
+    Since the noise and bias are both additive to the input, they have the
+    same jacobians.
+    """
+
+    a = unbiased_accel
+    om = unbiased_gyro
+    omdt = om * dt
+    J_att_inv_times_N = SO3.left_jacobian_inv(omdt) @ N_matrix(omdt)
+    xi = np.zeros((9,))
+    xi[:3] = dt * om
+    xi[3:6] = dt * a
+    xi[6:9] = (dt**2 / 2) * J_att_inv_times_N @ a
+    J = SE23.left_jacobian(-xi)
+    Om = SO3.wedge(omdt)
+    OmOm = Om @ Om
+    A = SO3.wedge(a)
+    # See Barfoot 2nd edition, equation 9.247
+    Up = dt * np.eye(9, 6)
+    Up[6:9, 0:3] = (
+        -0.5
+        * (dt**2 / 2)
+        * (
+            (1 / 360)
+            * (dt**3)
+            * (OmOm @ A + Om @ (SO3.wedge(Om @ a)) + SO3.wedge(OmOm @ a))
+            - (1 / 6) * dt * A
+        )
+    )
+    Up[6:9, 3:6] = (dt**2 / 2) * J_att_inv_times_N
+
+    L = J @ Up
+    return L
+
+class IMUKinematics(ProcessModel):
+    """
+    The IMU Kinematics refer to the following continuous time model:
+
+    .. math::
+
+        \\dot{\mathbf{r}} &= \mathbf{v}
+
+        \\dot{\mathbf{v}} &= \mathbf{C}\mathbf{a} +  \mathbf{g}
+
+        \\dot{\mathbf{C}} &= \mathbf{C}\mathbf{\omega}^\wedge
+
+    Using :math:`SE_2(3)` extended poses, it can be shown that the
+    discrete-time IMU kinematics are given by:
+
+    .. math::
+        \mathbf{T}_{k} = \mathbf{G}_{k-1} \mathbf{T}_{k-1} \mathbf{U}_{k-1}
+
+    where :math:`\mathbf{T}_{k}` is the pose at time :math:`k`, :math:`\mathbf{G}_{k-1}`
+    is a matrix that depends on the gravity vector, and :math:`\mathbf{U}_{k-1}` is a matrix
+    that depends on the IMU measurements.
+
+    The :math:`\mathbf{G}_{k-1}` and :math:`\mathbf{U}_{k-1}` matrices are
+    not quite elements of :math:`SE_2(3)`, but instead belong to a new group
+    named here the "Incremental Euclidean Group" :math:`IE(3)`.
+
+    """
+
+    def __init__(self, Q: np.ndarray, gravity=None):
+        """
+        Parameters
+        ----------
+        Q : np.ndarray
+            Discrete-time noise matrix.
+        g_a : np.ndarray
+            Gravity vector resolved in the inertial frame.
+            If None, default value is set to [0; 0; -9.80665].
+        """
+        self._Q = Q
+
+        if gravity is None:
+            gravity = np.array([0, 0, -9.80665])
+
+        self._gravity = np.array(gravity).ravel()
+
+    def evaluate(self, x: IMUState, u: IMU, dt: float) -> IMUState:
+        """
+        Propagates an IMU state forward one timestep from an IMU measurement.
+
+        The continuous-time IMU equations are discretized using the assumption
+        that the IMU measurements are constant between two timesteps.
+
+        Parameters
+        ----------
+        x : IMUState
+            Current IMU state
+        u : IMU
+            IMU measurement,
+        dt : float
+            timestep.
+
+        Returns
+        -------
+        IMUState
+            Propagated IMUState.
+        """
+        x = x.copy()
+
+        # Get unbiased inputs
+        u_no_bias = get_unbiased_imu(x, u)
+
+        G = G_matrix(self._gravity, dt)
+        U = U_matrix(u_no_bias.gyro, u_no_bias.accel, dt)
+
+        x.pose = G @ x.pose @ U
+
+        # Propagate the biases forward in time using random walk
+        if hasattr(u, "bias_gyro_walk") and hasattr(x, "bias_gyro"):
+            x.bias_gyro = x.bias_gyro.ravel() + dt * u.bias_gyro_walk.ravel()
+
+        if hasattr(u, "bias_accel_walk") and hasattr(x, "bias_accel"):
+            x.bias_accel = x.bias_accel.ravel() + dt * u.bias_accel_walk.ravel()
+
+        return x
+
+    def jacobian(self, x: IMUState, u: IMU, dt: float) -> np.ndarray:
+        """
+        Returns the Jacobian of the IMU kinematics model with respect
+        to the full state
+        """
+
+        # Get unbiased inputs
+        u_no_bias = get_unbiased_imu(x, u)
+
+        G = G_matrix(self._gravity, dt)
+        U_inv = U_matrix_inv(u_no_bias.gyro, u_no_bias.accel, dt)
+
+        # Jacobian of process model wrt to pose
+        if x.direction == "right":
+            jac_pose = adjoint_IE3(U_inv)
+        elif x.direction == "left":
+            jac_pose = adjoint_IE3(G)
+
+        jac_kwargs = {}
+
+        if hasattr(x, "bias_gyro"):
+            # Jacobian of pose wrt to bias
+            jac_bias = -self._get_input_jacobian(x, u, dt)
+
+            # Jacobian of bias random walk wrt to pose
+            jac_pose = np.vstack([jac_pose, np.zeros((6, jac_pose.shape[1]))])
+
+            # Jacobian of bias random walk wrt to biases
+            jac_bias = np.vstack([jac_bias, np.identity(6)])
+            jac_gyro = jac_bias[:, :3]
+            jac_accel = jac_bias[:, 3:6]
+            jac_kwargs["bias_gyro"] = jac_gyro
+            jac_kwargs["bias_accel"] = jac_accel
+
+        jac_kwargs["attitude"] = jac_pose[:, :3]
+        jac_kwargs["velocity"] = jac_pose[:, 3:6]
+        jac_kwargs["position"] = jac_pose[:, 6:9]
+
+        return x.jacobian_from_blocks(**jac_kwargs)
+
+    def covariance(self, x: IMUState, u: IMU, dt: float) -> np.ndarray:
+        # Jacobian of pose wrt to noise
+        L_pn = self._get_input_jacobian(x, u, dt)
+
+        # Jacobian of bias random walk wrt to noise
+        L_bn = np.zeros((6, 6))
+
+        if hasattr(x, "bias_gyro"):
+            # Jacobian of pose wrt to bias random walk
+            L_pw = np.zeros((9, 6))
+
+            # Jacobian of bias wrt to bias random walk
+            L_bw = dt * np.identity(6)
+
+            L = np.block([[L_pn, L_pw], [L_bn, L_bw]])
+
+        else:
+            L = np.hstack([[L_pn, L_bn]])
+
+        return L @ self._Q @ L.T
+
+    def _get_input_jacobian(self, x: IMUState, u: IMU, dt: float) -> np.ndarray:
+        """
+        Computes the jacobian of the nav state with respect to the input.
+
+        Since the noise and bias are both additive to the input, they have the
+        same jacobians.
+        """
+        # Get unbiased inputs
+        u_no_bias = get_unbiased_imu(x, u)
+
+        G = G_matrix(self._gravity, dt)
+        U = U_matrix(u_no_bias.gyro, u_no_bias.accel, dt)
+        L = L_matrix(u_no_bias.gyro, u_no_bias.accel, dt)
+
+        if x.direction == "right":
+            jac = L
+        elif x.direction == "left":
+            jac = SE23.adjoint(G @ x.pose @ U) @ L
+        return jac
     
 
 class CompositeProcessModel(ProcessModel):
@@ -561,3 +903,143 @@ class RangeRelativePose(CompositeMeasurementModel):
 
     def __repr__(self):
         return f"RangeRelativePose (of substate {self.state_id})"
+
+class Altitude(MeasurementModel):
+    """
+    A model that returns that z component of a position vector.
+    """
+
+    def __init__(self, R: np.ndarray, minimum=None, bias=0.0):
+        """
+
+        Parameters
+        ----------
+        R : np.ndarray
+            variance associated with the measurement
+        minimum : float, optional
+            Minimal height for the measurement to be valid, by default None
+        bias : float, optional
+            Fixed sensor bias, by default 0.0. This bias will be added to the
+            z component of position to create the modelled measurement.
+        """
+        self.R = R
+        if minimum is None:
+            minimum = -np.inf
+        self.minimum = minimum
+        self.bias = bias
+
+    def evaluate(self, x: MatrixLieGroupState):
+        h = x.position[2] + self.bias
+        return h if h > self.minimum else None
+
+    def jacobian(self, x: MatrixLieGroupState):
+        if x.direction == "right":
+            return x.jacobian_from_blocks(
+                position=x.attitude[2, :].reshape((1, -1))
+            )
+        elif x.direction == "left":
+            return x.jacobian_from_blocks(
+                attitude=SO3.odot(x.position)[2, :].reshape((1, -1)),
+                position=np.array(([[0, 0, 1]])),
+            )
+
+    def covariance(self, x: MatrixLieGroupState) -> np.ndarray:
+        return self.R
+
+class AltitudeById(CompositeMeasurementModel):
+
+    def __init__(
+        self, 
+        R: np.ndarray, 
+        nb_state_id: Any,
+        minimum=None, 
+        bias=0.0,
+    ):
+        """
+
+        Parameters
+        ----------
+        nb_state_id : Any
+            State ID of Robot 2.
+        R : float or numpy.ndarray
+            covariance associated with range measurement
+        """
+
+        model = Altitude(R, minimum, bias)
+        super(AltitudeById, self).__init__(model, nb_state_id)
+
+    def __repr__(self):
+        return f"RangeAltitude (of substate {self.state_id})"
+
+
+class Magnetometer(MeasurementModel):
+    """
+    Magnetometer model of the form
+
+    .. math::
+
+        \mathbf{y} = \mathbf{C}_{ab}^T \mathbf{m}_a + \mathbf{v}
+
+    where :math:`\mathbf{m}_a` is the magnetic field vector in a world frame `a`.
+    """
+
+    def __init__(self, R: np.ndarray, magnetic_vector: List[float] = None):
+        """
+
+        Parameters
+        ----------
+        R : np.ndarray
+            Covariance associated with :math:`\mathbf{v}`
+        magnetic_vector : list[float] or numpy.ndarray, optional
+            local magnetic field vector, by default [1, 0, 0]
+        """
+        if magnetic_vector is None:
+            magnetic_vector = [1, 0, 0]
+
+        self.R = R
+        self._m_a = np.array(magnetic_vector).reshape((-1, 1))
+
+    def evaluate(self, x: MatrixLieGroupState):
+        return x.attitude.T @ self._m_a
+
+    def jacobian(self, x: MatrixLieGroupState):
+        if x.direction == "right":
+            return x.jacobian_from_blocks(
+                attitude=-SO3.odot(x.attitude.T @ self._m_a)
+            )
+        elif x.direction == "left":
+            return x.jacobian_from_blocks(
+                attitude=-x.attitude.T @ SO3.odot(self._m_a)
+            )
+
+    def covariance(self, x: MatrixLieGroupState) -> np.ndarray:
+        if np.isscalar(self.R):
+            return self.R * np.identity(x.position.size)
+        else:
+            return self.R
+        
+
+
+class MagnetometerById(CompositeMeasurementModel):
+
+    def __init__(
+        self, 
+        R: np.ndarray, 
+        nb_state_id: Any,
+        magnetic_vector: List[float] = None
+    ):
+        """
+
+        Parameters
+        ----------
+        nb_state_id : Any
+            State ID of Robot 2.
+        R : float or numpy.ndarray
+            covariance associated with range measurement
+        """
+
+        model = Magnetometer(R, magnetic_vector= magnetic_vector)
+        super(MagnetometerById, self).__init__(model, nb_state_id)
+
+    def __repr__(self):
+        return f"RangeAltitude (of substate {self.state_id})"

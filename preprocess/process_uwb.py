@@ -198,9 +198,9 @@ def process_uwb(path):
     )
 
     # Convert timestamps from seconds to nanoseconds
-    df["timestamp"] = (df["time"]*1e9).astype(int)
+    df["timestamp"] = df["time"]
     df.drop(columns=["time"], inplace=True)
-    df_passive["timestamp"] = (df_passive["time"]*1e9).astype(int)
+    df_passive["timestamp"] = df_passive["time"]
     df_passive.drop(columns=["time"], inplace=True)
 
     # Add back important info to df_passive
@@ -248,10 +248,10 @@ def process_uwb(path):
 
 if __name__ == '__main__':
     
-    # if len(sys.argv) != 2:
-    #     print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
-    #     sys.exit(1)
-    path = 'data/1c'
+    if len(sys.argv) != 2:
+        print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
+        sys.exit(1)
+    path = sys.argv[1]
     
     process_uwb(path)
 

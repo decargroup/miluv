@@ -63,8 +63,7 @@ def process_csv(dir, file, headers, name):
 def merge_time(df):
     sec = df["header.stamp.secs"]
     nsec = df["header.stamp.nsecs"]
-    df["timestamp"] = sec * 1e9 + nsec
-    df["timestamp"] = df["timestamp"].astype(int)
+    df["timestamp"] = sec + nsec/1e9
     return df
 
 

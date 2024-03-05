@@ -13,6 +13,7 @@ from preprocess.process_uwb import (
     get_anchors, 
     get_moment_arms
 )
+import yaml
 
 
 # TODO: look into dataclasses
@@ -39,7 +40,10 @@ class DataLoader:
         self.exp_name = exp_name
         self.exp_dir = exp_dir
         self.cam = cam
-        self.setup = {'uwb_tags': None,  'april_tags': None}
+        self.setup = {'uwb_tags': None,  
+                      'april_tags': None,
+                      'imu_px4_calib': None,
+                      'imu_cam_calib': None,}
 
         # TODO: read robots from configs
         exp_path = os.path.join(self.exp_dir, self.exp_name)
@@ -87,9 +91,14 @@ class DataLoader:
         # Load anchors and moment arms from experiment info
         anchors = get_anchors(exp_info["anchor_constellation"])
         moment_arms = get_moment_arms()
+        (self.setup["uwb_tags"], 
+        self.setup["april_tags"]) = tags_to_df(anchors, moment_arms)
+        self.setup["imu_px4_calib"] = self.read_yaml("imu", "imu_px4_calib")
+
+        
         # TODO: Add april tags to the data
-        (self.setup['uwb_tags'], 
-         self.setup['april_tags']) = tags_to_df(anchors, moment_arms)
+        # TODO: Load cam imu calibration
+        # self.setup['imu_cam_calib'] = self.read_yaml("imu", "imu_cam_calib")
 
         # TODO: Load timestamp-to-image mapping?
         # if cam == "both" or cam == "bottom":
@@ -103,6 +112,13 @@ class DataLoader:
                             topic + ".csv")
         return pd.read_csv(path)
     
+    def read_yaml(self, sensor:str, topic: str) -> pd.DataFrame:
+
+        """Read a yaml file for a given robot and topic."""
+        path = os.path.join("config/" + sensor + "/" + topic + ".yaml")
+        return yaml.safe_load(open(path, 'r'))
+    
+
     def copy(self):
         return copy.deepcopy(self)
     
@@ -207,8 +223,7 @@ class DataLoader:
 
     def get_timerange(self, 
                    robot_id:List = None, 
-                   sensors: List = None,
-                   seconds = False) -> float:
+                   sensors: List = None) -> float:
         """
         Get the start time of the data for a robot.
 
@@ -242,12 +257,6 @@ class DataLoader:
 
         start_time = max(start_times)
         end_time = min(end_times)
-
-
-        if seconds:
-            start_time = start_time/1e9
-            end_time = end_time/1e9
-
 
         return (start_time, end_time)
         

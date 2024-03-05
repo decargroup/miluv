@@ -348,7 +348,6 @@ class UnBiasedIMU(Input):
             0.0,
         )
     
-
 class CompositeInput(Input):
     # TODO: add tests to new methods
     def __init__(self, input_list: List[Input]) -> None:
@@ -440,3 +439,4 @@ class CompositeInput(Input):
             temp = temp[input.dof :]
 
         return new
+

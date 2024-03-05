@@ -130,9 +130,9 @@ class RangeData(DataLoader):
 
         for id in out.data:
             for sensor in out.data[id]:
-                condition = (out.data[id][sensor]['std'] <= max_bias)
+                condition = (abs(out.data[id][sensor]['bias']) <= max_bias)
                 if min_bias is not None:
-                    condition &= (out.data[id][sensor]['std'] >= min_bias)
+                    condition &= (abs(out.data[id][sensor]['bias']) >= min_bias)
                 out.data[id][sensor] = out.data[id][sensor][condition]
 
         return out
@@ -190,7 +190,7 @@ class RangeData(DataLoader):
     def merge_range(self,
                 robot_id:List=None, 
                 sensors:List=None,
-                seconds: bool = False) -> pd.DataFrame:
+                ) -> pd.DataFrame:
 
 
         if robot_id is None:
@@ -224,18 +224,12 @@ class RangeData(DataLoader):
             out[sensor] = out[sensor].drop_duplicates(
                 subset=["from_id", "to_id", "timestamp"], 
                 keep="last")
-        
-        if seconds:
-            for sensor in sensors:
-                out[sensor]["timestamp"] = out[sensor]["timestamp"]/1e9
 
         return out
 
     # TODO: Need to check
     def to_measurements(self, 
-                  reference_id: Any = 'world',
-                  merge: bool = True,
-                  seconds: bool = False) -> List[Measurement]:
+                  reference_id: Any = 'world',) -> List[Measurement]:
         """
         Convert to a list of measurements.
 
@@ -255,8 +249,10 @@ class RangeData(DataLoader):
             List of measurements.
         """
 
-        if merge:
-            range_data = self.merge_range(seconds=seconds)
+        range_data = self.merge_range()
+        # TODO: remove this line
+        # save the range data in a csv file
+        range_data['uwb_range'].to_csv('range_data.csv', index=False)
         
         measurements = []
         for i, data in range_data['uwb_range'].iterrows():
@@ -269,13 +265,13 @@ class RangeData(DataLoader):
                      self.setup['uwb_tags']['tag_id'] == data.to_id].iloc[0]
             
             from_tag_pos = from_tag[['position.x',
+                                     'position.y',
+                                     'position.z']].tolist()
+            to_tag_pos = to_tag[['position.x',    
                                  'position.y',
                                  'position.z']].tolist()
-            to_tag_pos = to_tag[['position.x',    
-                               'position.y',
-                               'position.z']].tolist()
             
-            variance = data["std"]**2
+            variance = 5 * data["std"]**2
             if from_tag.parent_id == reference_id:
                 model = RangeRelativePose(
                     from_tag_pos,
@@ -298,8 +294,7 @@ class RangeData(DataLoader):
                     to_tag.parent_id,
                     variance,
                 )
-
             measurements.append(
-                Measurement(data.gt_range, data.timestamp, model)
+                Measurement(data.range, data.timestamp, model)
             )
         return measurements
