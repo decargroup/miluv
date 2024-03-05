@@ -255,6 +255,7 @@ class RangeData(DataLoader):
         range_data['uwb_range'].to_csv('range_data.csv', index=False)
         
         measurements = []
+        count = 0
         for i, data in range_data['uwb_range'].iterrows():
 
 
@@ -271,7 +272,7 @@ class RangeData(DataLoader):
                                  'position.y',
                                  'position.z']].tolist()
             
-            variance = 5 * data["std"]**2
+            variance = data["std"]**2
             if from_tag.parent_id == reference_id:
                 model = RangeRelativePose(
                     from_tag_pos,
@@ -295,6 +296,7 @@ class RangeData(DataLoader):
                     variance,
                 )
             measurements.append(
-                Measurement(data.range, data.timestamp, model)
+                Measurement(data.gt_range, data.timestamp, model)
             )
+        print(count)
         return measurements

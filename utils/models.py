@@ -889,9 +889,9 @@ class RangeRelativePose(CompositeMeasurementModel):
         Parameters
         ----------
         tag_body_position : numpy.ndarray
-            Position of tag in body frame of Robot 1.
+            Position of tag with respect to Frame 1.
         nb_tag_body_position : numpy.ndarray
-            Position of 2nd tag in body frame of Robot 2.
+            Position of 2nd tag with respect to Frame 2, in Robot 2.
         nb_state_id : Any
             State ID of Robot 2.
         R : float or numpy.ndarray
