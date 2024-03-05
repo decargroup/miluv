@@ -1,5 +1,5 @@
 experiment,num_robots,num_tags_per_robot,num_anchors,anchor_constellation,trajectory,cir_bool,obstacles_bool,apriltags_bool,barometer_bool
 1c,3,2,6,0,random,false,false,true,false
-2c,3,2,6,0b,moving_triangle,false,false,true,true
+11,3,2,6,0,random3,true,false,true,false
 16,1,2,6,2b,random3,false,false,false,true
 20,1,1,6,0,random3,false,false,true,false

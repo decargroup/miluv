@@ -133,7 +133,6 @@ def generate_config(exp_info):
         "LISTENING_MESSAGE": listening_message
     }
     
-    
 def process_uwb(path):
     # The configuration files
     # TODO: must dynamically load the appropriate config file based on # of robots + if has anchors 
@@ -242,7 +241,7 @@ def process_uwb(path):
         robot_targ_bool = df_passive["to_id"].isin(tags)
         df_robot = df_passive[robot_init_bool | robot_targ_bool]
         df_robot.to_csv(
-            join(path, f"{robot}/uwb_range_passive.csv"),
+            join(path, f"{robot}/uwb_passive.csv"),
             index=False
         )
 
@@ -262,7 +261,7 @@ if __name__ == '__main__':
         robot_folder = os.path.join(path, robot_id)
         for file in os.listdir(robot_folder):
             file_path = os.path.join(robot_folder, file)
-            if robot_id in file and "uwb" in file:
+            if robot_id in file and "uwb" in file and "cir" not in file:
                 os.remove(file_path)
     
 
