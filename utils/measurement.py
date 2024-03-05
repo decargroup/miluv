@@ -255,7 +255,6 @@ class RangeData(DataLoader):
         range_data['uwb_range'].to_csv('range_data.csv', index=False)
         
         measurements = []
-        count = 0
         for i, data in range_data['uwb_range'].iterrows():
 
 
