@@ -1,6 +1,6 @@
 # %%
 from miluv.data import DataLoader
 
-mv = DataLoader("1c", baro=False)
+mv = DataLoader("1c", barometer=False)
 a=2
 # %%
