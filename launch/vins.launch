@@ -1,0 +1,39 @@
+<launch>
+    <!-- Global parameters -->
+    <arg name="robot"/>
+    <arg name="bag_path"/>
+    <arg name="offline" default="true"/>
+    <arg name="use_rviz" default="true"/>
+    <arg name="do_loop_closures" default="true"/>
+
+    <!-- Launch RVIZ -->
+    <group if="$(arg use_rviz)">
+        <include file="$(find vins)/launch/vins_rviz.launch">
+        </include>
+    </group>
+
+    <!-- Launch VINS -->
+    <node name="vins_estimator" output="screen" pkg="vins" type="vins_node"
+        args="$(find miluv)/config/vins/$(arg robot)/vins.yaml"/>
+    
+    <!-- Launch loop closures -->
+    <group if="$(arg do_loop_closures)">
+        <node name="loop_fusion" output="screen" pkg="loop_fusion" type="loop_fusion_node"
+        args="$(find miluv)/config/vins/$(arg robot)/vins.yaml"/>
+    </group>
+
+    <!-- Run image decompressor -->
+    <group if="$(arg offline)">
+        <node name="infra1_decompressor" output="screen" pkg="image_transport" type="republish"
+            args="compressed in:=/$(arg robot)/camera/infra1/image_rect_raw raw out:=/$(arg robot)/camera/infra1/image_raw"/>
+        <node name="infra2_decompressor" output="screen" pkg="image_transport" type="republish"
+            args="compressed in:=/$(arg robot)/camera/infra2/image_rect_raw raw out:=/$(arg robot)/camera/infra2/image_raw"/>
+    </group>
+
+    <!-- Run bag file -->
+    <group if="$(arg offline)">
+        <node name="bag_player" output="screen" pkg="rosbag" type="play"
+            args="$(arg bag_path) -s 10"/>
+    </group>
+
+</launch>
