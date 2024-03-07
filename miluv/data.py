@@ -1,3 +1,4 @@
+from .utils import get_mocap_splines
 import pandas as pd
 import cv2
 import os
@@ -69,9 +70,10 @@ class DataLoader:
                 self.data[id].update({"barometer": []})
                 self.data[id]["barometer"] = self.read_csv("barometer", id)
 
-            # TODO: replace this with adding gt to each robot's data by fitting a spline
             # self.data[id].update({"mocap": []})
-            # self.data[id]["mocap"] = self.read_csv("mocap", id)
+            mocap_df = self.read_csv("mocap", id)
+            self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
+                = get_mocap_splines(mocap_df)
 
         # TODO: Load timestamp-to-image mapping?
         # if cam == "both" or cam == "bottom":
