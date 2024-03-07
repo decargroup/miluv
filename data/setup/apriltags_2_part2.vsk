@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<KinematicModel VERSION="3.2">
+	<Parameters>
+		<Parameter NAME="apriltags_3_apriltags_31_x" VALUE="-1797.8544921875" PRIOR="-1797.8544921875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_31_y" VALUE="4199.876953125" PRIOR="4199.876953125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_31_z" VALUE="954.0093994140625" PRIOR="954.0093994140625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_32_x" VALUE="-292.06436157226562" PRIOR="-292.06436157226562" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_32_y" VALUE="4148.94091796875" PRIOR="4148.94091796875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_32_z" VALUE="920.1060791015625" PRIOR="920.1060791015625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_33_x" VALUE="3287.391845703125" PRIOR="3287.391845703125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_33_y" VALUE="833.54345703125" PRIOR="833.54345703125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_33_z" VALUE="963.775634765625" PRIOR="963.775634765625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_34_x" VALUE="3084.970458984375" PRIOR="3084.970458984375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_34_y" VALUE="-386.4747314453125" PRIOR="-386.4747314453125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_34_z" VALUE="1154.655029296875" PRIOR="1154.655029296875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_35_x" VALUE="-3144.009033203125" PRIOR="-3144.009033203125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_35_y" VALUE="-2734.723876953125" PRIOR="-2734.723876953125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_35_z" VALUE="966.5987548828125" PRIOR="966.5987548828125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_36_x" VALUE="-2360.76416015625" PRIOR="-2360.76416015625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_36_y" VALUE="-3377.05322265625" PRIOR="-3377.05322265625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_3_apriltags_36_z" VALUE="1104.7786865234375" PRIOR="1104.7786865234375" HIDDEN="true"/>
+	</Parameters>
+	<Skeleton>
+		<Segment NAME="apriltags_2" OPACITY="255" BOUNDS="-50 -50 -50 50 50 50" MASS="0" MASS-CENTRE="0 0 0" INERTIA="0 0 0" RGB="255 164 0" HIDDEN="false" DRAW-END-RATIO="1" DRAW-HEIGHT="0.5" DRAW-TWIST="0" DRAW-WIDTH="0.5" DRAW-STYLE="box" DRAW-SHADING="shaded-smooth">
+			<JointFree NAME="World_apriltags_3" PRE-ORIENTATION="0 0 0" PRE-POSITION="0 0 0" INVERSE-POST-ORIENTATION="0 0 0" INVERSE-POST-POSITION="0 0 0" MEAN="0 0 0 0 0 0" COVARIANCE="2.464900016784668 0 0 0 0 0 0 2.464900016784668 0 0 0 0 0 0 246.49000549316406 0 0 0 0 0 0 1000000 0 0 0 0 0 0 1000000 0 0 0 0 0 0 1000000" T="* * * * * *" SIGNS="+ + + + + +" RANGE-CENTRING-STATE="0 0 0 0 0 0" RANGE-MATRIX="29.60881233215332 0 0 0 0 0 0 29.60881233215332 0 0 0 0 0 0 29.60881233215332 0 0 0 0 0 0 100000000 0 0 0 0 0 0 100000000 0 0 0 0 0 0 100000000">
+				<JointTemplate MEAN="0 0 0 0 0 0" COVARIANCE="2.464900016784668 0 0 0 0 0 0 2.464900016784668 0 0 0 0 0 0 246.49000549316406 0 0 0 0 0 0 1000000 0 0 0 0 0 0 1000000 0 0 0 0 0 0 1000000" TPOSE-MEAN="0 0 0 0 0 0" TPOSE-COVARIANCE="0.10000000149011612 0 0 0 0 0 0 0.10000000149011612 0 0 0 0 0 0 0.10000000149011612 0 0 0 0 0 0 0.10000000149011612 0 0 0 0 0 0 0.10000000149011612 0 0 0 0 0 0 0.10000000149011612" PRE-ORIENTATION="0 0 0" PRE-POSITION="0 0 0" INVERSE-POST-ORIENTATION="0 0 0" INVERSE-POST-POSITION="0 0 0"/>
+			</JointFree>
+		</Segment>
+	</Skeleton>
+	<MarkerSet>
+		<Markers>
+			<Marker NAME="apriltags_4" RADIUS="12.5" RGB="255 164 0" STATUS="required" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_2" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_47" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_5" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_9" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_3" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+		</Markers>
+		<Sticks>
+			<Stick MARKER1="apriltags_4" MARKER2="apriltags_2" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_4" MARKER2="apriltags_47" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_4" MARKER2="apriltags_5" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_4" MARKER2="apriltags_9" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_4" MARKER2="apriltags_3" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_2" MARKER2="apriltags_47" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_2" MARKER2="apriltags_5" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_2" MARKER2="apriltags_9" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_2" MARKER2="apriltags_3" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_47" MARKER2="apriltags_5" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_47" MARKER2="apriltags_9" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_47" MARKER2="apriltags_3" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_5" MARKER2="apriltags_9" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_5" MARKER2="apriltags_3" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_9" MARKER2="apriltags_3" RGB1="255 164 0" RGB2="255 164 0"/>
+		</Sticks>
+	</MarkerSet>
+	<TargetSet>
+		<Targets>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_4" OPACITY="255" POSITION="'apriltags_3_apriltags_31_x' 'apriltags_3_apriltags_31_y' 'apriltags_3_apriltags_31_z'" RGB="93 93 93" SEGMENT="apriltags_2" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_2" OPACITY="255" POSITION="'apriltags_3_apriltags_32_x' 'apriltags_3_apriltags_32_y' 'apriltags_3_apriltags_32_z'" RGB="93 93 93" SEGMENT="apriltags_2" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_47" OPACITY="255" POSITION="'apriltags_3_apriltags_33_x' 'apriltags_3_apriltags_33_y' 'apriltags_3_apriltags_33_z'" RGB="93 93 93" SEGMENT="apriltags_2" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_5" OPACITY="255" POSITION="'apriltags_3_apriltags_34_x' 'apriltags_3_apriltags_34_y' 'apriltags_3_apriltags_34_z'" RGB="93 93 93" SEGMENT="apriltags_2" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_9" OPACITY="255" POSITION="'apriltags_3_apriltags_35_x' 'apriltags_3_apriltags_35_y' 'apriltags_3_apriltags_35_z'" RGB="93 93 93" SEGMENT="apriltags_2" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_3" OPACITY="255" POSITION="'apriltags_3_apriltags_36_x' 'apriltags_3_apriltags_36_y' 'apriltags_3_apriltags_36_z'" RGB="93 93 93" SEGMENT="apriltags_2" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+		</Targets>
+	</TargetSet>
+</KinematicModel>
+
