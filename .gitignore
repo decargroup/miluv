@@ -1,6 +1,8 @@
 data/*
+!data/setup
 *.pyc
 miluv.egg*
 figs
 TODO
 .vscode
+calib
