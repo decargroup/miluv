@@ -1,7 +1,8 @@
 import sys
 from os import listdir, remove, walk, rename
-from os.path import join
+from os.path import join, isfile
 import pandas as pd
+import yaml
 
 # headers to keep for every file
 imu = [
@@ -125,6 +126,17 @@ def shift_timestamps(path):
         rename(
             file, "/".join(file.split("/")[:-1]) + "/" + str(img_timestamp) +
             ".jpeg")
+
+    # Save timeshift to yaml file        
+    if not isfile(path + "/timeshift.yaml"):
+        seconds = int(min_timestamp)
+        nanoseconds = int((min_timestamp - seconds) * 1e9)
+        with open(path + "/timeshift.yaml", 'w') as file:
+            yaml.dump(
+                {'timeshift_s': seconds, 'timeshift_ns': nanoseconds}, 
+                file,
+                default_flow_style=False
+            )
 
 
 if __name__ == '__main__':
