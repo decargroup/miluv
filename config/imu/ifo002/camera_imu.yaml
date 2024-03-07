@@ -6,6 +6,6 @@ accelerometer_random_walk: 0.0001443166674108964
 gyroscope_noise_density: 0.0001374226054492884 
 gyroscope_random_walk: 2.3388560788927866e-06 
 
-rostopic: '/ifo002/camera/imu' #Make sure this is correct
-update_rate: 200.0 #Make sure this is correct
+rostopic: '/ifo002/camera/imu'
+update_rate: 200.0
 
