@@ -191,9 +191,9 @@ def process_uwb(path):
     )
 
     # Convert timestamps from seconds to nanoseconds
-    df["timestamp"] = (df["time"]*1e9).astype(int)
+    df["timestamp"] = df["time"]
     df.drop(columns=["time"], inplace=True)
-    df_passive["timestamp"] = (df_passive["time"]*1e9).astype(int)
+    df_passive["timestamp"] = df_passive["time"]
     df_passive.drop(columns=["time"], inplace=True)
 
     # Add back important info to df_passive

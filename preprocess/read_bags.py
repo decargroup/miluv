@@ -25,7 +25,7 @@ def rename_files(files, path):
 
 def write_imgs(input_bag, dir_main):
     bridge = CvBridge()
-    for topic, msg, t in rosbag.Bag(input_bag).read_messages():
+    for topic, msg, _ in rosbag.Bag(input_bag).read_messages():
         if msg._type == 'sensor_msgs/CompressedImage':
             if "infra1" in topic:
                 dir = dir_main + "infra1/"

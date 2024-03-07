@@ -82,8 +82,7 @@ def process_cir(dir, file, headers):
 def merge_time(df):
     sec = df["header.stamp.secs"]
     nsec = df["header.stamp.nsecs"]
-    df["timestamp"] = sec * 1e9 + nsec
-    df["timestamp"] = df["timestamp"].astype(int)
+    df["timestamp"] = sec + nsec / 1e9
     return df
 
 
@@ -91,9 +90,15 @@ def find_min_timestamp(all_files):
     """Find the minimum timestamp in all csv files."""
     min_timestamp = float('inf')
     for file in all_files:
-        df = pd.read_csv(file)
-        if df["timestamp"].min() < min_timestamp:
-            min_timestamp = df["timestamp"].min()
+        if file.endswith('.csv'):
+            df = pd.read_csv(file)
+            if df["timestamp"].min() < min_timestamp:
+                min_timestamp = df["timestamp"].min()
+        elif file.endswith('.jpeg'):
+            img_timestamp = int(file.split(".")[0].split("/")[-1]) / 1e9
+            if img_timestamp < min_timestamp:
+                min_timestamp = img_timestamp
+       
     return min_timestamp
 
 
@@ -108,13 +113,15 @@ def shift_timestamps(path):
             elif file.endswith('.jpeg'):
                 all_jpegs.append(join(subdir, file))
 
-    min_timestamp = find_min_timestamp(all_csvs)
+    min_timestamp = find_min_timestamp(all_csvs + all_jpegs)
     for file in all_csvs:
         df = pd.read_csv(file)
         df["timestamp"] = df["timestamp"] - min_timestamp
+        if "timestamp_n" in df.columns:
+            df["timestamp_n"] = df["timestamp_n"] - min_timestamp
         df.to_csv(file, index=False)
     for file in all_jpegs:
-        img_timestamp = int(file.split(".")[0].split("/")[-1]) - min_timestamp
+        img_timestamp = int(file.split(".")[0].split("/")[-1]) / 1e9 - min_timestamp
         rename(
             file, "/".join(file.split("/")[:-1]) + "/" + str(img_timestamp) +
             ".jpeg")
