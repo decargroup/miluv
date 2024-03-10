@@ -24,7 +24,7 @@ def get_mocap_splines(mocap: pd.DataFrame) -> tuple[callable, callable]:
         ["pose.position.x", "pose.position.y", "pose.position.z"]
     ].values
     quat = mocap[
-        ["pose.orientation.w", "pose.orientation.x", "pose.orientation.y", "pose.orientation.z"]
+        ["pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"]
     ].values
     
     # Remove mocap gaps
@@ -102,7 +102,7 @@ def load_vins(exp_name, robot_id):
     data["timestamp"] = data["timestamp"]/1e9 - timeshift
     
     return data
-
+    
 def align_frames(df1, df2):
     """
     Align inertial reference frames for two dataframes consisting of body-frame data. 
@@ -127,123 +127,74 @@ def align_frames(df1, df2):
     Returns:
     - df1: First dataframe resolved to the reference frame of the second dataframe.
     """
-    
-    # Generate transformation matrices
-    pose1 = df1[[
+    pos1 = df1[[
         "pose.position.x", "pose.position.y", "pose.position.z", 
-        "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
     ]].values
-    T1 = np.array([se3_pose(pose1[i, :3], pose1[i, 3:]) for i in range(len(pose1))])
     
-    pose2 = df2[[
+    pos2 = df2[[
         "pose.position.x", "pose.position.y", "pose.position.z",
-        "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
     ]].values
-    T2 = np.array([se3_pose(pose2[i, :3], pose2[i, 3:]) for i in range(len(pose2))])
     
-    Y = T1 @ np.linalg.inv(T2)
-    T_hat = Y[0]
-    
-    num_meas = np.shape(Y)[0]
+    y = pos1
+
+    C_hat = np.eye(3) @ Rotation.from_rotvec(np.random.randn(3)*1).as_matrix()
+    r_hat = np.zeros(3) + np.random.randn(3)*1
     
     # Levenberg-Marquardt optimization
-    def error(Y, T):
-        y_wedge = np.array(
-            [sp.linalg.logm(T @ np.linalg.inv(Y_i)) for Y_i in Y]
-        )
-        return np.array([se3_vee(y_wedge[i]) for i in range(len(y_wedge))]).flatten()
+    def error(y, C, r):
+        return (y - (C @ (pos2 - r).T).T).flatten()
     
-    def jacobian():
-        x = np.eye(6)
-        return np.array(list(x)*num_meas)
+    def jacobian(C, r):
+        J = np.empty((0, 6))
+        for pos in pos2:
+            J_iter = np.zeros((3, 6))
+            J_iter[:, :3] = -C @ so3_wedge_matrix(pos - r)
+            J_iter[:, 3:] = -C
+            J = np.vstack((J, J_iter))
+        return J
     
     del_x = np.ones(6)*1e6
     iter = 0
-    J = jacobian()
-    print(J)
-    K = np.linalg.inv(J.T @ J + 0* 1e-6 * np.eye(6)) @ J.T
-    print(K)
-    e = error(Y, T_hat)
-    while np.linalg.norm(del_x) > 1e-6 and iter < 100:
+    e = error(y, C_hat, r_hat)
+    while np.linalg.norm(del_x) > 1e-12 and iter < 100:
+        J = jacobian(C_hat, r_hat)
+        K = np.linalg.inv(J.T @ J + 0* 1e-6 * np.eye(6)) @ J.T
         del_x = K @ e
-        del_x_wedge = se3_wedge_matrix(del_x)
-        T_hat =  T_hat @ sp.linalg.expm(del_x_wedge)
+        r_hat = r_hat + del_x[3:]
+        C_hat = C_hat @ sp.linalg.expm(so3_wedge_matrix(del_x[:3]))
         iter += 1
         
-        e = error(Y, T_hat)
+        e = error(y, C_hat, r_hat)
         print("Iteration: ", iter)
         print("Error: ", e)
         print("Error norm: ", np.linalg.norm(e))
         print("Delta x: ", del_x)
         print("Delta x norm: ", np.linalg.norm(del_x))
-        print("T_hat: ", T_hat)
+        print("C_hat: ", C_hat)
+        print("r_hat: ", r_hat) 
         print("-------------------")
             
     # Apply transformation to df1
-    pose1 = np.array([se3_pose(pose1[i, :3], pose1[i, 3:]) for i in range(len(pose1))])
-    pose1 = np.array([np.linalg.inv(T_hat) @ pose1[i] for i in range(len(pose1))])
+    pose1 = df1[[
+        "pose.position.x", "pose.position.y", "pose.position.z",
+        "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
+    ]].values
+
+    vins_quat = pose1[:, 3:]
+    vins_r = pose1[:, :3]
+
+    pose1 = np.array([C_hat.T @ vins_r[i] + r_hat for i in range(len(vins_r))])
     df1[[
         "pose.position.x", "pose.position.y", "pose.position.z",
-    ]] = np.array([pose1[i][:3, 3] for i in range(len(pose1))])
+    ]] = np.array([pose1[i] for i in range(len(pose1))])
+    
+    vins_C = np.array([Rotation.from_quat(vins_quat[i]).as_matrix() for i in range(len(vins_quat))])    
     df1[[
         "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
-    ]] = np.array([Rotation.from_matrix(pose1[i][:3, :3]).as_quat() for i in range(len(pose1))])
-    
-    # # Plot measurements Y over time
-    # fig, axs = plt.subplots(3, 1)
-    # y = np.array([se3_vee(sp.linalg.logm(np.linalg.inv(T1[i]) @ T2[i])) for i in range(len(T1))])
-    # axs[0].plot(df1["timestamp"], y[:, 0], label="x")
-    # axs[0].plot(df1["timestamp"], y[:, 1], label="y")
-    # axs[0].plot(df1["timestamp"], y[:, 2], label="z")
-    # axs[0].set_title("Orientation error")
-    # axs[0].legend()
-    # axs[1].plot(df1["timestamp"], y[:, 3], label="x")
-    # axs[1].plot(df1["timestamp"], y[:, 4], label="y")
-    # axs[1].plot(df1["timestamp"], y[:, 5], label="z")
-    # axs[1].set_title("Position error")
-    # axs[1].legend()
-    # axs[2].plot(df1["timestamp"], np.linalg.norm(y, axis=1))
-    # axs[2].set_title("Error norm")
-    # plt.show()
+    ]] = np.array([Rotation.from_matrix(vins_C[i] @ C_hat).as_quat() for i in range(len(vins_C))])
     
     return df1
     
-    
-def se3_pose(pos, quat):
-    """
-    Create a 4x4 SE(3) pose matrix from position and quaternion.
-    
-    Args:
-    - pos: Position.
-    - quat: Quaternion, [x, y, z, w].
-    
-    Returns:
-    - pose: SE(3) pose matrix.
-    """
-    
-    pose = np.eye(4)
-    pose[:3, 3] = pos
-    pose[:3, :3] = Rotation.from_quat(quat).as_matrix()
-    
-    return pose
-    
-def se3_wedge_matrix(omega):
-    """
-    Create a 4x4 SE(3) wedge matrix from a 6x1 twist vector.
-    
-    Args:
-    - omega: 6x1 twist vector.
-    
-    Returns:
-    - omega_hat: 4x4 SE(3) wedge matrix.
-    """
-    
-    omega_hat = np.zeros((4, 4))
-    omega_hat[:3, :3] = so3_wedge_matrix(omega[:3])
-    omega_hat[:3, 3] = omega[3:]
-    
-    return omega_hat
-
 def so3_wedge_matrix(omega):
     """
     Create a 3x3 SO(3) wedge matrix from a 3x1 vector.
@@ -265,37 +216,20 @@ def so3_wedge_matrix(omega):
     
     return omega_hat
 
-def se3_vee(omega_hat):
+def se3_pose(pos, quat):
     """
-    Create a 6x1 twist vector from a 4x4 SE(3) wedge matrix.
+    Create a 4x4 SE(3) pose matrix from position and quaternion.
     
     Args:
-    - omega_hat: 4x4 SE(3) wedge matrix.
+    - pos: Position.
+    - quat: Quaternion, [x, y, z, w].
     
     Returns:
-    - omega: 6x1 twist vector.
+    - pose: SE(3) pose matrix.
     """
     
-    omega = np.zeros(6)
-    omega[:3] = so3_vee(omega_hat[:3, :3])
-    omega[3:] = omega_hat[:3, 3]
+    pose = np.eye(4)
+    pose[:3, 3] = pos
+    pose[:3, :3] = Rotation.from_quat(quat).as_matrix()
     
-    return omega
-
-def so3_vee(omega_hat):
-    """
-    Create a 3x1 vector from a 3x3 SO(3) wedge matrix.
-    
-    Args:
-    - omega_hat: 3x3 SO(3) cross matrix.
-    
-    Returns:
-    - omega: 3x1 vector.
-    """
-    
-    omega = np.zeros(3)
-    omega[0] = omega_hat[2, 1]
-    omega[1] = omega_hat[0, 2]
-    omega[2] = omega_hat[1, 0]
-    
-    return omega
+    return pose

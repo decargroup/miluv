@@ -1,10 +1,12 @@
 # %%
 from miluv.data import DataLoader
 from miluv.utils import (
-    get_mocap_splines, load_vins, align_frames
+    load_vins, align_frames
 )
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.spatial.transform import Rotation
+import numpy as np
 
 exp_name = "1c"
 robot_id = "ifo001"
@@ -57,6 +59,24 @@ axs[1].set_title("y")
 axs[1].legend()
 axs[2].plot(vins["timestamp"], vins["pose.position.z"], label="vins")
 axs[2].plot(vins["timestamp"], pos[2], label="mocap")
+axs[2].set_title("z")
+axs[2].legend()
+plt.legend()
+
+fig, axs = plt.subplots(3, 1)
+vins_quat = vins[["pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"]].values
+vins_rot_vec = Rotation.from_quat(vins_quat).as_rotvec()
+mocap_rot_vec = Rotation.from_quat(quat.T).as_rotvec()
+axs[0].plot(vins["timestamp"], vins_rot_vec[:, 0], label="vins")
+axs[0].plot(vins["timestamp"], mocap_rot_vec[:, 0], label="mocap")
+axs[0].set_title("x")
+axs[0].legend()
+axs[1].plot(vins["timestamp"], vins_rot_vec[:, 1], label="vins")
+axs[1].plot(vins["timestamp"], mocap_rot_vec[:, 1], label="mocap")
+axs[1].set_title("y")
+axs[1].legend()
+axs[2].plot(vins["timestamp"], vins_rot_vec[:, 2], label="vins")
+axs[2].plot(vins["timestamp"], mocap_rot_vec[:, 2], label="mocap")
 axs[2].set_title("z")
 axs[2].legend()
 plt.legend()
