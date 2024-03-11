@@ -4,3 +4,5 @@ miluv.egg*
 figs
 TODO
 .vscode
+dist
+build
