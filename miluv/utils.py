@@ -137,8 +137,8 @@ def align_frames(df1, df2):
     
     y = pos1
 
-    C_hat = np.eye(3) @ Rotation.from_rotvec(np.random.randn(3)*1).as_matrix()
-    r_hat = np.zeros(3) + np.random.randn(3)*1
+    C_hat = np.eye(3)
+    r_hat = np.zeros(3)
     
     # Levenberg-Marquardt optimization
     def error(y, C, r):
@@ -153,12 +153,12 @@ def align_frames(df1, df2):
             J = np.vstack((J, J_iter))
         return J
     
-    del_x = np.ones(6)*1e6
+    del_x = np.ones(6)
     iter = 0
     e = error(y, C_hat, r_hat)
     while np.linalg.norm(del_x) > 1e-12 and iter < 100:
         J = jacobian(C_hat, r_hat)
-        K = np.linalg.inv(J.T @ J + 0* 1e-6 * np.eye(6)) @ J.T
+        K = np.linalg.inv(J.T @ J + 1e-6 * np.eye(6)) @ J.T
         del_x = K @ e
         r_hat = r_hat + del_x[3:]
         C_hat = C_hat @ sp.linalg.expm(so3_wedge_matrix(del_x[:3]))
@@ -180,21 +180,20 @@ def align_frames(df1, df2):
         "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
     ]].values
 
-    vins_quat = pose1[:, 3:]
     vins_r = pose1[:, :3]
+    vins_quat = pose1[:, 3:]
+    vins_C = np.array([Rotation.from_quat(vins_quat[i]).as_matrix() for i in range(len(vins_quat))])
 
     pose1 = np.array([C_hat.T @ vins_r[i] + r_hat for i in range(len(vins_r))])
     df1[[
         "pose.position.x", "pose.position.y", "pose.position.z",
-    ]] = np.array([pose1[i] for i in range(len(pose1))])
-    
-    vins_C = np.array([Rotation.from_quat(vins_quat[i]).as_matrix() for i in range(len(vins_quat))])    
+    ]] = np.array([pose1[i] for i in range(len(pose1))])    
     df1[[
         "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
     ]] = np.array([Rotation.from_matrix(vins_C[i] @ C_hat).as_quat() for i in range(len(vins_C))])
     
     return df1
-    
+
 def so3_wedge_matrix(omega):
     """
     Create a 3x3 SO(3) wedge matrix from a 3x1 vector.
@@ -215,21 +214,3 @@ def so3_wedge_matrix(omega):
     omega_hat[2, 1] = omega[0]
     
     return omega_hat
-
-def se3_pose(pos, quat):
-    """
-    Create a 4x4 SE(3) pose matrix from position and quaternion.
-    
-    Args:
-    - pos: Position.
-    - quat: Quaternion, [x, y, z, w].
-    
-    Returns:
-    - pose: SE(3) pose matrix.
-    """
-    
-    pose = np.eye(4)
-    pose[:3, 3] = pos
-    pose[:3, :3] = Rotation.from_quat(quat).as_matrix()
-    
-    return pose

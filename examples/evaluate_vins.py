@@ -1,12 +1,8 @@
 # %%
 from miluv.data import DataLoader
-from miluv.utils import (
-    load_vins, align_frames
-)
+from miluv.utils import load_vins, align_frames
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.spatial.transform import Rotation
-import numpy as np
 
 exp_name = "1c"
 robot_id = "ifo001"
@@ -17,9 +13,12 @@ mv = DataLoader(exp_name, barometer=False, cir=False)
 # Read vins data
 vins = load_vins(exp_name, robot_id)
 
+# Drop the last 10 seconds of vins data
+vins = vins[vins["timestamp"] < vins["timestamp"].iloc[-1] - 10]
+
 # Get mocap data at vins timestamps
-pos = mv.data["ifo001"]["mocap_pos"](vins["timestamp"])
-quat = mv.data["ifo001"]["mocap_quat"](vins["timestamp"])
+pos = mv.data[robot_id]["mocap_pos"](vins["timestamp"])
+quat = mv.data[robot_id]["mocap_quat"](vins["timestamp"])
 
 # Align frame
 df_mocap = pd.DataFrame({
@@ -32,7 +31,6 @@ df_mocap = pd.DataFrame({
     "pose.orientation.z": quat[2],
     "pose.orientation.w": quat[3],
 })
-# vins_old = vins.copy()
 vins = align_frames(vins, df_mocap)
 
 # Compare vins and mocap data
@@ -45,8 +43,6 @@ ax.set_xlabel("X")
 ax.set_ylabel("Y")
 ax.set_zlabel("Z")
 ax.legend()
-# plt.plot(vins["pose.position.x"], vins["pose.position.y"], label="vins")
-# plt.plot(pos[0], pos[1], label="mocap")
 
 fig, axs = plt.subplots(3, 1)
 axs[0].plot(vins["timestamp"], vins["pose.position.x"], label="vins")
@@ -64,19 +60,13 @@ axs[2].legend()
 plt.legend()
 
 fig, axs = plt.subplots(3, 1)
-vins_quat = vins[["pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"]].values
-vins_rot_vec = Rotation.from_quat(vins_quat).as_rotvec()
-mocap_rot_vec = Rotation.from_quat(quat.T).as_rotvec()
-axs[0].plot(vins["timestamp"], vins_rot_vec[:, 0], label="vins")
-axs[0].plot(vins["timestamp"], mocap_rot_vec[:, 0], label="mocap")
+axs[0].plot(vins["timestamp"], vins["pose.position.x"] - pos[0], label="x")
 axs[0].set_title("x")
 axs[0].legend()
-axs[1].plot(vins["timestamp"], vins_rot_vec[:, 1], label="vins")
-axs[1].plot(vins["timestamp"], mocap_rot_vec[:, 1], label="mocap")
+axs[1].plot(vins["timestamp"], vins["pose.position.y"] - pos[1], label="y")
 axs[1].set_title("y")
 axs[1].legend()
-axs[2].plot(vins["timestamp"], vins_rot_vec[:, 2], label="vins")
-axs[2].plot(vins["timestamp"], mocap_rot_vec[:, 2], label="mocap")
+axs[2].plot(vins["timestamp"], vins["pose.position.z"] - pos[2], label="z")
 axs[2].set_title("z")
 axs[2].legend()
 plt.legend()
