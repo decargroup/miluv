@@ -49,10 +49,10 @@ class DataLoader:
             if uwb:
                 self.data[id].update({"uwb_range": []})
                 self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
-                
+
                 self.data[id].update({"uwb_passive": []})
                 self.data[id]["uwb_passive"] = self.read_csv("uwb_passive", id)
-                
+
             if cir:
                 self.data[id].update({"uwb_cir": []})
                 self.data[id]["uwb_cir"] = self.read_csv("uwb_cir", id)
@@ -173,8 +173,8 @@ class DataLoader:
                         img_ts = self.closest_past_timestamp(
                             robot_id, cam, timestamp)
                         if img_ts is None:
-                            print("No", cam, "image found for timestamp",
-                                  timestamp, "for robot_id", robot_id)
+                            # print("No", cam, "image found for timestamp",
+                            #       timestamp, "for robot_id", robot_id)    # Debugging msg
                             continue
                         img_path = os.path.join(self.exp_dir, self.exp_name,
                                                 robot_id, cam,
