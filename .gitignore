@@ -5,7 +5,6 @@ figs
 TODO
 .vscode
 src/simulated_ekf.py
-src/ekf_velocity.py
 src/simulated_ekf_vel.py
 src/example_ekf_nobias.py
 range_data.csv

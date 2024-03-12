@@ -229,23 +229,6 @@ class RangeData(DataLoader):
                     from_tag.parent_id,
                     variance,
                 )
-                robots = ['ifo001', 'ifo002', 'ifo003']
-                gt_pose = [self.miluv.data[robot]["mocap"].pose_matrix(
-                                [data.timestamp, data.timestamp]) for robot in robots]
-                x = [SE3State(  value = gt_pose[i][0], 
-                        state_id = robot,
-                        stamp = data.timestamp) for i, robot in enumerate(robots)]
-                x = CompositeState(x)
-                y = model.evaluate(x)
-                true.append(y)
-                gt_true.append(data.gt_range)
-                range_csv.append(data.range)
-                stamps.append(data.timestamp)
-                diff.append(data.gt_range - data.range)
-                if abs(y - data.range) < 0.5:
-                    measurements.append(
-                        Measurement(data.range, data.timestamp, model)
-                    )
             else:
                 model = RangePoseToPose(
                     from_tag[['position.x','position.y','position.z']].tolist(),
@@ -254,23 +237,24 @@ class RangeData(DataLoader):
                     to_tag.parent_id,
                     variance,
                     )
-                # robots = ['ifo001', 'ifo002', 'ifo003']
-                # gt_pose = [self.miluv.data[robot]["mocap"].pose_matrix(
-                #                 [data.timestamp, data.timestamp]) for robot in robots]
-                # x = [SE3State(  value = gt_pose[i][0], 
-                #         state_id = robot,
-                #         stamp = data.timestamp) for i, robot in enumerate(robots)]
-                # x = CompositeState(x)
-                # y = model.evaluate(x)
-                # true.append(y)
-                # gt_true.append(data.range)
-                # range_csv.append(data.range)
-                # stamps.append(data.timestamp)
-                # diff.append(data.range - y)
-                if abs(data.range - y) < 0.5:
-                    measurements.append(
-                        Measurement(data.range, data.timestamp, model)
-                    )
+            
+            robots = ['ifo001', 'ifo002', 'ifo003']
+            gt_pose = [self.miluv.data[robot]["mocap"].pose_matrix(
+                                [data.timestamp, data.timestamp]) for robot in robots]
+            x = [SE3State(  value = gt_pose[i][0], 
+                        state_id = robot,
+                        stamp = data.timestamp) for i, robot in enumerate(robots)]
+            x = CompositeState(x)
+            y = model.evaluate(x)
+            if abs(data.range - y) < 0.5:
+                measurements.append(
+                    Measurement(data.range, data.timestamp, model)
+                )
+            # true.append(y)
+            # gt_true.append(data.range)
+            # range_csv.append(data.range)
+            # stamps.append(data.timestamp)
+            # diff.append(data.range - y)
 
         # plt.plot(stamps, diff)
         # plt.ylabel('Difference (m)')
