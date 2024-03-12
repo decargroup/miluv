@@ -1,58 +1,33 @@
 import numpy as np
-from typing import Any, List, Dict
+from typing import Any, List
 from utils.models import (
-    MeasurementModel,
-    RangeRelativePose,
+    RangePoseToAnchorById,
     RangePoseToPose,
 )
+from utils.states import SE3State, CompositeState
 from miluv.data import DataLoader
 import pandas as pd
 import copy
+import matplotlib.pyplot as plt
 
 class Measurement:
     """
-    A data container containing a generic measurement's value, timestamp,
+    A data container containing a measurement's value, timestamp,
     and corresponding model.
     """
-
-    __slots__ = ["value", "stamp", "model", "state_id"]
-
     def __init__(
         self,
         value: np.ndarray,
         stamp: float = None,
-        model: MeasurementModel = None,
+        model = None,
         state_id: Any = None,
     ):
-        """
-        Parameters
-        ----------
-        value : np.ndarray
-            the value of the measurement reading
-        stamp : float, optional
-            timestamp, by default None
-        model : MeasurementModel, optional
-            model for this measurement, by default None
-        state_id : Any, optional
-            optional state ID, by default None
-        """
-        #:numpy.ndarray: Container for the measurement value
         self.value = np.array(value) if np.isscalar(value) else value
-        #:float: Timestamp
         self.stamp = stamp
-        # MeasurementModel: measurement model associated with this measurement.
         self.model = model
-        #:Any: Optional, ID of the state this measurement is associated.
         self.state_id = state_id
 
     def minus(self, y_check: np.ndarray) -> np.ndarray:
-        """Evaluates the difference between the current measurement
-        and a predicted measurement.
-
-        By default, assumes that the measurement is a column vector,
-        and thus, the ``minus`` operator is simply vector subtraction.
-        """
-
         return self.value.reshape((-1, 1)) - y_check.reshape((-1, 1))
 
 class RangeData(DataLoader):
@@ -60,7 +35,7 @@ class RangeData(DataLoader):
     Class for storing UWB range data.
     """
     def __init__(self, 
-                 dataloader: DataLoader):
+                 dataloader: DataLoader, miluv):
         
         # remove all data which are not "uwb_range"
         data = dataloader.data
@@ -70,8 +45,7 @@ class RangeData(DataLoader):
         self.data = {id: {sensor: data[id][sensor] 
                           for sensor in data[id] if 
                           sensor in self._sensors} for id in data}
-
-
+        self.miluv = miluv
     def copy(self):
         """
         Create a copy of the RangeData object.
@@ -186,12 +160,10 @@ class RangeData(DataLoader):
 
         return out
 
-    # TODO: Need to check
     def merge_range(self,
                 robot_id:List=None, 
                 sensors:List=None,
                 ) -> pd.DataFrame:
-
 
         if robot_id is None:
             robot_id = list(self.data.keys())
@@ -216,7 +188,6 @@ class RangeData(DataLoader):
         out = {sensor: pd.concat(out[sensor]) 
                for sensor in sensors}
         
-
         # sort the data by timestamp
         for sensor in sensors:
             out[sensor] = out[sensor].sort_values(by="timestamp")
@@ -227,74 +198,91 @@ class RangeData(DataLoader):
 
         return out
 
-    # TODO: Need to check
     def to_measurements(self, 
                   reference_id: Any = 'world',) -> List[Measurement]:
         """
-        Convert to a list of measurements.
-
-        Parameters
-        ----------
-        tags : List[Tag]
-            Information about the tags
-        variance : float, optional
-            If specified, overrides the variance for all measurements. Otherwise
-            the variance from the bag file or the calibration is used.
-        state_id : Any, optional
-            optional identifier to add to the measurement, by default None
-
-        Returns
-        -------
-        List[Measurement]
-            List of measurements.
+        Convert to a list of Measurement objects.
         """
-
+        
         range_data = self.merge_range()
         # TODO: remove this line
-        # save the range data in a csv file
         range_data['uwb_range'].to_csv('range_data.csv', index=False)
         
+        diff = []
+        true = []
+        gt_true = []
+        range_csv = []
+        stamps = []
         measurements = []
         for i, data in range_data['uwb_range'].iterrows():
-
-
             from_tag = self.setup['uwb_tags'].loc[
                        self.setup['uwb_tags']['tag_id'] == data.from_id].iloc[0]
-            
             to_tag = self.setup['uwb_tags'].loc[
                      self.setup['uwb_tags']['tag_id'] == data.to_id].iloc[0]
             
-            from_tag_pos = from_tag[['position.x',
-                                     'position.y',
-                                     'position.z']].tolist()
-            to_tag_pos = to_tag[['position.x',    
-                                 'position.y',
-                                 'position.z']].tolist()
-            
-            variance = data["std"]**2
-            if from_tag.parent_id == reference_id:
-                model = RangeRelativePose(
-                    from_tag_pos,
-                    to_tag_pos,
-                    to_tag.parent_id,
-                    variance,
-                )
-            elif to_tag.parent_id == reference_id:
-                model = RangeRelativePose(
-                    to_tag_pos,
-                    from_tag_pos,
+            variance = 10 * data["std"]**2
+            if to_tag.parent_id == reference_id:
+                # print(data.bias)
+                model = RangePoseToAnchorById(
+                    to_tag[['position.x','position.y','position.z']].tolist(),
+                    from_tag[['position.x','position.y','position.z']].tolist(),
                     from_tag.parent_id,
                     variance,
                 )
+                robots = ['ifo001', 'ifo002', 'ifo003']
+                gt_pose = [self.miluv.data[robot]["mocap"].pose_matrix(
+                                [data.timestamp, data.timestamp]) for robot in robots]
+                x = [SE3State(  value = gt_pose[i][0], 
+                        state_id = robot,
+                        stamp = data.timestamp) for i, robot in enumerate(robots)]
+                x = CompositeState(x)
+                y = model.evaluate(x)
+                true.append(y)
+                gt_true.append(data.gt_range)
+                range_csv.append(data.range)
+                stamps.append(data.timestamp)
+                diff.append(data.gt_range - data.range)
+                if abs(y - data.range) < 0.5:
+                    measurements.append(
+                        Measurement(data.range, data.timestamp, model)
+                    )
             else:
                 model = RangePoseToPose(
-                    from_tag_pos,
-                    to_tag_pos,
+                    from_tag[['position.x','position.y','position.z']].tolist(),
+                    to_tag[['position.x','position.y','position.z']].tolist(),
                     from_tag.parent_id,
                     to_tag.parent_id,
                     variance,
-                )
-            measurements.append(
-                Measurement(data.gt_range, data.timestamp, model)
-            )
+                    )
+                # robots = ['ifo001', 'ifo002', 'ifo003']
+                # gt_pose = [self.miluv.data[robot]["mocap"].pose_matrix(
+                #                 [data.timestamp, data.timestamp]) for robot in robots]
+                # x = [SE3State(  value = gt_pose[i][0], 
+                #         state_id = robot,
+                #         stamp = data.timestamp) for i, robot in enumerate(robots)]
+                # x = CompositeState(x)
+                # y = model.evaluate(x)
+                # true.append(y)
+                # gt_true.append(data.range)
+                # range_csv.append(data.range)
+                # stamps.append(data.timestamp)
+                # diff.append(data.range - y)
+                if abs(data.range - y) < 0.5:
+                    measurements.append(
+                        Measurement(data.range, data.timestamp, model)
+                    )
+
+        # plt.plot(stamps, diff)
+        # plt.ylabel('Difference (m)')
+        # plt.xlabel('Time (s)')
+
+        # fig, ax = plt.subplots()
+        # ax.plot(stamps, true, linestyle='None', marker='o', label='Model Evaluation')
+        # ax.plot(stamps, range_csv, linestyle='None', marker='s', label='Range from csv')
+        # ax.plot(stamps, gt_true, linestyle='None', marker='x', label='Ground Truth Range from csv')
+        # ax.set(xlabel='time (s)', 
+        #        ylabel='range (m)',
+        #        title='Range measurements',
+        #        )
+        # plt.legend()
         return measurements

@@ -8,10 +8,10 @@ from miluv.wrappers import (
 import numpy as np
 from typing import List
 import copy
-from preprocess.process_uwb import (
+from miluv.utils import (
     get_experiment_info,
     get_anchors, 
-    get_moment_arms
+    get_tags
 )
 import yaml
 
@@ -31,6 +31,8 @@ class DataLoader:
         ],
         uwb: bool = True,
         cir: bool = True,
+        vio: bool = True,
+        vio_loop: bool = True,
         height: bool = True,
         mag: bool = True,
         barometer: bool = True,
@@ -71,8 +73,22 @@ class DataLoader:
                 self.data[id].update({"uwb_range": []})
                 self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
                 
-                self.data[id].update({"uwb_range_passive": []})
-                self.data[id]["uwb_passive"] = self.read_csv("uwb_range_passive", id)
+                self.data[id].update({"uwb_passive": []})
+                self.data[id]["uwb_passive"] = self.read_csv("uwb_passive", id)
+
+            if vio:
+                self.data[id].update({"vio": []})
+                self.data[id]["vio"] = self.read_csv("vio", id)
+
+                # divide timestamp by 1e9
+                self.data[id]["vio"]["timestamp"] = self.data[id]["vio"]["timestamp"] / 1e9
+
+            if vio_loop:
+                self.data[id].update({"vio_loop": []})
+                self.data[id]["vio_loop"] = self.read_csv("vio_loop", id)
+
+                # # divide timestamp by 1e9
+                # self.data[id]["vio_loop"]["timestamp"] = self.data[id]["vio_loop"]["timestamp"] / 1e9
                 
             # if cir:
             #     self.data[id].update({"uwb_cir": []})
@@ -97,9 +113,9 @@ class DataLoader:
             
         # Load anchors and moment arms from experiment info
         anchors = get_anchors(exp_info["anchor_constellation"])
-        moment_arms = get_moment_arms()
+        tags = get_tags()
         (self.setup["uwb_tags"], 
-        self.setup["april_tags"]) = tags_to_df(anchors, moment_arms)
+        self.setup["april_tags"]) = tags_to_df(anchors, tags)
         self.setup["imu_px4_calib"] = self.read_yaml("imu", "imu_px4_calib")
 
         

@@ -1,11 +1,8 @@
-from typing import List, Any
+from typing import Any
 import numpy as np
-from dataclasses import dataclass
-from abc import ABC
 from csaps import csaps
 from pymlg import SO3
 import pandas as pd
-from pymocap import MocapTrajectory
 
 """ 
 This module contains data wrappers for:

@@ -8,28 +8,11 @@ from os.path import join
 import os
 import pandas as pd
 import yaml
-
-def get_experiment_info(path):
-    exp_name = path.split('/')[-1]
-    df = pd.read_csv(join("config", "experiments.csv"))
-    row: pd.DataFrame = df[df["experiment"] == exp_name]
-    return row.to_dict(orient="records")[0]
-
-def get_anchors(anchor_constellation):
-    with open('config/uwb/anchors.yaml', 'r') as file:
-        return yaml.safe_load(file)[anchor_constellation]
-
-def get_moment_arms(flatten=False):
-    with open('config/uwb/moment_arms.yaml', 'r') as file:
-        moment_arms = yaml.safe_load(file)
-
-    if flatten:
-        arms = {}
-        for robot, arm in moment_arms.items():
-            arms.update(arm)
-        return arms
-    else:
-        return moment_arms
+from miluv.utils import (
+    get_experiment_info, 
+    get_anchors, 
+    get_tags
+)
 
     
 def generate_config(exp_info):
@@ -64,7 +47,7 @@ def generate_config(exp_info):
         elif exp_info["num_tags_per_robot"] == 1:
             tags.update({f"{i}": f"[{(i+1)*10}]"})
         
-    moment_arms = get_moment_arms(flatten=True)
+    moment_arms = get_tags(flatten=True)
     
     pose_topic = {}
     for i in range(exp_info["num_robots"]):

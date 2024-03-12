@@ -68,6 +68,7 @@ input_freq = 190
 # Get the time range
 start_time, end_time = miluv.get_timerange(
                             sensors = input_sensor)
+end_time = end_time - 30
 query_stamps = np.arange(start_time, end_time, 1/input_freq)
 
 
@@ -93,7 +94,7 @@ accel = [miluv.data[robot]["mocap"].accelerometer(
 
 # Get range data
 range_data = RangeData(miluv)
-# range_data = range_data.filter_by_bias( max_bias=0.03)
+range_data = range_data.filter_by_bias( max_bias=0.3)
 range_data = range_data.by_timerange(start_time, 
                                      end_time, 
                                      sensors=["uwb_range"])
@@ -160,7 +161,7 @@ P0 = np.diag([0.1, 0.1, 0.1,
               0.0001, 0.0001,0.0001,
               0.0001, 0.0001,0.0001])
 
-Q =  np.diag([0.0025**2, 0.0025**2,0.0025**2, 
+Q =  1e2 * np.diag([0.0025**2, 0.0025**2,0.0025**2, 
              0.025**2, 0.025**2,0.025**2,
              0.0001**2, 0.0001**2,0.0001**2,
              0.0001**2, 0.0001**2,0.0001**2,])
