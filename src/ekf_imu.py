@@ -1,9 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import seaborn as sns
 import tqdm
-import datetime
 from typing import List
 import pandas as pd
 
@@ -23,24 +20,23 @@ from utils.misc import (
 )
 
 from utils.states import (
-    SE23State,
+    IMUState,
     CompositeState,
     StateWithCovariance,
 )
 
 from utils.inputs import (
     IMU,
-    IMUState,
     CompositeInput,
 )
 
 from utils.models import (
     BodyFrameIMU,
-    IMUKinematics,
     MagnetometerById,
     CompositeProcessModel,
     AltitudeById,
 )
+from navlie.lib.imu import IMUKinematics
 
 from miluv.data import DataLoader
 from src.filters import ExtendedKalmanFilter
@@ -60,7 +56,7 @@ save_fig = False
 
 
 """ Get data """
-miluv = DataLoader("1c", baro=False)
+miluv = DataLoader("1c", barometer=False)
 robots = list(miluv.data.keys())
 input_sensor = "imu_px4"
 input_freq = 190
@@ -68,7 +64,8 @@ input_freq = 190
 # Get the time range
 start_time, end_time = miluv.get_timerange(
                             sensors = input_sensor)
-end_time = end_time - 30
+
+end_time = end_time - 50
 query_stamps = np.arange(start_time, end_time, 1/input_freq)
 
 
@@ -80,6 +77,7 @@ mag = [mag.data[robot]["mag"] for robot in robots]
 
 height = miluv.by_timerange(start_time, end_time, sensors=["height"])
 height = [height.data[robot]["height"] for robot in robots]
+min_height = [h['range'].min() for h in height]
 
 # Get pose data
 pose = [miluv.data[robot]["mocap"].extended_pose_matrix(
@@ -93,37 +91,24 @@ accel = [miluv.data[robot]["mocap"].accelerometer(
 
 
 # Get range data
-range_data = RangeData(miluv)
-range_data = range_data.filter_by_bias( max_bias=0.3)
+range_data = RangeData(miluv, miluv)
+# range_data = range_data.filter_by_bias( max_bias=0.3)
 range_data = range_data.by_timerange(start_time, 
                                      end_time, 
                                      sensors=["uwb_range"])
 meas_data = range_data.to_measurements(
     reference_id = 'world')
 
-# Add the altitude measurements
-R = 0.1**2
-for i in range(len(query_stamps)):
-    y = [Measurement(  value = position[n][i][-1],
-                       stamp = query_stamps[i],
-                       model = AltitudeById(R = R, 
-                       nb_state_id = robot))
-        for n, robot in enumerate(robots)
-        ]
-    meas_data.extend(y)
-
-
-# Add the magnetic field measurements
-R = 0.01**2
+R = [0.1, 0.1, 0.1]
+bias = [-0.0924, -0.0088, -0.1207]
 for n, robot in enumerate(robots):
-    for i in range(len(mag[n])):
-        y = Measurement(value = mag[n].iloc[i][
-                                ['magnetic_field.x',
-                                 'magnetic_field.y',
-                                 'magnetic_field.z']].values,
-                            stamp = mag[n].iloc[i]['timestamp'],
-                            model = MagnetometerById(R = R, 
-                            nb_state_id = robot))
+    for i in range(len(height[n])):
+        y = Measurement(value = height[n].iloc[i]['range'],
+                            stamp = height[n].iloc[i]['timestamp'],
+                            model = AltitudeById(R = R[n], 
+                            state_id = robot,
+                            minimum=min_height[n],
+                            bias = bias[n]))
         meas_data.append(y)
 
 # sort the measurements
@@ -132,16 +117,12 @@ meas_data = sorted(meas_data, key=lambda x: x.stamp)
 
 """ Create ground truth data """
 ground_truth = []
-bias_gyro = np.array([0.0, 0.0, 0.01])
-bias_accel = np.array([0.01, 0.01, 0.0])
 for i in range(len(query_stamps)):
     x = [IMUState(  nav_state = pose[n][i], 
                     bias_gyro = imus.setup["imu_px4_calib"
                                            ][robot]["bias_gyro"], 
                     bias_accel = imus.setup["imu_px4_calib"
                                             ][robot]["bias_accel"],
-                    # bias_gyro = bias_gyro,
-                    # bias_accel = bias_accel,
                     state_id = robot,
                     stamp = query_stamps[i],
                     direction='right') 
@@ -155,16 +136,16 @@ for i in range(len(query_stamps)):
 x0 = ground_truth[0].copy()
 
 # State and input covariance
-P0 = np.diag([0.1, 0.1, 0.1, 
-              1, 1, 1,
-              1, 1, 1,
-              0.0001, 0.0001,0.0001,
-              0.0001, 0.0001,0.0001])
+P0 = np.diag([0.0025**2, 0.0025**2, 0.0025**2, 
+             0.1**2, 0.1**2, 0.1,
+             0.01, 0.01, 0.1,
+             0.0001, 0.0001,0.0001,
+             0.0001, 0.0001,0.0001])
 
-Q =  1e2 * np.diag([0.0025**2, 0.0025**2,0.0025**2, 
-             0.025**2, 0.025**2,0.025**2,
-             0.0001**2, 0.0001**2,0.0001**2,
-             0.0001**2, 0.0001**2,0.0001**2,])
+Q =  2.5 * np.diag([0.1**2, 0.1**2,0.15**2, 
+             0.015**2, 0.015**2,0.02**2,
+             0.01**2, 0.01**2,0.01**2,
+             0.01**2, 0.01**2,0.01**2,])
 
 # # Process Model
 # process_model = CompositeProcessModel(
@@ -181,16 +162,16 @@ Q = np.kron(np.eye(n_states), Q)
 input_data = []
 for i in range(len(query_stamps)):
     u = [IMU(
-        # gyro = imus.data[robot][input_sensor].iloc[i][
-        #     ['angular_velocity.x', 
-        #      'angular_velocity.y', 
-        #      'angular_velocity.z']].values, 
-        gyro = gyro[n][i],
-        # accel= imus.data[robot][input_sensor].iloc[i][
-        #     ['linear_acceleration.x', 
-        #      'linear_acceleration.y', 
-        #      'linear_acceleration.z']].values,
-        accel = accel[n][i],
+        gyro = imus.data[robot][input_sensor].iloc[i][
+            ['angular_velocity.x', 
+             'angular_velocity.y', 
+             'angular_velocity.z']].values, 
+        # gyro = gyro[n][i],
+        accel= imus.data[robot][input_sensor].iloc[i][
+            ['linear_acceleration.x', 
+             'linear_acceleration.y', 
+             'linear_acceleration.z']].values,
+        # accel = accel[n][i],
         stamp = query_stamps[i], 
         state_id = robot)
         for n, robot in enumerate(robots)

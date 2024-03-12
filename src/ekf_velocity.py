@@ -107,7 +107,7 @@ range_data = range_data.by_timerange(start_time, end_time,
 meas_data = range_data.to_measurements(
     reference_id = 'world')
 
-R = [5*0.1, 5*0.1, 5*0.1]
+R = [0.1, 3*0.1, 10*0.1]
 # bias = [height[n]['range'].mean() - position[n][:,2].mean() for n in range(len(robots))]
 bias = [-0.0924, -0.0088, -0.1207]
 for n, robot in enumerate(robots):
@@ -119,31 +119,6 @@ for n, robot in enumerate(robots):
                             minimum=min_height[n],
                             bias = bias[n]))
         meas_data.append(y)
-
-# # Add the altitude measurements
-# # meas_data = []
-# R = 0.1**2
-# for i in range(len(query_stamps)):
-#     y = [Measurement(  value = position[n][i][-1],
-#                        stamp = query_stamps[i],
-#                        model = AltitudeById(R = R, 
-#                        state_id = robot))
-#         for n, robot in enumerate(robots)
-#         ]
-#     meas_data.extend(y)
-
-# # Add the magnetic field measurements
-# R =  0.01**2
-# for n, robot in enumerate(robots):
-#     for i in range(len(mag[n])):
-#         y = Measurement(value = mag[n].iloc[i][
-#                                 ['magnetic_field.x',
-#                                  'magnetic_field.y',
-#                                  'magnetic_field.z']].values,
-#                             stamp = mag[n].iloc[i]['timestamp'],
-#                             model = MagnetometerById(R = R, 
-#                             state_id = robot))
-#         meas_data.append(y)
 
 # sort the measurements
 meas_data = sorted(meas_data, key=lambda x: x.stamp)
@@ -167,10 +142,8 @@ for i in range(len(query_stamps)):
 x0 = ground_truth[0].copy()
 P0 = np.diag([0.02**2, 0.02**2, 0.02**2, 
                 0.1, 0.1, 0.1])
-Q = np.diag([ 0.05**2, 0.05**2, 10 * 0.15**2, 
+Q = np.diag([ 5*0.1**2, 5*0.1**2, 10 * 0.15**2, 
                0.1,0.1, 0.001])
-
-
 
 # Process Model
 process_model = CompositeProcessModel(
@@ -186,11 +159,11 @@ input_data = []
 for i in range(len(query_stamps)):
     u = [VectorInput(
         value = np.hstack((
-                            angular_velocity[n][i],
-                            # imus.data[robot]["imu_px4"].iloc[i][
-                            # ['angular_velocity.x', 
-                            # 'angular_velocity.y', 
-                            # 'angular_velocity.z']].values, 
+                            # angular_velocity[n][i],
+                            imus.data[robot]["imu_px4"].iloc[i][
+                            ['angular_velocity.x', 
+                            'angular_velocity.y', 
+                            'angular_velocity.z']].values, 
                            (pose[n][i][:3,:3].T @ init_attitude[n] @ (vio.data[robot]['vio'].iloc[i][
                            ['velocity.x', 'velocity.y', 'velocity.z']].values).reshape(-1,1)).ravel(),
                         #    velocity[n][:,i],

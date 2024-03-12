@@ -6,14 +6,18 @@ from typing import Any, List, Union
 from pymlg import SO2, SO3
 from utils.states import (
     CompositeState,
+    IMUState,
     )
 from utils.inputs import (
     VectorInput,
+    IMU,
     )
 from scipy.linalg import block_diag
 from utils.inputs import (
     CompositeInput
 )
+from utils.misc import van_loans
+
 
 """
 Module containing:
@@ -135,6 +139,95 @@ class BodyFrameVelocity:
             L = dt * Ad @ x.group.left_jacobian(-u.value * dt)
 
         return L @ self._Q @ L.T
+
+def unbiased_imu(x: IMUState,
+                 u: IMU,
+                ):
+
+    if hasattr(x, "bias_gyro") and hasattr(x, "bias_accel"):
+        u_gyro = u.gyro + x.bias_gyro
+        u_accel = u.accel + x.bias_accel
+        bias = True
+    else:
+        u_gyro = u.gyro
+        u_accel = u.accel
+        bias = False
+    
+    return u_gyro, u_accel, bias
+    
+class BodyFrameIMU:
+
+    def __init__(self, Q: np.ndarray,
+                 ):
+        self._Q = Q
+
+    def evaluate(
+        self, x: IMUState, u: IMU, dt: float
+    ) -> IMUState:
+        x = x.copy()
+
+        u_gyro, u_accel, bias = unbiased_imu(x, u)
+
+        g_a = np.array([0, 0, -9.81])
+
+        attitude = x.attitude
+        velocity = x.velocity
+        position = x.position
+
+        x.attitude = attitude @ SO3.Exp(u_gyro * dt)
+        x.velocity = velocity + dt * attitude @ u_accel + dt * g_a
+        x.position = position + dt * velocity
+
+        return x
+    
+    def continuous_time_matrices(
+            self, x: IMUState, u: IMU
+            ) -> np.ndarray:
+        
+        x = x.copy()
+        
+        u_gyro, u_accel, bias = unbiased_imu(x, u)
+
+        A = np.zeros((x.dof, x.dof))
+        A[0:3, 0:3] = - SO3.wedge(u_gyro)
+        A[3:6, 0:3] = - x.attitude @ SO3.wedge(u_accel)
+        A[6:9, 3:6] = np.eye(len(x.velocity))
+
+        if bias:
+            A[0:3, 9:12] = np.eye(len(u_gyro))
+            A[3:6, 12:15] = x.attitude
+
+        L = np.zeros((len(A), len(self._Q)))
+        L[0:3, 0:3] = - np.eye(len(u_gyro))
+        L[3:6, 3:6] = - x.attitude
+        
+        if bias:
+            L[9:12, 6:9] = -np.eye(len(u_gyro))
+            L[12:15, 9:12] = -np.eye(len(u_accel))
+
+        return A, L
+    
+    def jacobian(
+        self, x: IMUState, u: IMU, dt: float
+    ) -> np.ndarray:
+        
+        x = x.copy()
+        A, L = self.continuous_time_matrices(x, u)
+        A_d, Q_d = van_loans(A, L, self._Q, dt)
+        return A_d
+
+    def covariance(
+        self, x: IMUState, u: IMU, dt: float
+    ) -> np.ndarray:
+
+        x = x.copy()
+        A, L = self.continuous_time_matrices(x, u)
+        A_d, Q_d = van_loans(A, L, self._Q, dt)
+
+        return Q_d
+    
+    def evaluate_with_jacobian(self, x, u, dt: float):
+        return self.evaluate(x, u, dt), self.jacobian(x, u, dt)
 
 class CompositeMeasurementModel:
     """

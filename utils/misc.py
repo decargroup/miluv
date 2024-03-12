@@ -9,6 +9,30 @@ from utils.states import (
     StateWithCovariance
 )
 from miluv.data import DataLoader
+from scipy.linalg import expm, block_diag
+
+def van_loans(
+    A_c: np.ndarray,
+    L_c: np.ndarray,
+    Q_c: np.ndarray,
+    dt: float,
+) -> Tuple[np.ndarray, np.ndarray]:
+    N = A_c.shape[0]
+
+    A_c = np.atleast_2d(A_c)
+    L_c = np.atleast_2d(L_c)
+    Q_c = np.atleast_2d(Q_c)
+
+    # Form Xi matrix and compute Upsilon using matrix exponential
+    Xi = block_diag(A_c, -A_c.T, A_c, np.zeros((N, N)))
+    Xi[:N, N : 2 * N] = L_c @ Q_c @ L_c.T
+    Upsilon = expm(Xi * dt)
+
+    # Extract relevant parts of Upsilon
+    A_d = Upsilon[:N, :N]
+    Q_d = Upsilon[:N, N : 2 * N] @ A_d.T
+    
+    return A_d, Q_d
 
 class GaussianResult:
     """
