@@ -214,3 +214,26 @@ def so3_wedge_matrix(omega):
     omega_hat[2, 1] = omega[0]
     
     return omega_hat
+
+def compute_position_rmse(df1, df2):
+    """
+    Compute the root mean squared error (RMSE) between two dataframes consisting of 
+    position data.
+    
+    Args:
+    - df1: First dataframe.
+    - df2: Second dataframe.
+    
+    Returns:
+    - rmse: RMSE.
+    """
+    
+    pos1 = df1[[
+        "pose.position.x", "pose.position.y", "pose.position.z"
+    ]].values
+    
+    pos2 = df2[[
+        "pose.position.x", "pose.position.y", "pose.position.z"
+    ]].values
+    
+    return np.sqrt(np.mean(np.linalg.norm(pos1 - pos2, axis=1)**2))
