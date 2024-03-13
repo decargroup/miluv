@@ -16,4 +16,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.8",
+    install_requires=[
+        "pymlg @ git+https://github.com/decargroup/pymlg@main",
+    ],
 )
