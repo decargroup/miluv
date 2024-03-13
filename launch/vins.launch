@@ -1,7 +1,7 @@
 <launch>
     <!-- Global parameters -->
     <arg name="robot"/>
-    <arg name="bag_path"/>
+    <arg name="bag"/>
     <arg name="offline" default="true"/>
     <arg name="use_rviz" default="true"/>
     <arg name="do_loop_closures" default="true"/>
@@ -33,7 +33,7 @@
     <!-- Run bag file -->
     <group if="$(arg offline)">
         <node name="bag_player" output="screen" pkg="rosbag" type="play"
-            args="$(arg bag_path) -s 10"/>
+            args="$(arg bag) -s 10"/>
     </group>
 
 </launch>
