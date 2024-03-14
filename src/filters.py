@@ -1,5 +1,5 @@
 """ 
-Module containing Extended Kalman Filter.
+Extended Kalman Filter.
 """
 from utils import StateWithCovariance
 import numpy as np
@@ -25,8 +25,6 @@ class ExtendedKalmanFilter:
     On-manifold nonlinear Kalman filter.
     """
 
-    __slots__ = ["process_model", "reject_outliers", "bias"]
-
     def __init__(self, process_model, reject_outliers=False):
 
         self.process_model = process_model
@@ -34,18 +32,12 @@ class ExtendedKalmanFilter:
 
     def predict(
         self,
-        x: StateWithCovariance,
-        u,
-        dt: float = None,
-        x_jac = None,
-        output_details: bool = False,
-    ) -> StateWithCovariance:
-
-        # Make a copy so we dont modify the input
+        x: StateWithCovariance, u, dt: float = None, 
+        x_jac = None) -> StateWithCovariance:
+        
         x_new = x.copy()
 
         # If state has no time stamp, load from measurement.
-        # usually only happens on estimator start-up
         if x.state.stamp is None:
             t_km1 = u.stamp
         else:
@@ -74,13 +66,8 @@ class ExtendedKalmanFilter:
 
     def correct(
         self,
-        x: StateWithCovariance,
-        y: Measurement,
-        u,
-        x_jac = None,
-        reject_outlier: bool = None,
-        output_details: bool = False,
-    ) -> StateWithCovariance:
+        x: StateWithCovariance, y: Measurement, u, 
+        x_jac = None, reject_outlier: bool = None, ) -> StateWithCovariance:
         
         # Make copy to avoid modifying the input
         x = x.copy()
@@ -108,7 +95,6 @@ class ExtendedKalmanFilter:
 
         y_check, G = y.model.evaluate_with_jacobian(x.state)
 
-        details_dict = {}
         if y_check is not None:
             P = x.covariance
             R = np.atleast_2d(y.model.covariance(x_jac))

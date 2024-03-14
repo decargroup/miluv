@@ -1,46 +1,22 @@
 import numpy as np
-from utils.states import (
-    CompositeState,
-)
 from typing import Any, List, Union
-from pymlg import SO2, SO3
+from pymlg import SO3
 from utils.states import (
     CompositeState,
-    IMUState,
     )
 from utils.inputs import (
     VectorInput,
-    IMU,
     )
 from scipy.linalg import block_diag
 from utils.inputs import (
     CompositeInput
 )
-from utils.misc import van_loans
-
 
 """
 Module containing:
-- functions required for process models
 - ProcessModels
 - MeasurementModels
 """
-
-def jacobian_fd(self, x, step_size=1e-6):
-    """
-    Calculates the model jacobian with finite difference.
-    """
-    N = x.dof
-    y = self.evaluate(x)
-    m = y.size
-    jac_fd = np.zeros((m, N))
-    for i in range(N):
-        dx = np.zeros((N, 1))
-        dx[i, 0] = step_size
-        x_temp = x.plus(dx)
-        jac_fd[:, i] = (self.evaluate(x_temp) - y).flatten() / step_size
-
-    return jac_fd
 
 class CompositeProcessModel:
 
@@ -53,10 +29,7 @@ class CompositeProcessModel:
         self._shared_input = shared_input
 
     def evaluate(
-        self,
-        x: CompositeState,
-        u: CompositeInput,
-        dt: float,
+        self, x: CompositeState, u: CompositeInput, dt: float,
     ) -> CompositeState:
         x = x.copy()
         for i, x_sub in enumerate(x.value):
@@ -69,10 +42,7 @@ class CompositeProcessModel:
         return x
 
     def jacobian(
-        self,
-        x: CompositeState,
-        u: CompositeInput,
-        dt: float,
+        self, x: CompositeState, u: CompositeInput, dt: float,
     ) -> np.ndarray:
         jac = []
         for i, x_sub in enumerate(x.value):
@@ -90,10 +60,7 @@ class CompositeProcessModel:
         return self.evaluate(x, u, dt), self.jacobian(x, u, dt)
 
     def covariance(
-        self,
-        x: CompositeState,
-        u: CompositeInput,
-        dt: float,
+        self, x: CompositeState, u: CompositeInput, dt: float,
     ) -> np.ndarray:
         cov = []
         for i, x_sub in enumerate(x.value):
@@ -127,120 +94,26 @@ class BodyFrameVelocity:
         if x.direction == "right":
             return x.group.adjoint(x.group.Exp(-u.value * dt))
         elif x.direction == "left":
-            return np.identity(x.dof)
-
+            raise NotImplementedError("Not implemented.")
+        
     def covariance(
         self, x, u: VectorInput, dt: float
     ) -> np.ndarray:
         if x.direction == "right":
             L = dt * x.group.left_jacobian(-u.value * dt)
         elif x.direction == "left":
-            Ad = x.group.adjoint(x.value @ x.group.Exp(u.value * dt))
-            L = dt * Ad @ x.group.left_jacobian(-u.value * dt)
+            raise NotImplementedError("Not implemented.")
 
         return L @ self._Q @ L.T
-
-def unbiased_imu(x: IMUState,
-                 u: IMU,
-                ):
-
-    if hasattr(x, "bias_gyro") and hasattr(x, "bias_accel"):
-        u_gyro = u.gyro + x.bias_gyro
-        u_accel = u.accel + x.bias_accel
-        bias = True
-    else:
-        u_gyro = u.gyro
-        u_accel = u.accel
-        bias = False
-    
-    return u_gyro, u_accel, bias
-    
-class BodyFrameIMU:
-
-    def __init__(self, Q: np.ndarray,
-                 ):
-        self._Q = Q
-
-    def evaluate(
-        self, x: IMUState, u: IMU, dt: float
-    ) -> IMUState:
-        x = x.copy()
-
-        u_gyro, u_accel, bias = unbiased_imu(x, u)
-
-        g_a = np.array([0, 0, -9.81])
-
-        attitude = x.attitude
-        velocity = x.velocity
-        position = x.position
-
-        x.attitude = attitude @ SO3.Exp(u_gyro * dt)
-        x.velocity = velocity + dt * attitude @ u_accel + dt * g_a
-        x.position = position + dt * velocity
-
-        return x
-    
-    def continuous_time_matrices(
-            self, x: IMUState, u: IMU
-            ) -> np.ndarray:
-        
-        x = x.copy()
-        
-        u_gyro, u_accel, bias = unbiased_imu(x, u)
-
-        A = np.zeros((x.dof, x.dof))
-        A[0:3, 0:3] = - SO3.wedge(u_gyro)
-        A[3:6, 0:3] = - x.attitude @ SO3.wedge(u_accel)
-        A[6:9, 3:6] = np.eye(len(x.velocity))
-
-        if bias:
-            A[0:3, 9:12] = np.eye(len(u_gyro))
-            A[3:6, 12:15] = x.attitude
-
-        L = np.zeros((len(A), len(self._Q)))
-        L[0:3, 0:3] = - np.eye(len(u_gyro))
-        L[3:6, 3:6] = - x.attitude
-        
-        if bias:
-            L[9:12, 6:9] = -np.eye(len(u_gyro))
-            L[12:15, 9:12] = -np.eye(len(u_accel))
-
-        return A, L
-    
-    def jacobian(
-        self, x: IMUState, u: IMU, dt: float
-    ) -> np.ndarray:
-        
-        x = x.copy()
-        A, L = self.continuous_time_matrices(x, u)
-        A_d, Q_d = van_loans(A, L, self._Q, dt)
-        return A_d
-
-    def covariance(
-        self, x: IMUState, u: IMU, dt: float
-    ) -> np.ndarray:
-
-        x = x.copy()
-        A, L = self.continuous_time_matrices(x, u)
-        A_d, Q_d = van_loans(A, L, self._Q, dt)
-
-        return Q_d
-    
-    def evaluate_with_jacobian(self, x, u, dt: float):
-        return self.evaluate(x, u, dt), self.jacobian(x, u, dt)
 
 class CompositeMeasurementModel:
     """
     Wrapper for a standard measurement model that assigns the model to a specific
     substate (referenced by `state_id`) inside a CompositeState.
     """
-
     def __init__(self, model, state_id):
         self.model = model
         self.state_id = state_id
-
-    def __repr__(self):
-        return f"{self.model}(of substate {self.state_id})"
 
     def evaluate(self, x: CompositeState) -> np.ndarray:
         return self.model.evaluate(x.get_state_by_id(self.state_id))
@@ -259,13 +132,11 @@ class CompositeMeasurementModel:
     def covariance(self, x: CompositeState) -> np.ndarray:
         x_sub = x.get_state_by_id(self.state_id)
         return self.model.covariance(x_sub)
-    
 
 class RangePoseToAnchor:
     """
     Range measurement from a pose state to an anchor.
     """
-
     def __init__(
         self,
         anchor_position: List[float],
@@ -316,7 +187,6 @@ class RangePoseToPose:
     """
     Range model given two absolute poses of rigid bodies, each containing a tag.
     """
-
     def __init__(
         self, tag_body_position1, tag_body_position2, state_id1, state_id2, R
     ):
@@ -388,13 +258,10 @@ class RangePoseToAnchorById(CompositeMeasurementModel):
     """
     Range model given a pose of another body relative to current pose.
     """
-
     def __init__(
         self,
-        anchor_position: np.ndarray,
-        tag_body_position: np.ndarray,
-        state_id: Any,
-        R: np.ndarray,
+        anchor_position: np.ndarray, tag_body_position: np.ndarray,
+        state_id: Any, R: np.ndarray,
     ):
 
         model = RangePoseToAnchor(anchor_position, tag_body_position, R)
@@ -404,10 +271,8 @@ class Altitude:
     """
     A model that returns that z component of a position vector.
     """
-
     def __init__(self, R: np.ndarray, minimum=None, bias=0.0):
         """
-
         Parameters
         ----------
         R : np.ndarray
@@ -444,65 +309,7 @@ class Altitude:
 class AltitudeById(CompositeMeasurementModel):
 
     def __init__(
-        self, 
-        R: np.ndarray, 
-        state_id: Any,
-        minimum=None, 
-        bias=0.0,
+        self, R: np.ndarray, state_id: Any, minimum=None, bias=0.0,
     ):
-
         model = Altitude(R, minimum, bias)
         super(AltitudeById, self).__init__(model, state_id)
-
-
-class Magnetometer:
-    """
-    Magnetometer model
-    """
-
-    def __init__(self, R: np.ndarray, magnetic_vector: List[float] = None):
-        """
-
-        Parameters
-        ----------
-        R : np.ndarray
-            Covariance associated with :math:`\mathbf{v}`
-        magnetic_vector : list[float], by default [1, 0, 0]
-        """
-        if magnetic_vector is None:
-            magnetic_vector = [1, 0, 0]
-
-        self.R = R
-        self._m_a = np.array(magnetic_vector).reshape((-1, 1))
-
-    def evaluate(self, x):
-        return x.attitude.T @ self._m_a
-
-    def jacobian(self, x):
-        if x.direction == "right":
-            return x.jacobian_from_blocks(
-                attitude=-SO3.odot(x.attitude.T @ self._m_a)
-            )
-        elif x.direction == "left":
-            NotImplementedError("Not implemented.")
-
-    def evaluate_with_jacobian(self, x) -> Union[np.ndarray, np.ndarray]:
-        return self.evaluate(x), self.jacobian(x)
-    
-    def covariance(self, x) -> np.ndarray:
-        if np.isscalar(self.R):
-            return self.R * np.identity(x.position.size)
-        else:
-            return self.R
-
-class MagnetometerById(CompositeMeasurementModel):
-
-    def __init__(
-        self, 
-        R: np.ndarray, 
-        state_id: Any,
-        magnetic_vector: List[float] = None
-    ):
-        
-        model = Magnetometer(R, magnetic_vector= magnetic_vector)
-        super(MagnetometerById, self).__init__(model, state_id)

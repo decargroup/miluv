@@ -30,13 +30,12 @@ class DataLoader:
             "infra2",
         ],
         uwb: bool = True,
-        cir: bool = True,
+        cir: bool = False,
         vio: bool = True,
         vio_loop: bool = True,
         height: bool = True,
         mag: bool = True,
         barometer: bool = True,
-        # calib_uwb: bool = True,
     ):
 
         # TODO: Add checks for valid exp dir and name
@@ -51,7 +50,6 @@ class DataLoader:
         # TODO: read robots from configs
         exp_path = os.path.join(self.exp_dir, self.exp_name)
         exp_info = get_experiment_info(exp_path)
-
 
         robot_ids = [
             "ifo001",
@@ -90,9 +88,9 @@ class DataLoader:
                 # # divide timestamp by 1e9
                 # self.data[id]["vio_loop"]["timestamp"] = self.data[id]["vio_loop"]["timestamp"] / 1e9
                 
-            # if cir:
-            #     self.data[id].update({"uwb_cir": []})
-            #     self.data[id]["uwb_cir"] = self.read_csv("uwb_cir", id)
+            if cir:
+                self.data[id].update({"uwb_cir": []})
+                self.data[id]["uwb_cir"] = self.read_csv("uwb_cir", id)
 
             if height:
                 self.data[id].update({"height": []})

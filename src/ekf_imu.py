@@ -3,45 +3,39 @@ import matplotlib.pyplot as plt
 import tqdm
 from typing import List
 import pandas as pd
-
 from pyuwbcalib.utils import (
     set_plotting_env, 
 )
-
 from utils.measurement import (
     Measurement,
     RangeData,
 )
-
 from utils.misc import (
     GaussianResult,
     GaussianResultList,
     plot_error,
 )
-
 from utils.states import (
-    IMUState,
     CompositeState,
     StateWithCovariance,
 )
-
 from utils.inputs import (
-    IMU,
     CompositeInput,
 )
-
 from utils.models import (
-    BodyFrameIMU,
-    MagnetometerById,
     CompositeProcessModel,
     AltitudeById,
 )
-from navlie.lib.imu import IMUKinematics
-
+from utils.imu import ( 
+    IMU,
+    IMUState,
+    IMUKinematics,
+)
 from miluv.data import DataLoader
 from src.filters import ExtendedKalmanFilter
 import time
 from tqdm import tqdm
+from scipy.linalg import block_diag
 
 # Set the plotting environment
 set_plotting_env()
@@ -65,9 +59,7 @@ input_freq = 190
 start_time, end_time = miluv.get_timerange(
                             sensors = input_sensor)
 
-end_time = end_time - 50
 query_stamps = np.arange(start_time, end_time, 1/input_freq)
-
 
 # Get input data
 imus = miluv.by_timestamps(query_stamps, sensors=input_sensor)
@@ -99,7 +91,7 @@ range_data = range_data.by_timerange(start_time,
 meas_data = range_data.to_measurements(
     reference_id = 'world')
 
-R = [0.1, 0.1, 0.1]
+R = [10*0.1, 3*0.1, 10*0.1]
 bias = [-0.0924, -0.0088, -0.1207]
 for n, robot in enumerate(robots):
     for i in range(len(height[n])):
@@ -114,15 +106,14 @@ for n, robot in enumerate(robots):
 # sort the measurements
 meas_data = sorted(meas_data, key=lambda x: x.stamp)
 
-
 """ Create ground truth data """
 ground_truth = []
+bias_gyro = [0.0, 0.0, 0.0]
+bias_accel = [0.0, 0.0, 0.0]
 for i in range(len(query_stamps)):
-    x = [IMUState(  nav_state = pose[n][i], 
-                    bias_gyro = imus.setup["imu_px4_calib"
-                                           ][robot]["bias_gyro"], 
-                    bias_accel = imus.setup["imu_px4_calib"
-                                            ][robot]["bias_accel"],
+    x = [IMUState(  SE23_state = pose[n][i], 
+                    bias_gyro = bias_gyro,
+                    bias_accel = bias_accel,
                     state_id = robot,
                     stamp = query_stamps[i],
                     direction='right') 
@@ -136,27 +127,37 @@ for i in range(len(query_stamps)):
 x0 = ground_truth[0].copy()
 
 # State and input covariance
-P0 = np.diag([0.0025**2, 0.0025**2, 0.0025**2, 
-             0.1**2, 0.1**2, 0.1,
+P0 = np.diag([0.1, 0.1, 0.1, 
+             0.1, 0.1, 0.1,
              0.01, 0.01, 0.1,
              0.0001, 0.0001,0.0001,
              0.0001, 0.0001,0.0001])
 
-Q =  2.5 * np.diag([0.1**2, 0.1**2,0.15**2, 
-             0.015**2, 0.015**2,0.02**2,
-             0.01**2, 0.01**2,0.01**2,
-             0.01**2, 0.01**2,0.01**2,])
+Q  = {robot: [] for robot in robots}
+for n, robot in enumerate(robots):
+    Q_c = np.eye(12)
+    w_gyro = [(np.pi/180*w)**2 for w in 
+              imus.setup["imu_px4_calib"][robot]["bias_gyro"]]
+    w_accel = [w**2 for w in 
+               imus.setup["imu_px4_calib"][robot]["bias_accel"]]
+    w_gyro_bias = [(np.pi/180*w)**2 for w in 
+                   imus.setup["imu_px4_calib"][robot]["bias_gyro_walk"]]
+    w_accel_bias = [w**2 for w in 
+                    imus.setup["imu_px4_calib"][robot]["bias_accel_walk"]]
+    Q_c[0:3,0:3] = 200*np.diag(w_gyro)
+    Q_c[3:6,3:6] = 200*np.diag(w_accel)
+    Q_c[6:9,6:9] = np.diag(w_gyro_bias)
+    Q_c[9:12,9:12] = np.diag(w_accel_bias)
+    dt = 1/input_freq
+    Q[robot] = Q_c / dt
 
-# # Process Model
-# process_model = CompositeProcessModel(
-#     [BodyFrameIMU(Q) for i in range(len(robots))])
 process_model = CompositeProcessModel(
-    [IMUKinematics(Q) for i in range(len(robots))])
+    [IMUKinematics(Q[robot]) for robot in robots])
 
 # Composite covariance
 n_states = len(x0.value)
 P0 = np.kron(np.eye(n_states), P0)
-Q = np.kron(np.eye(n_states), Q)
+Q = block_diag(*[Q[robot] for robot in robots]) 
 
 """ Create input data """
 input_data = []
@@ -269,6 +270,5 @@ if imu_plot:
         for a in ax:
             for b in a:
                 b.legend()
-
 
 plt.show()

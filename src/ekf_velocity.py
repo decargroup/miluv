@@ -6,43 +6,34 @@ import tqdm
 import datetime
 from typing import List
 import pandas as pd
-
 from navlie.lib.models import (
     BodyFrameVelocity,
 )
-
 from pyuwbcalib.utils import (
     set_plotting_env,
 )
-
 from utils.measurement import (
     Measurement,
     RangeData,
 )
-
 from utils.misc import (
     GaussianResult,
     GaussianResultList,
     plot_error,
 )
-
 from utils.states import (
     SE3State,
     CompositeState,
     StateWithCovariance,
 )
-
 from utils.inputs import (
     VectorInput,
     CompositeInput,
 )
-
 from utils.models import (
     CompositeProcessModel,
     AltitudeById,
-    MagnetometerById,
 )
-
 from miluv.data import DataLoader
 from src.filters import ExtendedKalmanFilter
 import time
@@ -123,8 +114,6 @@ for n, robot in enumerate(robots):
 # sort the measurements
 meas_data = sorted(meas_data, key=lambda x: x.stamp)
     
-
-
 """ Create ground truth data """
 ground_truth = []
 for i in range(len(query_stamps)):
@@ -159,14 +148,14 @@ input_data = []
 for i in range(len(query_stamps)):
     u = [VectorInput(
         value = np.hstack((
-                            # angular_velocity[n][i],
-                            imus.data[robot]["imu_px4"].iloc[i][
-                            ['angular_velocity.x', 
-                            'angular_velocity.y', 
-                            'angular_velocity.z']].values, 
-                           (pose[n][i][:3,:3].T @ init_attitude[n] @ (vio.data[robot]['vio'].iloc[i][
-                           ['velocity.x', 'velocity.y', 'velocity.z']].values).reshape(-1,1)).ravel(),
-                        #    velocity[n][:,i],
+        # angular_velocity[n][i],
+        imus.data[robot]["imu_px4"].iloc[i][
+        ['angular_velocity.x', 
+        'angular_velocity.y', 
+        'angular_velocity.z']].values, 
+        (pose[n][i][:3,:3].T @ init_attitude[n] @ (vio.data[robot]['vio'].iloc[i][
+        ['velocity.x', 'velocity.y', 'velocity.z']].values).reshape(-1,1)).ravel(),
+    #    velocity[n][:,i],
                             )),
         stamp = query_stamps[i], 
         state_id = robot)

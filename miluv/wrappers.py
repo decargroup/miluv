@@ -186,7 +186,7 @@ class MocapTrajectory:
         quat /= np.linalg.norm(quat, axis=1)[:, None]
 
         # Resolve quaternion ambiguities so that quaternion trajectories look
-        # smooth. This is recursive so cannot be vectorized.
+        # smooth.
         for idx, q in enumerate(quat[1:]):
             q_old = quat[idx]
             if np.linalg.norm((-q - q_old)) < np.linalg.norm((q - q_old)):
@@ -197,66 +197,26 @@ class MocapTrajectory:
     def position(self, stamps: np.ndarray) -> np.ndarray:
         """
         Get the position at one or more query times.
-
-        Parameters
-        ----------
-        stamps : np.ndarray
-            Query times
-
-        Returns
-        -------
-        np.ndarray with shape (N,3)
-            Position data
         """
         return self._pos_spline(stamps, 0).T
 
     def velocity(self, stamps: np.ndarray) -> np.ndarray:
         """
         Get the velocity at one or more query times.
-
-        Parameters
-        ----------
-        stamps : np.ndarray
-            Query times
-
-        Returns
-        -------
-        np.ndarray with shape (N,3)
-            velocity data
         """
         return self._pos_spline(stamps, 1).T
 
     def acceleration(self, stamps: np.ndarray) -> np.ndarray:
         """
         Get the acceleration at one or more query times.
-
-        Parameters
-        ----------
-        stamps : np.ndarray
-            Query times
-
-        Returns
-        -------
-        np.ndarray with shape (N,3)
-            acceleration data
         """
         return self._pos_spline(stamps, 2).T
 
     def accelerometer(self, stamps: np.ndarray, g_a=None) -> np.ndarray:
         """
         Get simuluated accelerometer readings
-
-        Parameters
-        ----------
-        stamps : float or np.ndarray
-            query times
         g_a : List[float], optional
             gravity vector, by default [0, 0, -9.80665]
-
-        Returns
-        -------
-        ndarray with shape `(len(stamps),3)`
-            Accelerometer readings
         """
         if g_a is None:
             g_a = [0, 0, -9.80665]
@@ -270,16 +230,6 @@ class MocapTrajectory:
     def quaternion(self, stamps):
         """
         Get the quaternion at one or more query times.
-
-        Parameters
-        ----------
-        stamps : np.ndarray
-            Query times
-
-        Returns
-        -------
-        np.ndarray with shape (N,4)
-            quaternion data
         """
         q = self._quat_spline(stamps, 0).T
         return q / np.linalg.norm(q, axis=1)[:, None]
@@ -287,16 +237,6 @@ class MocapTrajectory:
     def rot_matrix(self, stamps):
         """
         Get the DCM/rotation matrix at one or more query times.
-
-        Parameters
-        ----------
-        stamps : np.ndarray
-            Query times
-
-        Returns
-        -------
-        np.ndarray with shape (N,3,3)
-            DCM/rotation matrix data
         """
 
         quat = self.quaternion(stamps)
@@ -305,16 +245,6 @@ class MocapTrajectory:
     def pose_matrix(self, stamps):
         """
         Get the SE(3) pose matrix at one or more query times.
-
-        Parameters
-        ----------
-        stamps : np.ndarray
-            Query times
-
-        Returns
-        -------
-        np.ndarray with shape (N,4,4)
-            pose data
         """
         r = self.position(stamps)
         C = self.rot_matrix(stamps)
@@ -327,16 +257,6 @@ class MocapTrajectory:
     def extended_pose_matrix(self, stamps):
         """
         Get the SE_2(3) extended pose matrix at one or more query times.
-
-        Parameters
-        ----------
-        stamps : np.ndarray
-            Query times
-
-        Returns
-        -------
-        np.ndarray with shape (N,5,5)
-            extended pose data
         """
         r = self.position(stamps)
         C = self.rot_matrix(stamps)
@@ -352,16 +272,6 @@ class MocapTrajectory:
     def angular_velocity(self, stamps: np.ndarray) -> np.ndarray:
         """
         Get the angular velocity at one or more query times.
-
-        Parameters
-        ----------
-        stamps : np.ndarray
-            Query times
-
-        Returns
-        -------
-        np.ndarray with shape (N,3)
-            angular velocity data
         """
         q = self._quat_spline(stamps, 0)
         q: np.ndarray = q / np.linalg.norm(q, axis=0)
@@ -383,16 +293,6 @@ class MocapTrajectory:
         """
         Get the body-frame-resolved translational velocity
         at one or more query times.
-
-        Parameters
-        ----------
-        stamps : np.ndarray
-            Query times
-
-        Returns
-        -------
-        np.ndarray with shape (N,3)
-            body-frame-resolved velocity data
         """
         v_zw_a = self.velocity(stamps)
         v_zw_a = np.expand_dims(v_zw_a, 2)

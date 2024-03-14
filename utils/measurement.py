@@ -117,21 +117,9 @@ class RangeData(DataLoader):
         """
         Get a RangeData object containing only the measurements between the
         specified pair of tags.
-
-        Parameters
-        ----------
-        from_id : int
-            The ID of the initiating tag.
-        to_id : int
-            The ID of the receiving tag.
-
-        Returns
-        -------
-        RangeData
-            RangeData object
         """
-        out = self.copy()
 
+        out = self.copy()
         for id in out.data:
             for sensor in out.data[id]:
                 match_mask = np.logical_and(
@@ -144,12 +132,11 @@ class RangeData(DataLoader):
     
     def by_tags(self, tag_ids :List) -> "RangeData":
         """
-        Get a RangeData object containing only the measurements between the
-        specified pair of tags.
+        Get a RangeData object containing only the measurements for 
+        a specified set of tags.
         """
 
         out = self.copy()
-
         for id in out.data:
             for sensor in out.data[id]:
                 match_mask = np.logical_and(
@@ -170,12 +157,10 @@ class RangeData(DataLoader):
 
         if sensors is not None and not all(
             sensor in self._sensors for sensor in sensors):
-                
                 raise ValueError(f"Invalid sensor type. Must be one of {self._sensors}")
         else:
             sensors = self._sensors
         sensors = [sensors] if type(sensors) is str else sensors
-
 
         # create a pd dataframe with all the range data
         out = {sensor: [] for sensor in sensors}
@@ -220,7 +205,7 @@ class RangeData(DataLoader):
             to_tag = self.setup['uwb_tags'].loc[
                      self.setup['uwb_tags']['tag_id'] == data.to_id].iloc[0]
             
-            variance = 10 * data["std"]**2
+            variance = data["std"]**2
             if to_tag.parent_id == reference_id:
                 # print(data.bias)
                 model = RangePoseToAnchorById(

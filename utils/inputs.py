@@ -35,55 +35,6 @@ class VectorInput:
 
     def copy(self) -> "VectorInput":
         return copy.deepcopy(self)
-
-class IMU:
-    """
-    Data container for an IMU reading.
-    """
-
-    def __init__(
-        self,
-        gyro: np.ndarray,
-        accel: np.ndarray,
-        stamp: float,
-        bias_gyro_walk: np.ndarray = [0, 0, 0],
-        bias_accel_walk: np.ndarray = [0, 0, 0],
-        state_id: Any = None,
-        covariance: np.ndarray = None,
-    ):
-        self.dof = 12
-        self.stamp = stamp
-        self.state_id = state_id
-        self.covariance = covariance
-
-        self.gyro = np.array(gyro).ravel()
-        self.accel = np.array(
-            accel
-        ).ravel()  #:np.ndarray: Accelerometer reading
-
-        if bias_accel_walk is None:
-            bias_accel_walk = np.zeros((3, 1))
-        else:
-            self.bias_gyro_walk = np.array(bias_gyro_walk).ravel()
-
-        if bias_gyro_walk is None:
-            bias_gyro_walk = np.zeros((3, 1))
-        else:
-            self.bias_accel_walk = np.array(bias_accel_walk).ravel()
-
-        self.state_id = state_id
-
-    def plus(self, w: np.ndarray):
-        new = self.copy()
-        w = w.ravel()
-        new.gyro = new.gyro + w[0:3]
-        new.accel = new.accel + w[3:6]
-        new.bias_gyro_walk = new.bias_gyro_walk + w[6:9]
-        new.bias_accel_walk = new.bias_accel_walk + w[9:12]
-        return new
-
-    def copy(self):
-        return copy.deepcopy(self)
     
 class CompositeInput:
     def __init__(self, input_list: List) -> None:
