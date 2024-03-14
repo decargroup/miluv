@@ -14,13 +14,18 @@ imu = [
     "linear_acceleration.y",
     "linear_acceleration.z",
 ]
+
 mag = [
     "timestamp",
     "magnetic_field.x",
     "magnetic_field.y",
     "magnetic_field.z",
 ]
-height = ["timestamp", "range"]
+height = [
+    "timestamp",
+    "range",
+]
+
 mocap = [
     "timestamp",
     "pose.position.x",
@@ -31,7 +36,11 @@ mocap = [
     "pose.orientation.z",
     "pose.orientation.w",
 ]
-barometer = ["timestamp", "fluid_pressure"]
+barometer = [
+    "timestamp",
+    "fluid_pressure",
+]
+
 cir = [
     "timestamp",
     "my_id",
@@ -40,6 +49,7 @@ cir = [
     "idx",
     "cir",
 ]
+
 
 def cleanup_csvs(dir):
     # Find all csv files
