@@ -78,15 +78,9 @@ class DataLoader:
                 self.data[id].update({"vio": []})
                 self.data[id]["vio"] = self.read_csv("vio", id)
 
-                # divide timestamp by 1e9
-                self.data[id]["vio"]["timestamp"] = self.data[id]["vio"]["timestamp"] / 1e9
-
             if vio_loop:
                 self.data[id].update({"vio_loop": []})
                 self.data[id]["vio_loop"] = self.read_csv("vio_loop", id)
-
-                # # divide timestamp by 1e9
-                # self.data[id]["vio_loop"]["timestamp"] = self.data[id]["vio_loop"]["timestamp"] / 1e9
                 
             if cir:
                 self.data[id].update({"uwb_cir": []})

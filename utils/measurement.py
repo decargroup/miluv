@@ -4,11 +4,9 @@ from utils.models import (
     RangePoseToAnchorById,
     RangePoseToPose,
 )
-from utils.states import SE3State, CompositeState
 from miluv.data import DataLoader
 import pandas as pd
 import copy
-import matplotlib.pyplot as plt
 
 class Measurement:
     """
@@ -47,9 +45,6 @@ class RangeData(DataLoader):
                           sensor in self._sensors} for id in data}
         self.miluv = miluv
     def copy(self):
-        """
-        Create a copy of the RangeData object.
-        """
         return copy.deepcopy(self)
                 
     def by_timestamps(self, 
@@ -188,16 +183,8 @@ class RangeData(DataLoader):
         """
         Convert to a list of Measurement objects.
         """
-        
+
         range_data = self.merge_range()
-        # TODO: remove this line
-        range_data['uwb_range'].to_csv('range_data.csv', index=False)
-        
-        diff = []
-        true = []
-        gt_true = []
-        range_csv = []
-        stamps = []
         measurements = []
         for i, data in range_data['uwb_range'].iterrows():
             from_tag = self.setup['uwb_tags'].loc[
@@ -207,7 +194,6 @@ class RangeData(DataLoader):
             
             variance = data["std"]**2
             if to_tag.parent_id == reference_id:
-                # print(data.bias)
                 model = RangePoseToAnchorById(
                     to_tag[['position.x','position.y','position.z']].tolist(),
                     from_tag[['position.x','position.y','position.z']].tolist(),
@@ -222,36 +208,8 @@ class RangeData(DataLoader):
                     to_tag.parent_id,
                     variance,
                     )
-            
-            robots = ['ifo001', 'ifo002', 'ifo003']
-            gt_pose = [self.miluv.data[robot]["mocap"].pose_matrix(
-                                [data.timestamp, data.timestamp]) for robot in robots]
-            x = [SE3State(  value = gt_pose[i][0], 
-                        state_id = robot,
-                        stamp = data.timestamp) for i, robot in enumerate(robots)]
-            x = CompositeState(x)
-            y = model.evaluate(x)
-            if abs(data.range - y) < 0.5:
-                measurements.append(
-                    Measurement(data.range, data.timestamp, model)
-                )
-            # true.append(y)
-            # gt_true.append(data.range)
-            # range_csv.append(data.range)
-            # stamps.append(data.timestamp)
-            # diff.append(data.range - y)
-
-        # plt.plot(stamps, diff)
-        # plt.ylabel('Difference (m)')
-        # plt.xlabel('Time (s)')
-
-        # fig, ax = plt.subplots()
-        # ax.plot(stamps, true, linestyle='None', marker='o', label='Model Evaluation')
-        # ax.plot(stamps, range_csv, linestyle='None', marker='s', label='Range from csv')
-        # ax.plot(stamps, gt_true, linestyle='None', marker='x', label='Ground Truth Range from csv')
-        # ax.set(xlabel='time (s)', 
-        #        ylabel='range (m)',
-        #        title='Range measurements',
-        #        )
-        # plt.legend()
+                
+            measurements.append(
+                Measurement(data.range, data.timestamp, model)
+            )
         return measurements
