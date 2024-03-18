@@ -13,6 +13,7 @@ import yaml
 def get_experiment_info(path):
     exp_name = path.split('/')[-1]
     df = pd.read_csv(join("config", "experiments.csv"))
+    df["experiment"] = df["experiment"].astype(str)
     row: pd.DataFrame = df[df["experiment"] == exp_name]
     return row.to_dict(orient="records")[0]
 
@@ -40,7 +41,10 @@ def generate_config(exp_info):
         pose_path.update({f"{i}": f"ifo00{i+1}.bag"})
 
     uwb_path = pose_path.copy()
-    anchors = get_anchors(str(exp_info["anchor_constellation"]))
+    if exp_info["num_anchors"] > 0:
+        anchors = get_anchors(str(exp_info["anchor_constellation"]))
+    else:
+        anchors = None
     machines = {}
     for i in range(exp_info["num_robots"]):
         machines.update({f"{i}": f"ifo00{i+1}"})
@@ -135,7 +139,8 @@ def process_uwb(path):
     uwb_config = generate_config(exp_info)
 
     # Read anchor positions
-    anchor_positions = read_anchor_positions(uwb_config)
+    if exp_info["num_anchors"] > 0:
+        anchor_positions = read_anchor_positions(uwb_config)
 
     # Create a RosMachine object for every machine
     machines = {}
@@ -144,7 +149,10 @@ def process_uwb(path):
         machines[machine_id] = RosMachine(uwb_config, i)
 
     # Process and merge the data from all the machines
-    data = PostProcess(machines, anchor_positions)
+    if exp_info["num_anchors"] > 0:
+        data = PostProcess(machines, anchor_positions)
+    else:
+        data = PostProcess(machines)
 
     # Load the UWB calibration results
     calib_results = load("config/uwb/uwb_calib.pickle", )
