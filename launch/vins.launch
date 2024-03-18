@@ -33,7 +33,7 @@
     <!-- Run bag file -->
     <group if="$(arg offline)">
         <node name="bag_player" output="screen" pkg="rosbag" type="play"
-            args="$(arg bag) -s 10"/>
+            args="$(arg bag) -s 8"/>
     </group>
 
 </launch>

@@ -80,6 +80,8 @@ def evaluate_vins(exp_name, robot_id, visualize):
         axs[2].grid()
 
         plt.show(block=True)
+        
+    return rmse
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
