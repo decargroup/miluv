@@ -102,6 +102,28 @@ def load_vins(exp_name, robot_id):
     data["timestamp"] = data["timestamp"]/1e9 - timeshift
     
     return data
+
+def save_vins(
+    data: pd.DataFrame,
+    exp_name: str, 
+    robot_id: str, 
+    loop: bool = True,
+    suffix: str = ""
+):
+    """
+    Save VINS data.
+    
+    Args:
+    - data: VINS data.
+    - exp_name: Experiment name.
+    - robot_id: Robot ID.
+    - loop: Whether loop closure was enabled or not, only affects csv file name.
+    - suffix: Suffix to append to the csv file name.
+    """
+    if loop:
+        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio_loop{suffix}.csv", index=False)
+    else:
+        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio{suffix}.csv", index=False)
     
 def align_frames(df1, df2):
     """
@@ -124,8 +146,10 @@ def align_frames(df1, df2):
     - df1: First dataframe.
     - df2: Second dataframe.
     
-    Returns:
-    - df1: First dataframe resolved to the reference frame of the second dataframe.
+    Returns: dict
+    - data: First dataframe with aligned data.
+    - C: Rotation matrix from mocap frame to VINS frame.
+    - r: Translation vector from mocap frame to VINS frame, resolved in the mocap frame.
     """
     pos1 = df1[[
         "pose.position.x", "pose.position.y", "pose.position.z", 
@@ -192,7 +216,11 @@ def align_frames(df1, df2):
         "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
     ]] = np.array([Rotation.from_matrix(vins_C[i] @ C_hat).as_quat() for i in range(len(vins_C))])
     
-    return df1
+    return {
+        "data": df1,
+        "C": C_hat,
+        "r": r_hat
+    }
 
 def so3_wedge_matrix(omega):
     """

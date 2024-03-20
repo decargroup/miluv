@@ -16,9 +16,10 @@ if __name__ == "__main__":
     for i in range(len(data)):
         num_robots = data["num_robots"].iloc[i]
         for j in range(num_robots):
-            rmse = call_vins(data["experiment"].iloc[i], f"ifo00{j+1}")
+            exp_name = str(data["experiment"].iloc[i])
+            rmse = call_vins(exp_name, f"ifo00{j+1}")
             new_df = pd.DataFrame({
-                "experiment": [data["experiment"].iloc[i]],
+                "experiment": [exp_name],
                 "robot": [f"ifo00{j+1}"],
                 "rmse": [rmse]
             })

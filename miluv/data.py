@@ -33,7 +33,7 @@ class DataLoader:
 
         # TODO: read robots from configs
         exp_data = pd.read_csv("config/experiments.csv")
-        exp_data = exp_data[exp_data["experiment"] == exp_name]
+        exp_data = exp_data[exp_data["experiment"].astype(str) == exp_name]
         robot_ids = [f"ifo00{i}" for i in range(1, exp_data["num_robots"].iloc[0] + 1)]
         self.data = {id: {} for id in robot_ids}
         for id in robot_ids:

@@ -1,9 +1,11 @@
 # %%
 from miluv.data import DataLoader
-from miluv.utils import load_vins, align_frames, compute_position_rmse
+from miluv.utils import load_vins, align_frames, compute_position_rmse, save_vins
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
+import yaml
+from scipy.spatial.transform import Rotation
 
 def evaluate_vins(exp_name, robot_id, visualize):
     # Read sensor and mocap data
@@ -30,7 +32,18 @@ def evaluate_vins(exp_name, robot_id, visualize):
         "pose.orientation.z": quat[2],
         "pose.orientation.w": quat[3],
     })
-    vins = align_frames(vins, df_mocap)
+    results = align_frames(vins, df_mocap)
+    vins = results["data"]
+    frame_alignment = {
+        "phi_vm": Rotation.from_matrix(results["C"]).as_rotvec().tolist(),
+        "r_vm_m": results["r"].tolist(),
+    }
+    
+    # Save frame_alignment to a yaml file
+    with open(f"data/vins/{exp_name}/{robot_id}_alignment_pose.yaml", "w") as file:
+        yaml.dump(frame_alignment, file)
+    save_vins(vins, exp_name, robot_id, suffix="_aligned_and_shifted")
+    
     
     rmse = compute_position_rmse(vins, df_mocap)
     print(f"Position RMSE for Experiment {exp_name} and Robot {robot_id}: {rmse} m")
