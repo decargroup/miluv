@@ -1,4 +1,5 @@
 data/*
+!data/setup
 *.pyc
 miluv.egg*
 figs
@@ -9,3 +10,6 @@ src/simulated_ekf_vel.py
 src/example_ekf_nobias.py
 range_data.csv
 src/results
+calib
+dist
+build
