@@ -103,8 +103,8 @@ velocity = [miluv.data[robot]["mocap"].velocity(
 init_attitude = [p[0][:3,:3] for p in pose]
 
 # Get range data
-range_data = RangeData(miluv, miluv)
-# range_data = range_data.filter_by_bias( max_bias=0.01)
+range_data = RangeData(miluv)
+range_data = range_data.filter_by_bias( max_bias=0.3)
 range_data = range_data.by_timerange(start_time, end_time,
                                      sensors=["uwb_range"])
 meas_data = range_data.to_measurements(

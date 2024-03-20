@@ -94,7 +94,7 @@ accel = [miluv.data[robot]["mocap"].accelerometer(
 
 
 # Get range data
-range_data = RangeData(miluv, miluv)
+range_data = RangeData(miluv)
 range_data = range_data.filter_by_bias( max_bias=0.3)
 range_data = range_data.by_timerange(start_time, 
                                      end_time, 
