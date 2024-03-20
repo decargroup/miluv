@@ -8,7 +8,6 @@ from pyuwbcalib.utils import (
 )
 from utils.measurement import (
     Measurement,
-    RangeData,
 )
 from utils.misc import (
     GaussianResult,
@@ -32,6 +31,7 @@ from utils.imu import (
     IMUKinematics,
 )
 from miluv.data import DataLoader
+from miluv.wrappers import RangeData
 from src.filters import ExtendedKalmanFilter
 import time
 from tqdm import tqdm

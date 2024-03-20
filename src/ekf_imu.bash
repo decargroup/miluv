@@ -45,10 +45,10 @@
 # # python preprocess/cleanup_csv.py data/10c
 # python src/ekf_imu.py --exp 10c
 
-python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/11 False
-python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/11
+# python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/11 False
+# python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/11
 python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/11
-python src/ekf_imu.py --exp 11
+# python src/ekf_imu.py --exp 11
 
 # # python preprocess/read_bags.py data/29 False
 # # python preprocess/process_uwb.py data/29
