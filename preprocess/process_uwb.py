@@ -33,7 +33,6 @@ def generate_config(exp_info,
     }
     
     pose_path = {
-        # "directory": f"data/{exp_info['experiment']}/",
         "directory": join(exp_path, ""),
     }
     for i in range(int(exp_info["num_robots"])):
@@ -241,7 +240,6 @@ if __name__ == '__main__':
         print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
         sys.exit(1)
     path = sys.argv[1]
-    # path = '/media/syedshabbir/Seagate B/data/13'
     
     process_uwb(path)
 
