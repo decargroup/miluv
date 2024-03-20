@@ -15,7 +15,13 @@ from miluv.utils import (
 )
 
     
-def generate_config(exp_info):
+def generate_config(exp_info, 
+                    exp_path = None,
+                    ):
+    
+    if exp_path is None:
+        exp_path = f"data/{exp_info['experiment']}"
+
     params = {
         "max_ts_value": "2**32",
         "ts_to_ns": "1e9 * (1.0 / 499.2e6 / 128.0)",
@@ -27,9 +33,10 @@ def generate_config(exp_info):
     }
     
     pose_path = {
-        "directory": f"data/{exp_info['experiment']}/",
+        # "directory": f"data/{exp_info['experiment']}/",
+        "directory": join(exp_path, ""),
     }
-    for i in range(exp_info["num_robots"]):
+    for i in range(int(exp_info["num_robots"])):
         pose_path.update({
             f"{i}": f"ifo00{i+1}.bag"
         })
@@ -37,11 +44,11 @@ def generate_config(exp_info):
     uwb_path = pose_path.copy()
     anchors = get_anchors(str(exp_info["anchor_constellation"]))
     machines = {}
-    for i in range(exp_info["num_robots"]):
+    for i in range(int(exp_info["num_robots"])):
         machines.update({f"{i}": f"ifo00{i+1}"})
     
     tags = {}
-    for i in range(exp_info["num_robots"]):
+    for i in range(int(exp_info["num_robots"])):
         if exp_info["num_tags_per_robot"] == 2:
             tags.update({f"{i}": f"[{(i+1)*10}, {(i+1)*10 + 1}]"})
         elif exp_info["num_tags_per_robot"] == 1:
@@ -50,19 +57,19 @@ def generate_config(exp_info):
     moment_arms = get_tags(flatten=True)
     
     pose_topic = {}
-    for i in range(exp_info["num_robots"]):
+    for i in range(int(exp_info["num_robots"])):
         pose_topic.update({
             f"{i}": f"/ifo00{i+1}/vrpn_client_node/ifo00{i+1}/pose"
         })
         
     uwb_topic = {}
-    for i in range(exp_info["num_robots"]):
+    for i in range(int(exp_info["num_robots"])):
         uwb_topic.update({
             f"{i}": f"/ifo00{i+1}/uwb/range"
         })
         
     listening_topic = {}
-    for i in range(exp_info["num_robots"]):
+    for i in range(int(exp_info["num_robots"])):
         listening_topic.update({
             f"{i}": f"/ifo00{i+1}/uwb/passive"
         })
@@ -124,7 +131,7 @@ def process_uwb(path):
     # parser = ConfigParser(interpolation=ExtendedInterpolation())
     # parser.read(config)
     exp_info = get_experiment_info(path)
-    uwb_config = generate_config(exp_info)
+    uwb_config = generate_config(exp_info, path)
 
     # Read anchor positions
     anchor_positions = read_anchor_positions(uwb_config)
@@ -234,6 +241,7 @@ if __name__ == '__main__':
         print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
         sys.exit(1)
     path = sys.argv[1]
+    # path = '/media/syedshabbir/Seagate B/data/13'
     
     process_uwb(path)
 

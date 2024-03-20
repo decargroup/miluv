@@ -291,9 +291,6 @@ class StateWithCovariance:
     """
     A data container containing a State object and a covariance array.
     """
-
-    __slots__ = ["state", "covariance"]
-
     def __init__(self, state, covariance: np.ndarray):
         if covariance.shape[0] != covariance.shape[1]:
             raise ValueError("covariance must be an n x n array.")

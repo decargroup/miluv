@@ -50,12 +50,16 @@ class DataLoader:
         # TODO: read robots from configs
         exp_path = os.path.join(self.exp_dir, self.exp_name)
         exp_info = get_experiment_info(exp_path)
+        
+        if  exp_info["num_robots"] == 1:
+            robot_ids = ["ifo001"]
+        else:
+            robot_ids = [
+                "ifo001",
+                "ifo002",
+                "ifo003",
+            ]
 
-        robot_ids = [
-            "ifo001",
-            "ifo002",
-            "ifo003",
-        ]
         self.data = {id: {} for id in robot_ids}
 
         for id in robot_ids:    
@@ -78,15 +82,9 @@ class DataLoader:
                 self.data[id].update({"vio": []})
                 self.data[id]["vio"] = self.read_csv("vio", id)
 
-                # divide timestamp by 1e9
-                self.data[id]["vio"]["timestamp"] = self.data[id]["vio"]["timestamp"] / 1e9
-
             if vio_loop:
                 self.data[id].update({"vio_loop": []})
                 self.data[id]["vio_loop"] = self.read_csv("vio_loop", id)
-
-                # # divide timestamp by 1e9
-                # self.data[id]["vio_loop"]["timestamp"] = self.data[id]["vio_loop"]["timestamp"] / 1e9
                 
             if cir:
                 self.data[id].update({"uwb_cir": []})
