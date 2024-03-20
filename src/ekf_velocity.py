@@ -39,28 +39,40 @@ from src.filters import ExtendedKalmanFilter
 import time
 from tqdm import tqdm
 from scipy.spatial.transform import Rotation
+import os
+import sys
+import pickle
+import argparse
 
 # Set the plotting environment
 set_plotting_env()
 plt.rcParams.update({'font.size': 10})  
 
 # plots
-ekf = True
+ekf = False
 trajectory_plot = False
 error_plot = True
-vio_plot = False
+vio_plot = True
 imu_plot = False
 save_fig = False
 body_frame_vel = False
 height_plot = False
+save_results = True
 
 
 """ Get data """
-miluv = DataLoader("1c", barometer=False)
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--exp', required=True)
+# args = parser.parse_args()
+# exp = args.exp
+exp = "1c"
+folder = "/media/syedshabbir/Seagate B/data"
+miluv = DataLoader(exp, exp_dir = folder, barometer = False)
 robots = list(miluv.data.keys())
 input_sensor = "vio"
 start_time, end_time = miluv.get_timerange(
                             sensors = input_sensor,)
+end_time = end_time - 5
 
 input_freq = 30
 query_stamps = np.arange(start_time, end_time, 1/input_freq)
@@ -85,7 +97,7 @@ position = [miluv.data[robot]["mocap"].position(
                             query_stamps) for robot in robots]
 angular_velocity = [miluv.data[robot]["mocap"].angular_velocity(
                             query_stamps) for robot in robots]
-velocity = [miluv.data[robot]["mocap"].body_velocity(
+velocity = [miluv.data[robot]["mocap"].velocity(
                             query_stamps) for robot in robots]
 
 init_attitude = [p[0][:3,:3] for p in pose]
@@ -98,9 +110,9 @@ range_data = range_data.by_timerange(start_time, end_time,
 meas_data = range_data.to_measurements(
     reference_id = 'world')
 
-R = [0.1, 3*0.1, 10*0.1]
-# bias = [height[n]['range'].mean() - position[n][:,2].mean() for n in range(len(robots))]
-bias = [-0.0924, -0.0088, -0.1207]
+R = [3*0.1, 3*0.1, 10*0.1]
+bias = [height[n]['range'].mean() - position[n][:,2].mean() for n in range(len(robots))]
+# bias = [-0.0924, -0.0088, -0.1207]
 for n, robot in enumerate(robots):
     for i in range(len(height[n])):
         y = Measurement(value = height[n].iloc[i]['range'],
@@ -199,6 +211,31 @@ if ekf:
     print(1 / ((time.time() - init_stamp) / len(input_data)))
 
     results = GaussianResultList(results_list)
+
+""" Print position RMSE """
+if ekf:
+    (att_dof, pos_dof) = (3, 3)
+    dof = att_dof + pos_dof
+    n_states = int(results.dof[0] / dof)
+    pos_e = {robot: {} for robot in robots}
+    pos_rmse = {robot: {} for robot in robots}
+    for i, robot in enumerate(robots):
+        pos_e[robot] = np.array([(e.reshape(-1, dof)[i]
+                    [att_dof:att_dof + pos_dof]).ravel() 
+                    for e in results.error]).ravel()
+        pos_rmse[robot] = np.sqrt(pos_e[robot].T @ pos_e[robot] / len(pos_e[robot]))
+    for robot in robots:
+        print(f"Position RMSE for Experiment: {exp} and robot {robot}: {pos_rmse[robot]} m")
+
+if ekf and save_results:
+    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    folder = os.path.join(script_dir, f'results')
+    os.umask(0)
+    os.makedirs(folder, exist_ok=True)
+    filename = f'results_imu_{exp}.pkl'
+    file_path = os.path.join(folder, filename)
+    with open(file_path, 'wb') as file:
+        pickle.dump((results, pos_rmse), file)
 
 if ekf and error_plot:
     separate_figs = True

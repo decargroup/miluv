@@ -36,10 +36,15 @@ from src.filters import ExtendedKalmanFilter
 import time
 from tqdm import tqdm
 from scipy.linalg import block_diag
+import os
+import sys
+import pickle
+import argparse
 
 # Set the plotting environment
 set_plotting_env()
 plt.rcParams.update({'font.size': 10})  
+
 
 # plots
 ekf = True
@@ -47,10 +52,16 @@ imu_plot = False
 trajectory_plot = False
 error_plot = True
 save_fig = False
+save_results = True
 
 
 """ Get data """
-miluv = DataLoader("1c", barometer=False)
+parser = argparse.ArgumentParser()
+parser.add_argument('--exp', required=True)
+args = parser.parse_args()
+exp = args.exp
+folder = "/media/syedshabbir/Seagate B/data"
+miluv = DataLoader(exp, exp_dir = folder, barometer = False)
 robots = list(miluv.data.keys())
 input_sensor = "imu_px4"
 input_freq = 190
@@ -58,7 +69,7 @@ input_freq = 190
 # Get the time range
 start_time, end_time = miluv.get_timerange(
                             sensors = input_sensor)
-
+end_time = end_time - 5
 query_stamps = np.arange(start_time, end_time, 1/input_freq)
 
 # Get input data
@@ -84,15 +95,16 @@ accel = [miluv.data[robot]["mocap"].accelerometer(
 
 # Get range data
 range_data = RangeData(miluv, miluv)
-# range_data = range_data.filter_by_bias( max_bias=0.3)
+range_data = range_data.filter_by_bias( max_bias=0.3)
 range_data = range_data.by_timerange(start_time, 
                                      end_time, 
                                      sensors=["uwb_range"])
 meas_data = range_data.to_measurements(
     reference_id = 'world')
 
-R = [10*0.1, 3*0.1, 10*0.1]
-bias = [-0.0924, -0.0088, -0.1207]
+R = [3*0.1, 3*0.1, 3*0.1]
+# bias = [-0.0924, -0.0088, -0.1207]
+bias = [height[n]['range'].mean() - position[n][:,2].mean() for n in range(len(robots))]
 for n, robot in enumerate(robots):
     for i in range(len(height[n])):
         y = Measurement(value = height[n].iloc[i]['range'],
@@ -144,8 +156,8 @@ for n, robot in enumerate(robots):
                    imus.setup["imu_px4_calib"][robot]["bias_gyro_walk"]]
     w_accel_bias = [w**2 for w in 
                     imus.setup["imu_px4_calib"][robot]["bias_accel_walk"]]
-    Q_c[0:3,0:3] = 200*np.diag(w_gyro)
-    Q_c[3:6,3:6] = 200*np.diag(w_accel)
+    Q_c[0:3,0:3] = 2e4*np.diag(w_gyro)
+    Q_c[3:6,3:6] = 2e4*np.diag(w_accel)
     Q_c[6:9,6:9] = np.diag(w_gyro_bias)
     Q_c[9:12,9:12] = np.diag(w_accel_bias)
     dt = 1/input_freq
@@ -157,7 +169,6 @@ process_model = CompositeProcessModel(
 # Composite covariance
 n_states = len(x0.value)
 P0 = np.kron(np.eye(n_states), P0)
-Q = block_diag(*[Q[robot] for robot in robots]) 
 
 """ Create input data """
 input_data = []
@@ -216,6 +227,32 @@ if ekf:
 
     results = GaussianResultList(results_list)
 
+""" Print position RMSE """
+if ekf:
+    (att_dof, vel_dof, pos_dof, 
+    gyro_bias_dof, accel_bias_dof) = (3, 3, 3, 3, 3)
+    dof = att_dof + vel_dof + pos_dof + gyro_bias_dof + accel_bias_dof
+    n_states = int(results.dof[0] / dof)
+    pos_e = {robot: {} for robot in robots}
+    pos_rmse = {robot: {} for robot in robots}
+    for i, robot in enumerate(robots):
+        pos_e[robot] = np.array([(e.reshape(-1, dof)[i]
+                    [att_dof + vel_dof:att_dof + vel_dof + pos_dof]).ravel() 
+                    for e in results.error]).ravel()
+        pos_rmse[robot] = np.sqrt(pos_e[robot].T @ pos_e[robot] / len(pos_e[robot]))
+        
+    for robot in robots:
+        print(f"Position RMSE for Experiment: {exp} and robot {robot}: {pos_rmse[robot]} m")
+
+if ekf and save_results:
+    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    folder = os.path.join(script_dir, f'results')
+    os.umask(0)
+    os.makedirs(folder, exist_ok=True)
+    filename = f'results_imu_{exp}.pkl'
+    file_path = os.path.join(folder, filename)
+    with open(file_path, 'wb') as file:
+        pickle.dump((results, pos_rmse), file)
 
 if ekf and error_plot:
     separate_figs = True
@@ -238,37 +275,14 @@ if ekf and error_plot:
             j += 1
             if j == len(titles):
                 j = 0
-
-    legend = list(miluv.data.keys())
     
     # Have one legend for each figure
     for i, (fig, axs) in enumerate(figs):
         for ax in axs:
             for a in ax:
                 if a == axs[0,-1]:
-                    a.legend([legend[i]], handlelength=0)
+                    a.legend([robots[i]], handlelength=0)
         if save_fig:
-            plt.savefig(f'./figures/error_' + legend[i] + '_' + init_stamp + '.png')
+            plt.savefig(f'./figures/error_' + robots[i] + '_' + init_stamp + '.png')
 
-if imu_plot:
-
-
-    for n, robot in enumerate(robots):
-        fig, ax = plt.subplots(3, 2)
-        ax[0,0].plot(query_stamps, imus.data[robot][input_sensor]['angular_velocity.x'].values, label = 'gyro x')
-        ax[0,0].plot(query_stamps, gyro[n][:,0], label = 'gt gyro x')
-        ax[1,0].plot(query_stamps, imus.data[robot][input_sensor]['angular_velocity.y'].values, label = 'gyro y')
-        ax[1,0].plot(query_stamps, gyro[n][:,1], label = 'gt gyro y')
-        ax[2,0].plot(query_stamps, imus.data[robot][input_sensor]['angular_velocity.z'].values, label = 'gyro z')
-        ax[2,0].plot(query_stamps, gyro[n][:,2], label = 'gt gyro z')
-        ax[0,1].plot(query_stamps, imus.data[robot][input_sensor]['linear_acceleration.x'].values, label = 'accel x')
-        ax[0,1].plot(query_stamps, accel[n][:,0], label = 'gt accel x')
-        ax[1,1].plot(query_stamps, imus.data[robot][input_sensor]['linear_acceleration.y'].values, label = 'accel y')
-        ax[1,1].plot(query_stamps, accel[n][:,1], label = 'gt accel y')
-        ax[2,1].plot(query_stamps, imus.data[robot][input_sensor]['linear_acceleration.z'].values, label = 'accel z')
-        ax[2,1].plot(query_stamps, accel[n][:,2], label = 'gt accel z')
-        for a in ax:
-            for b in a:
-                b.legend()
-
-plt.show()
+# plt.show()

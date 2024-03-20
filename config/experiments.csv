@@ -1,5 +1,19 @@
 experiment,num_robots,num_tags_per_robot,num_anchors,anchor_constellation,trajectory,cir_bool,obstacles_bool,apriltags_bool,barometer_bool
 1c,3,2,6,0,random,false,false,true,false
+2c,3,2,6,0b,moving triangle,false,false,true,true
+3b,3,2,6,0,bias calibration,false,false,true,false
+4,3,2,6,1,random3,false,false,true,true
+5,3,2,6,2,random3,false,false,true,true
+7c,3,2,6,0b,random,false,false,true,true
+8b,3,1,6,0,random,false,false,true,false
+9c,3,2,6,0,random2,false,false,true,false
+10c,3,2,6,0b,random3,false,false,true,true
 11,3,2,6,0,random3,true,false,true,false
+12c,3,2,6,0,random,true,true,true,false
+29,3,2,6,1,bias calibration,false,false,true,true
+31,3,2,6,1,random3,true,false,true,true
+32,3,2,6,2,bias calibration,false,false,true,true
+34,3,2,6,2,random3,true,false,true,true
+13,1,2,6,0,circular 2d,false,false,true,false
 16,1,2,6,2b,random3,false,false,false,true
 20,1,1,6,0,random3,false,false,true,false
