@@ -4,6 +4,7 @@ experiment,num_robots,num_tags_per_robot,num_anchors,anchor_constellation,trajec
 3b,3,2,6,0,bias calibration,false,false,true,false
 4,3,2,6,1,random3,false,false,true,true
 5,3,2,6,2,random3,false,false,true,true
+6,3,2,6,2b,random3,false,false,false,true
 7c,3,2,6,0b,random,false,false,true,true
 8b,3,1,6,0,random,false,false,true,false
 9c,3,2,6,0,random2,false,false,true,false
@@ -11,9 +12,18 @@ experiment,num_robots,num_tags_per_robot,num_anchors,anchor_constellation,trajec
 11,3,2,6,0,random3,true,false,true,false
 12c,3,2,6,0,random,true,true,true,false
 29,3,2,6,1,bias calibration,false,false,true,true
-31,3,2,6,1,random3,true,false,true,true
 32,3,2,6,2,bias calibration,false,false,true,true
-34,3,2,6,2,random3,true,false,true,true
 13,1,2,6,0,circular 2d,false,false,true,false
+14,1,2,6,0,circular 2d,false,false,true,false
+15b,1,2,6,0b,remote controlled high paced,false,false,true,true
 16,1,2,6,2b,random3,false,false,false,true
+17,1,2,6,0,random3,false,false,true,false
+18,1,2,6,1,random3,false,false,true,true
+19,1,2,6,2,random3,false,false,true,true
 20,1,1,6,0,random3,false,false,true,false
+21b,1,2,6,0b,random3,false,true,TRUE,TRUE
+23,1,2,6,0,remote controlled low pace 1,FALSE,FALSE,TRUE,FALSE
+24,1,2,6,0,remote controlled low pace 2,FALSE,FALSE,TRUE,FALSE
+30,1,2,6,1,remote controlled high paced,FALSE,FALSE,TRUE,TRUE
+33,1,2,6,2,remote controlled high paced,FALSE,FALSE,TRUE,TRUE
+35,1,2,6,2b,remote controlled high paced,FALSE,FALSE,FALSE,TRUE

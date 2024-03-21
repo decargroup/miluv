@@ -229,18 +229,15 @@ if ekf:
 
 """ Print position RMSE """
 if ekf:
-    (att_dof, vel_dof, pos_dof, 
-    gyro_bias_dof, accel_bias_dof) = (3, 3, 3, 3, 3)
-    dof = att_dof + vel_dof + pos_dof + gyro_bias_dof + accel_bias_dof
-    n_states = int(results.dof[0] / dof)
-    pos_e = {robot: {} for robot in robots}
     pos_rmse = {robot: {} for robot in robots}
     for i, robot in enumerate(robots):
-        pos_e[robot] = np.array([(e.reshape(-1, dof)[i]
-                    [att_dof + vel_dof:att_dof + vel_dof + pos_dof]).ravel() 
-                    for e in results.error]).ravel()
-        pos_rmse[robot] = np.sqrt(pos_e[robot].T @ pos_e[robot] / len(pos_e[robot]))
+        pos = np.array([r.get_state_by_id(robot).position 
+                        for r in results.state]).ravel()
+        true_pos = np.array([r.get_state_by_id(robot).position 
+                             for r in results.state_true]).ravel()
         
+        e = pos - true_pos
+        pos_rmse[robot] = np.sqrt(e.T @ e / len(e))
     for robot in robots:
         print(f"Position RMSE for Experiment: {exp} and robot {robot}: {pos_rmse[robot]} m")
 

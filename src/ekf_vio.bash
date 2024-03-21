@@ -45,9 +45,9 @@
 # python preprocess/cleanup_csv.py data/10c
 # python src/ekf_velocity.py --exp 10c
 
-python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/1c False
-python preprocess/process_vios.py /media/syedshabbir/Seagate\ B/data/1c
-python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/1c
+# python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/1c False
+# python preprocess/process_vios.py /media/syedshabbir/Seagate\ B/data/1c
+# python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/1c
 python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/1c
 # python src/ekf_velocity.py --exp 11
 

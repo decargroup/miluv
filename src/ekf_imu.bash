@@ -1,8 +1,7 @@
 # # 3 robots
-
-# # python preprocess/read_bags.py data/1c False
-# # python preprocess/process_uwb.py data/1c
-# # python preprocess/cleanup_csv.py data/1c
+# python preprocess/read_bags.py data/1c False
+# python preprocess/process_uwb.py data/1c
+# python preprocess/cleanup_csv.py data/1c
 # python src/ekf_imu.py --exp 1c
 
 # # python preprocess/read_bags.py data/2c False

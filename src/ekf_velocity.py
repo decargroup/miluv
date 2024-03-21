@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import seaborn as sns
 import tqdm
-import datetime
+from pymlg import SO3
 from typing import List
 import pandas as pd
 from navlie.lib.models import (
@@ -43,21 +43,28 @@ import os
 import sys
 import pickle
 import argparse
+import yaml
+
+def read_vio_yaml(exp_name:str, exp_dir:str, robot:str) -> pd.DataFrame:
+    """Read a yaml file for a given robot and topic."""
+    path = "vio/" + exp_name + "/" + robot + "_alignment_pose.yaml"
+    path = os.path.join(exp_dir, path)
+    return yaml.safe_load(open(path, 'r'))
 
 # Set the plotting environment
 set_plotting_env()
 plt.rcParams.update({'font.size': 10})  
 
 # plots
-ekf = False
+ekf = True
 trajectory_plot = False
 error_plot = True
-vio_plot = True
+vio_plot = False
 imu_plot = False
 save_fig = False
 body_frame_vel = False
 height_plot = False
-save_results = True
+save_results = False
 
 
 """ Get data """
@@ -100,7 +107,11 @@ angular_velocity = [miluv.data[robot]["mocap"].angular_velocity(
 velocity = [miluv.data[robot]["mocap"].velocity(
                             query_stamps) for robot in robots]
 
-init_attitude = [p[0][:3,:3] for p in pose]
+offset = {robot: {} for robot in robots}
+for n, robot in enumerate(robots):
+    offset[robot] = read_vio_yaml(exp, folder, robot)
+    offset[robot]['C_vm'] = SO3.Exp(offset[robot]['phi_vm'])
+    
 
 # Get range data
 range_data = RangeData(miluv)
@@ -165,8 +176,12 @@ for i in range(len(query_stamps)):
         ['angular_velocity.x', 
         'angular_velocity.y', 
         'angular_velocity.z']].values, 
-        (pose[n][i][:3,:3].T @ init_attitude[n] @ (vio.data[robot]['vio'].iloc[i][
-        ['velocity.x', 'velocity.y', 'velocity.z']].values).reshape(-1,1)).ravel(),
+
+        (pose[n][i][:3,:3].T @ 
+         offset[robot]['C_vm'].T @ 
+         (vio.data[robot]['vio'].iloc[i][
+        ['velocity.x', 'velocity.y', 'velocity.z']].values).
+        reshape(-1,1)).ravel(),
     #    velocity[n][:,i],
                             )),
         stamp = query_stamps[i], 
@@ -214,16 +229,15 @@ if ekf:
 
 """ Print position RMSE """
 if ekf:
-    (att_dof, pos_dof) = (3, 3)
-    dof = att_dof + pos_dof
-    n_states = int(results.dof[0] / dof)
-    pos_e = {robot: {} for robot in robots}
     pos_rmse = {robot: {} for robot in robots}
     for i, robot in enumerate(robots):
-        pos_e[robot] = np.array([(e.reshape(-1, dof)[i]
-                    [att_dof:att_dof + pos_dof]).ravel() 
-                    for e in results.error]).ravel()
-        pos_rmse[robot] = np.sqrt(pos_e[robot].T @ pos_e[robot] / len(pos_e[robot]))
+        pos = np.array([r.get_state_by_id(robot).position 
+                        for r in results.state]).ravel()
+        true_pos = np.array([r.get_state_by_id(robot).position 
+                             for r in results.state_true]).ravel()
+        
+        e = pos - true_pos
+        pos_rmse[robot] = np.sqrt(e.T @ e / len(e))
     for robot in robots:
         print(f"Position RMSE for Experiment: {exp} and robot {robot}: {pos_rmse[robot]} m")
 
@@ -262,15 +276,13 @@ if ekf and error_plot:
             j += 1
             if j == len(titles):
                 j = 0
-    # legend Robot 1, 2, 3
-    legend = ["Robot 1", "Robot 2", "Robot 3"]
     
     # Have one legend for each figure
     for i, (fig, axs) in enumerate(figs):
         for ax in axs:
             for a in ax:
                 if a == axs[0,-1]:
-                    a.legend([legend[i]], handlelength=0)
+                    a.legend([robots[i]], handlelength=0)
     
 
 if body_frame_vel:
@@ -296,12 +308,11 @@ if imu_plot:
 if vio_plot:
     for n, robot in enumerate(robots):
 
-
         fig, ax = plt.subplots(3)
         vins_velocity = []
         vio_data = vio.data[robot]['vio'][['velocity.x', 'velocity.y', 'velocity.z']].values
         for v in vio_data:
-            vins_velocity.append((init_attitude[n] @ v.reshape(-1,1)).ravel())
+            vins_velocity.append((offset[robot]['C_vm'].T @ v.reshape(-1,1)).ravel())
         vins_velocity = np.array(vins_velocity)
         ax[0].plot(query_stamps, velocity[n][:,0], label="true")
         # ax[0].plot(query_stamps, velocity[n][0,:], label="true")
