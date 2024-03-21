@@ -157,6 +157,9 @@ if __name__ == '__main__':
         sys.exit(1)
 
     path = sys.argv[1]
+    if path.endswith('/'):
+        path = path[:-1]
+        
     files = [f for f in listdir(path) if f.endswith('.bag')]
 
     for file in files:

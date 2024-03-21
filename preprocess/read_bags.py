@@ -62,6 +62,9 @@ if __name__ == '__main__':
         vision = eval(sys.argv[2])
 
     path = sys.argv[1]
+    if path.endswith('/'):
+        path = path[:-1]
+        
     files = [f for f in listdir(path) if f.endswith('.bag')]
     files = rename_files(files, path)
 

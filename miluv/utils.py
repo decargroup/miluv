@@ -68,20 +68,26 @@ def get_timeshift(exp_name):
     
     return timeshift_s + timeshift_ns / 1e9
 
-def load_vins(exp_name, robot_id):
+def load_vins(exp_name, robot_id, loop=True):
     """
     Load VINS data.
     
     Args:
     - exp_name: Experiment name.
     - robot_id: Robot ID.
+    - loop: Whether to load VINS data with loop closure or not.
     
     Returns:
     - vins: VINS data.
     """
     
+    if loop:
+        file = f"data/vins/{exp_name}/{robot_id}_vio_loop.csv"
+    else:
+        file = f"data/vins/{exp_name}/{robot_id}_vio.csv"
+        
     data = pd.read_csv(
-        f"data/vins/{exp_name}/{robot_id}_vio_loop.csv", 
+        file, 
         names=[
             "timestamp",
             "pose.position.x",
