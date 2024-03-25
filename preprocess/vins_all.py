@@ -12,7 +12,7 @@ def call_vins(exp_name, robot_id):
 
 if __name__ == "__main__":
     data = pd.read_csv("config/experiments.csv")
-    rmse_df = pd.DataFrame(columns=["experiment", "robot", "rmse"])
+    rmse_df = pd.DataFrame(columns=["experiment", "robot", "rmse_loop", "rmse_no_loop"])
     for i in range(len(data)):
         num_robots = data["num_robots"].iloc[i]
         for j in range(num_robots):
@@ -21,11 +21,14 @@ if __name__ == "__main__":
             new_df = pd.DataFrame({
                 "experiment": [exp_name],
                 "robot": [f"ifo00{j+1}"],
-                "rmse": [rmse]
+                "rmse_loop": [rmse["rmse_loop"]],
+                "rmse_no_loop": [rmse["rmse_no_loop"]]
             })
             rmse_df = pd.concat([rmse_df, new_df], ignore_index=True)
             
-    rmse_df.to_csv("data/vins/vins_rmse.csv", index=False)
+            rmse_df.to_csv("data/vins/vins_rmse.csv", index=False)
+            
+    # rmse_df.to_csv("data/vins/vins_rmse.csv", index=False)
             
  
 # %%

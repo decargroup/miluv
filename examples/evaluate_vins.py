@@ -1,6 +1,6 @@
 # %%
 from miluv.data import DataLoader
-from miluv.utils import load_vins, align_frames, compute_position_rmse, save_vins
+from miluv.utils import load_vins, align_frames, compute_position_rmse, save_vins, apply_transformation
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
@@ -44,9 +44,30 @@ def evaluate_vins(exp_name, robot_id, visualize):
         yaml.dump(frame_alignment, file)
     save_vins(vins, exp_name, robot_id, suffix="_aligned_and_shifted")
     
+    rmse_loop = compute_position_rmse(vins, df_mocap)
+    print(f"Position RMSE w Loop Closure for \Experiment {exp_name} \
+                                        and Robot {robot_id}: {rmse_loop} m")
     
-    rmse = compute_position_rmse(vins, df_mocap)
-    print(f"Position RMSE for Experiment {exp_name} and Robot {robot_id}: {rmse} m")
+    # Apply transformation to vins without loop closure
+    vins_no_loop = load_vins(exp_name, robot_id, loop=False)
+    vins_no_loop = vins_no_loop[vins_no_loop["timestamp"] < vins_no_loop["timestamp"].iloc[-1] - 10]
+    pos_no_loop = mv.data[robot_id]["mocap_pos"](vins_no_loop["timestamp"])
+    quat_no_loop = mv.data[robot_id]["mocap_quat"](vins_no_loop["timestamp"])
+    df_mocap_no_loop = pd.DataFrame({
+        "timestamp": vins_no_loop["timestamp"],
+        "pose.position.x": pos_no_loop[0],
+        "pose.position.y": pos_no_loop[1],
+        "pose.position.z": pos_no_loop[2],
+        "pose.orientation.x": quat_no_loop[0],
+        "pose.orientation.y": quat_no_loop[1],
+        "pose.orientation.z": quat_no_loop[2],
+        "pose.orientation.w": quat_no_loop[3],
+    })
+    vins_no_loop = apply_transformation(vins_no_loop, results["C"], results["r"])
+    save_vins(vins_no_loop, exp_name, robot_id, loop=False, suffix="_aligned_and_shifted")
+    rmse_no_loop = compute_position_rmse(vins_no_loop, df_mocap_no_loop)
+    print(f"Position RMSE w/o Loop Closure for Experiment {exp_name} \
+                                        and Robot {robot_id}: {rmse_no_loop} m")
 
     if visualize:
         # Compare vins and mocap data
@@ -94,7 +115,7 @@ def evaluate_vins(exp_name, robot_id, visualize):
 
         plt.show(block=True)
         
-    return rmse
+    return {"rmse_loop": rmse_loop, "rmse_no_loop": rmse_no_loop}
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:

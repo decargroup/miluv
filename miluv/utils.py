@@ -205,28 +205,54 @@ def align_frames(df1, df2):
         print("-------------------")
             
     # Apply transformation to df1
-    pose1 = df1[[
-        "pose.position.x", "pose.position.y", "pose.position.z",
-        "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
-    ]].values
-
-    vins_r = pose1[:, :3]
-    vins_quat = pose1[:, 3:]
-    vins_C = np.array([Rotation.from_quat(vins_quat[i]).as_matrix() for i in range(len(vins_quat))])
-
-    pose1 = np.array([C_hat.T @ vins_r[i] + r_hat for i in range(len(vins_r))])
-    df1[[
-        "pose.position.x", "pose.position.y", "pose.position.z",
-    ]] = np.array([pose1[i] for i in range(len(pose1))])    
-    df1[[
-        "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
-    ]] = np.array([Rotation.from_matrix(vins_C[i] @ C_hat).as_quat() for i in range(len(vins_C))])
+    df1 = apply_transformation(df1, C_hat, r_hat)
     
     return {
         "data": df1,
         "C": C_hat,
         "r": r_hat
     }
+    
+def apply_transformation(df, C, r):
+    """
+    Apply a transformation to a dataframe consisting of body-frame data.
+    
+    Args:
+    - df: Dataframe.
+    - C: Rotation matrix.
+    - r: Translation vector.
+    
+    Returns:
+    - df: Dataframe with transformed data.
+    """
+    
+    pose = df[[
+        "pose.position.x", "pose.position.y", "pose.position.z",
+        "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
+    ]].values
+
+    df_r = pose[:, :3]
+    df_quat = pose[:, 3:]
+    df_C = np.array([Rotation.from_quat(df_quat[i]).as_matrix() for i in range(len(df_quat))])
+
+    pose = np.array([C.T @ df_r[i] + r for i in range(len(df_r))])
+    df[[
+        "pose.position.x", "pose.position.y", "pose.position.z",
+    ]] = np.array([pose[i] for i in range(len(pose))])    
+    df[[
+        "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
+    ]] = np.array([Rotation.from_matrix(df_C[i].T @ C).as_quat() for i in range(len(df_C))])
+    
+    if "twist.linear.x" in df.columns:
+        df_vel = df[[
+            "twist.linear.x", "twist.linear.y", "twist.linear.z"
+        ]].values
+        vel = np.array([C.T @ df_vel[i] for i in range(len(df_vel))])
+        df[[
+            "twist.linear.x", "twist.linear.y", "twist.linear.z"
+        ]] = np.array([vel[i] for i in range(len(vel))])
+    
+    return df
 
 def so3_wedge_matrix(omega):
     """

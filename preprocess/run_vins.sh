@@ -10,9 +10,9 @@ fi
 exp_name=$1
 robot=$2
 
-# Run VINS with a 5 minute timeout
+# Run VINS with a 4 minute timeout
 bag=$(rospack find miluv)/data/${exp_name}/${robot}.bag
-timeout 300 roslaunch miluv vins.launch robot:=$robot bag:=$bag > /dev/null 2>&1
+timeout 240 roslaunch miluv vins.launch robot:=$robot bag:=$bag > /dev/null 2>&1
 
 # Rename the output file 
 cd $(rospack find miluv)/data/vins
