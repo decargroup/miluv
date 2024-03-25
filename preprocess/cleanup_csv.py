@@ -124,7 +124,7 @@ def shift_timestamps(path):
             elif file.endswith('.jpeg'):
                 all_jpegs.append(join(subdir, file))
 
-    min_timestamp = find_min_timestamp(all_csvs + all_jpegs)
+    min_timestamp = find_min_timestamp(all_csvs)
     for file in all_csvs:
         df = pd.read_csv(file)
         df["timestamp"] = df["timestamp"] - min_timestamp
@@ -133,9 +133,13 @@ def shift_timestamps(path):
         df.to_csv(file, index=False)
     for file in all_jpegs:
         img_timestamp = int(file.split(".")[0].split("/")[-1]) / 1e9 - min_timestamp
-        rename(
-            file, "/".join(file.split("/")[:-1]) + "/" + str(img_timestamp) +
-            ".jpeg")
+        if img_timestamp < 0:
+            remove(file)
+        else:
+            rename(
+                file, 
+                "/".join(file.split("/")[:-1]) + "/" + str(img_timestamp) + ".jpeg"
+            )
 
     # Save timeshift to yaml file        
     if not isfile(path + "/timeshift.yaml"):
