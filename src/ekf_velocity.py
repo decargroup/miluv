@@ -1,44 +1,37 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import seaborn as sns
 import tqdm
-from pymlg import SO3
-from typing import List
 import pandas as pd
-from navlie.lib.models import (
-    BodyFrameVelocity,
-)
 from pyuwbcalib.utils import (
     set_plotting_env,
 )
-from utils.measurement import (
+from utils.meas import (
     Measurement,
     RangeData,
 )
+
+from utils.inputs import (
+    VectorInput,
+    CompositeInput,
+)
+from utils.states import (
+    CompositeState,
+    MatrixLieGroupState,
+    StateWithCovariance,
+)
+from utils.models import (
+    BodyFrameVelocity,
+    CompositeProcessModel,
+    AltitudeById,)
 from utils.misc import (
     GaussianResult,
     GaussianResultList,
     plot_error,
 )
-from utils.states import (
-    SE3State,
-    CompositeState,
-    StateWithCovariance,
-)
-from utils.inputs import (
-    VectorInput,
-    CompositeInput,
-)
-from utils.models import (
-    CompositeProcessModel,
-    AltitudeById,
-)
 from miluv.data import DataLoader
 from src.filters import ExtendedKalmanFilter
 import time
 from tqdm import tqdm
-from scipy.spatial.transform import Rotation
 import os
 import sys
 import pickle
@@ -79,7 +72,7 @@ robots = list(miluv.data.keys())
 input_sensor = "vio"
 start_time, end_time = miluv.get_timerange(
                             sensors = input_sensor,)
-end_time = end_time - 5
+end_time = end_time - 50
 
 input_freq = 30
 query_stamps = np.arange(start_time, end_time, 1/input_freq)
@@ -106,11 +99,6 @@ angular_velocity = [miluv.data[robot]["mocap"].angular_velocity(
                             query_stamps) for robot in robots]
 velocity = [miluv.data[robot]["mocap"].velocity(
                             query_stamps) for robot in robots]
-
-offset = {robot: {} for robot in robots}
-for n, robot in enumerate(robots):
-    offset[robot] = read_vio_yaml(exp, folder, robot)
-    offset[robot]['C_vm'] = SO3.Exp(offset[robot]['phi_vm'])
     
 
 # Get range data
@@ -140,7 +128,7 @@ meas_data = sorted(meas_data, key=lambda x: x.stamp)
 """ Create ground truth data """
 ground_truth = []
 for i in range(len(query_stamps)):
-    x = [SE3State(  value = pose[n][i], 
+    x = [MatrixLieGroupState(  value = pose[n][i], 
                     state_id = robot,
                     stamp = query_stamps[i],
                     direction='right') 
@@ -153,9 +141,9 @@ for i in range(len(query_stamps)):
 # Initial state
 x0 = ground_truth[0].copy()
 P0 = np.diag([0.02**2, 0.02**2, 0.02**2, 
-                0.1, 0.1, 0.1])
-Q = np.diag([ 5*0.1**2, 5*0.1**2, 10 * 0.15**2, 
-               0.1,0.1, 0.001])
+                2*0.1, 2*0.1, 2*0.1])
+Q = 2*np.diag([ 5*0.1**2, 5*0.1**2, 10 * 0.15**2, 
+               2*0.1,2*0.1, 2*0.01])
 
 # Process Model
 process_model = CompositeProcessModel(
@@ -178,9 +166,8 @@ for i in range(len(query_stamps)):
         'angular_velocity.z']].values, 
 
         (pose[n][i][:3,:3].T @ 
-         offset[robot]['C_vm'].T @ 
          (vio.data[robot]['vio'].iloc[i][
-        ['velocity.x', 'velocity.y', 'velocity.z']].values).
+        ['twist.linear.x', 'twist.linear.y', 'twist.linear.z']].values).
         reshape(-1,1)).ravel(),
     #    velocity[n][:,i],
                             )),
@@ -230,14 +217,17 @@ if ekf:
 """ Print position RMSE """
 if ekf:
     pos_rmse = {robot: {} for robot in robots}
+    dof = 3
     for i, robot in enumerate(robots):
-        pos = np.array([r.get_state_by_id(robot).position 
-                        for r in results.state]).ravel()
-        true_pos = np.array([r.get_state_by_id(robot).position 
-                             for r in results.state_true]).ravel()
-        
-        e = pos - true_pos
-        pos_rmse[robot] = np.sqrt(e.T @ e / len(e))
+        pos = np.array([r.get_state_by_id(robot).value[0:3,-1] 
+                        for r in results.state])
+        true_pos = np.array([r.get_state_by_id(robot).value[0:3,-1] 
+                             for r in results.state_true])
+        error = pos - true_pos
+        pos_rmse[robot] = np.sqrt(np.mean([e.T @ e / dof for e in error]))
+
+        error = error.ravel()
+        # pos_rmse[robot] = np.sqrt(error.T @ error / len(error))
     for robot in robots:
         print(f"Position RMSE for Experiment: {exp} and robot {robot}: {pos_rmse[robot]} m")
 
@@ -246,7 +236,7 @@ if ekf and save_results:
     folder = os.path.join(script_dir, f'results')
     os.umask(0)
     os.makedirs(folder, exist_ok=True)
-    filename = f'results_imu_{exp}.pkl'
+    filename = f'results_vel_{exp}.pkl'
     file_path = os.path.join(folder, filename)
     with open(file_path, 'wb') as file:
         pickle.dump((results, pos_rmse), file)
@@ -310,9 +300,11 @@ if vio_plot:
 
         fig, ax = plt.subplots(3)
         vins_velocity = []
-        vio_data = vio.data[robot]['vio'][['velocity.x', 'velocity.y', 'velocity.z']].values
+        vio_data = vio.data[robot]['vio'][['twist.linear.x', 'twist.linear.y', 'twist.linear.z']].values
+        # for v in vio_data:
+        #     vins_velocity.append((offset[robot]['C_vm'].T @ v.reshape(-1,1)).ravel())
         for v in vio_data:
-            vins_velocity.append((offset[robot]['C_vm'].T @ v.reshape(-1,1)).ravel())
+            vins_velocity.append(v.ravel())
         vins_velocity = np.array(vins_velocity)
         ax[0].plot(query_stamps, velocity[n][:,0], label="true")
         # ax[0].plot(query_stamps, velocity[n][0,:], label="true")

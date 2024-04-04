@@ -32,7 +32,7 @@ class DataLoader:
         uwb: bool = True,
         cir: bool = False,
         vio: bool = True,
-        vio_loop: bool = True,
+        vio_loop: bool = False,
         height: bool = True,
         mag: bool = True,
         barometer: bool = True,

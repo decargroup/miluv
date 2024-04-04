@@ -1,26 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tqdm
-from typing import List
-import pandas as pd
 from pyuwbcalib.utils import (
     set_plotting_env, 
-)
-from utils.measurement import (
-    Measurement,
-    RangeData,
 )
 from utils.misc import (
     GaussianResult,
     GaussianResultList,
     plot_error,
-)
-from utils.states import (
-    CompositeState,
-    StateWithCovariance,
-)
-from utils.inputs import (
-    CompositeInput,
 )
 from utils.models import (
     CompositeProcessModel,
@@ -31,15 +18,30 @@ from utils.imu import (
     IMUState,
     IMUKinematics,
 )
+from utils.inputs import (
+    CompositeInput,
+)
+from utils.states import (
+    CompositeState, 
+    StateWithCovariance,
+)
+from utils.meas import (
+    Measurement,
+    RangeData,
+)
 from miluv.data import DataLoader
 from src.filters import ExtendedKalmanFilter
 import time
 from tqdm import tqdm
-from scipy.linalg import block_diag
 import os
 import sys
 import pickle
 import argparse
+import csv
+
+""" 
+All Matrix Lie groups are perturbed in the right direction.
+"""
 
 # Set the plotting environment
 set_plotting_env()
@@ -52,14 +54,15 @@ imu_plot = False
 trajectory_plot = False
 error_plot = True
 save_fig = False
-save_results = True
+save_results = False
 
 
-""" Get data """
-parser = argparse.ArgumentParser()
-parser.add_argument('--exp', required=True)
-args = parser.parse_args()
-exp = args.exp
+# """ Get data """
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--exp', required=True)
+# args = parser.parse_args()
+# exp = args.exp
+exp = "1c"
 folder = "/media/syedshabbir/Seagate B/data"
 miluv = DataLoader(exp, exp_dir = folder, barometer = False)
 robots = list(miluv.data.keys())
@@ -230,16 +233,21 @@ if ekf:
 """ Print position RMSE """
 if ekf:
     pos_rmse = {robot: {} for robot in robots}
+    dof = 3
     for i, robot in enumerate(robots):
-        pos = np.array([r.get_state_by_id(robot).position 
-                        for r in results.state]).ravel()
-        true_pos = np.array([r.get_state_by_id(robot).position 
-                             for r in results.state_true]).ravel()
-        
-        e = pos - true_pos
-        pos_rmse[robot] = np.sqrt(e.T @ e / len(e))
+        pos = np.array([r.get_state_by_id(robot).value[0].value[0:3, -1]
+                        for r in results.state])
+        true_pos = np.array([r.get_state_by_id(robot).value[0].value[0:3, -1]
+                             for r in results.state_true])
+        error = pos - true_pos
+        pos_rmse[robot] = np.sqrt(np.mean([e.T @ e / dof for e in error]))
     for robot in robots:
         print(f"Position RMSE for Experiment: {exp} and robot {robot}: {pos_rmse[robot]} m")
+        filename = 'results_imu.csv'
+        if not os.path.isfile(filename):
+            with open(filename, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow([f"{exp}",f"{robot}",f"{pos_rmse[robot]}"])
 
 if ekf and save_results:
     script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -282,4 +290,4 @@ if ekf and error_plot:
         if save_fig:
             plt.savefig(f'./figures/error_' + robots[i] + '_' + init_stamp + '.png')
 
-# plt.show()
+plt.show()

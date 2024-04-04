@@ -1,0 +1,485 @@
+ bash src/ekf_imu.bash
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 14352/14352 [02:38<00:00, 90.50it/s]
+Average filter computation frequency (Hz):
+90.5030452313677
+Position RMSE for Experiment: 1c and robot ifo001: 0.051948244574510374 m
+Position RMSE for Experiment: 1c and robot ifo002: 0.06786862141237489 m
+Position RMSE for Experiment: 1c and robot ifo003: 0.06083776624592374 m
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 37987/37987 [08:28<00:00, 74.63it/s]
+Average filter computation frequency (Hz):
+74.63396615905334
+Position RMSE for Experiment: 2c and robot ifo001: 0.06968215341489746 m
+Position RMSE for Experiment: 2c and robot ifo002: 0.0761439469677558 m
+Position RMSE for Experiment: 2c and robot ifo003: 0.06787597249697881 m
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 55220/55220 [12:29<00:00, 73.69it/s]
+Average filter computation frequency (Hz):
+73.68864821373069
+Position RMSE for Experiment: 3b and robot ifo001: 0.052822581780348016 m
+Position RMSE for Experiment: 3b and robot ifo002: 0.07019892412534406 m
+Position RMSE for Experiment: 3b and robot ifo003: 0.061240132116405686 m
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 38248/38248 [07:53<00:00, 80.84it/s]
+Average filter computation frequency (Hz):
+80.83918580119895
+Position RMSE for Experiment: 4 and robot ifo001: 0.058229207916814206 m
+Position RMSE for Experiment: 4 and robot ifo002: 0.08717976669162858 m
+Position RMSE for Experiment: 4 and robot ifo003: 0.07100749502775527 m
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 37796/37796 [08:12<00:00, 76.76it/s]
+Average filter computation frequency (Hz):
+76.75960621882149
+Position RMSE for Experiment: 5 and robot ifo001: 0.07360106931038729 m
+Position RMSE for Experiment: 5 and robot ifo002: 0.08760843979407659 m
+Position RMSE for Experiment: 5 and robot ifo003: 0.10829036891095836 m
+Reading bag file ifo003.bag
+Folder already exists for bag file ifo003.bag. Skipping bag reading...
+Reading bag file ifo002.bag
+Folder already exists for bag file ifo002.bag. Skipping bag reading...
+Reading bag file ifo001.bag
+Folder already exists for bag file ifo001.bag. Skipping bag reading...
+[INFO]  Data folder /media/syedshabbir/Seagate B/data/6/ifo001 already exists. Not creating.
+[INFO]  Data folder /media/syedshabbir/Seagate B/data/6/ifo002 already exists. Not creating.
+[INFO]  Data folder /media/syedshabbir/Seagate B/data/6/ifo003 already exists. Not creating.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 38032/38032 [06:16<00:00, 101.01it/s]
+Average filter computation frequency (Hz):
+101.01497877345356
+Position RMSE for Experiment: 6 and robot ifo001: 799900671781653.2 m
+Position RMSE for Experiment: 6 and robot ifo002: 2444105841425631.5 m
+Position RMSE for Experiment: 6 and robot ifo003: 4732437375801159.0 m
+Traceback (most recent call last):
+  File "src/ekf_imu.py", line 65, in <module>
+    miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 76, in __init__
+    self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 132, in read_csv
+    return pd.read_csv(path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/7c/ifo001/uwb_range.csv'
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 18185/18185 [04:04<00:00, 74.23it/s]
+Average filter computation frequency (Hz):
+74.23436624947671
+Position RMSE for Experiment: 8b and robot ifo001: 0.08615707362057212 m
+Position RMSE for Experiment: 8b and robot ifo002: 0.077877967815353 m
+Position RMSE for Experiment: 8b and robot ifo003: 0.0788816925264907 m
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 38162/38162 [08:38<00:00, 73.54it/s]
+Average filter computation frequency (Hz):
+73.54436832269407
+Position RMSE for Experiment: 9c and robot ifo001: 0.057599084461921995 m
+Position RMSE for Experiment: 9c and robot ifo002: 0.07282165846511189 m
+Position RMSE for Experiment: 9c and robot ifo003: 0.06384606258890518 m
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 40844/40844 [09:12<00:00, 73.94it/s]
+Average filter computation frequency (Hz):
+73.93702024515561
+Position RMSE for Experiment: 10c and robot ifo001: 0.06339720451274587 m
+Position RMSE for Experiment: 10c and robot ifo002: 0.08021845493506852 m
+Position RMSE for Experiment: 10c and robot ifo003: 0.07124741688689477 m
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 52195/52195 [11:39<00:00, 74.59it/s]
+Average filter computation frequency (Hz):
+74.59270272760602
+Position RMSE for Experiment: 29 and robot ifo001: 0.055670820567744424 m
+Position RMSE for Experiment: 29 and robot ifo002: 0.07255748293657044 m
+Position RMSE for Experiment: 29 and robot ifo003: 0.06070007712244824 m
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 51298/51298 [11:15<00:00, 75.94it/s]
+Average filter computation frequency (Hz):
+75.9459423697278
+Position RMSE for Experiment: 32 and robot ifo001: 0.06396624190796524 m
+Position RMSE for Experiment: 32 and robot ifo002: 0.08034437056500184 m
+Position RMSE for Experiment: 32 and robot ifo003: 0.10235481694536057 m
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 26789/26789 [01:32<00:00, 290.58it/s]
+Average filter computation frequency (Hz):
+290.58647074756703
+Position RMSE for Experiment: 13 and robot ifo001: 0.06213086579859268 m
+Traceback (most recent call last):
+  File "src/ekf_imu.py", line 65, in <module>
+    miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 76, in __init__
+    self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 132, in read_csv
+    return pd.read_csv(path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/14/ifo001/uwb_range.csv'
+Traceback (most recent call last):
+  File "src/ekf_imu.py", line 65, in <module>
+    miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 76, in __init__
+    self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 132, in read_csv
+    return pd.read_csv(path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/15b/ifo001/uwb_range.csv'
+Reading bag file ifo001.bag
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1960, in _read_sized
+    size = _read_uint32(f)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1928, in _read_uint32
+    def _read_uint32(f): return _unpack_uint32(f.read(4))
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1935, in _unpack_uint32
+    def _unpack_uint32(v): return struct.unpack('<L', v)[0]
+struct.error: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2018, in _read_header
+    header = _read_sized(f)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1962, in _read_sized
+    raise ROSBagFormatException('error unpacking uint32: %s' % str(ex))
+rosbag.bag.ROSBagFormatException: error unpacking uint32: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2655, in start_reading
+    connection_info = self.read_connection_record(self.bag._file, True)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2725, in read_connection_record
+    header = self.bag._encryptor.read_encrypted_header(_read_header, f, _OP_CONNECTION)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 167, in read_encrypted_header
+    return read_header(f, req_op)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2020, in _read_header
+    raise ROSBagFormatException('Error reading header: %s' % str(ex))
+rosbag.bag.ROSBagFormatException: Error reading header: error unpacking uint32: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "preprocess/read_bags.py", line 83, in <module>
+    write_csvs(join(path, file))
+  File "preprocess/read_bags.py", line 46, in write_csvs
+    b = bagreader(input_bag)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/bagpy/bagreader.py", line 206, in __init__
+    self.reader = rosbag.Bag(self.bagfile)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 467, in __init__
+    self._open(f, mode, allow_unindexed)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1428, in _open
+    if   mode == 'r': self._open_read(f, allow_unindexed)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1464, in _open_read
+    self._reader.start_reading()
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2676, in start_reading
+    raise ROSBagUnindexedException()
+rosbag.bag.ROSBagUnindexedException: Unindexed bag
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1960, in _read_sized
+    size = _read_uint32(f)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1928, in _read_uint32
+    def _read_uint32(f): return _unpack_uint32(f.read(4))
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1935, in _unpack_uint32
+    def _unpack_uint32(v): return struct.unpack('<L', v)[0]
+struct.error: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2018, in _read_header
+    header = _read_sized(f)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1962, in _read_sized
+    raise ROSBagFormatException('error unpacking uint32: %s' % str(ex))
+rosbag.bag.ROSBagFormatException: error unpacking uint32: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2655, in start_reading
+    connection_info = self.read_connection_record(self.bag._file, True)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2725, in read_connection_record
+    header = self.bag._encryptor.read_encrypted_header(_read_header, f, _OP_CONNECTION)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 167, in read_encrypted_header
+    return read_header(f, req_op)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2020, in _read_header
+    raise ROSBagFormatException('Error reading header: %s' % str(ex))
+rosbag.bag.ROSBagFormatException: Error reading header: error unpacking uint32: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "preprocess/process_uwb.py", line 246, in <module>
+    process_uwb(path)
+  File "preprocess/process_uwb.py", line 143, in process_uwb
+    machines[machine_id] = RosMachine(uwb_config, i)
+  File "/home/syedshabbir/uwb_calibration/pyuwbcalib/machine.py", line 291, in __init__
+    self.df_pose, self.df_uwb, self.df_passive = self._read_data()
+  File "/home/syedshabbir/uwb_calibration/pyuwbcalib/machine.py", line 314, in _read_data
+    bag = bagreader(self.pose_path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/bagpy/bagreader.py", line 206, in __init__
+    self.reader = rosbag.Bag(self.bagfile)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 467, in __init__
+    self._open(f, mode, allow_unindexed)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1428, in _open
+    if   mode == 'r': self._open_read(f, allow_unindexed)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1464, in _open_read
+    self._reader.start_reading()
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2676, in start_reading
+    raise ROSBagUnindexedException()
+rosbag.bag.ROSBagUnindexedException: Unindexed bag
+Traceback (most recent call last):
+  File "preprocess/cleanup_csv.py", line 133, in <module>
+    cleanup_csvs(join(path, file.split(".")[0]))
+  File "preprocess/cleanup_csv.py", line 45, in cleanup_csvs
+    files = [f for f in listdir(dir) if f.endswith('.csv')]
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/16/ifo001'
+Traceback (most recent call last):
+  File "src/ekf_imu.py", line 65, in <module>
+    miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 68, in __init__
+    self.data[id]["imu_px4"] = self.read_csv("imu_px4", id)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 132, in read_csv
+    return pd.read_csv(path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/16/ifo001/imu_px4.csv'
+Traceback (most recent call last):
+  File "src/ekf_imu.py", line 65, in <module>
+    miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 76, in __init__
+    self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 132, in read_csv
+    return pd.read_csv(path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/17/ifo001/uwb_range.csv'
+Traceback (most recent call last):
+  File "src/ekf_imu.py", line 65, in <module>
+    miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 76, in __init__
+    self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 132, in read_csv
+    return pd.read_csv(path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/18/ifo001/uwb_range.csv'
+Traceback (most recent call last):
+  File "src/ekf_imu.py", line 65, in <module>
+    miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 76, in __init__
+    self.data[id]["uwb_range"] = self.read_csv("uwb_range", id)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 132, in read_csv
+    return pd.read_csv(path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/19/ifo001/uwb_range.csv'
+Reading bag file ifo001.bag
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1960, in _read_sized
+    size = _read_uint32(f)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1928, in _read_uint32
+    def _read_uint32(f): return _unpack_uint32(f.read(4))
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1935, in _unpack_uint32
+    def _unpack_uint32(v): return struct.unpack('<L', v)[0]
+struct.error: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2018, in _read_header
+    header = _read_sized(f)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1962, in _read_sized
+    raise ROSBagFormatException('error unpacking uint32: %s' % str(ex))
+rosbag.bag.ROSBagFormatException: error unpacking uint32: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2655, in start_reading
+    connection_info = self.read_connection_record(self.bag._file, True)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2725, in read_connection_record
+    header = self.bag._encryptor.read_encrypted_header(_read_header, f, _OP_CONNECTION)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 167, in read_encrypted_header
+    return read_header(f, req_op)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2020, in _read_header
+    raise ROSBagFormatException('Error reading header: %s' % str(ex))
+rosbag.bag.ROSBagFormatException: Error reading header: error unpacking uint32: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "preprocess/read_bags.py", line 83, in <module>
+    write_csvs(join(path, file))
+  File "preprocess/read_bags.py", line 46, in write_csvs
+    b = bagreader(input_bag)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/bagpy/bagreader.py", line 206, in __init__
+    self.reader = rosbag.Bag(self.bagfile)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 467, in __init__
+    self._open(f, mode, allow_unindexed)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1428, in _open
+    if   mode == 'r': self._open_read(f, allow_unindexed)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1464, in _open_read
+    self._reader.start_reading()
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2676, in start_reading
+    raise ROSBagUnindexedException()
+rosbag.bag.ROSBagUnindexedException: Unindexed bag
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1960, in _read_sized
+    size = _read_uint32(f)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1928, in _read_uint32
+    def _read_uint32(f): return _unpack_uint32(f.read(4))
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1935, in _unpack_uint32
+    def _unpack_uint32(v): return struct.unpack('<L', v)[0]
+struct.error: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2018, in _read_header
+    header = _read_sized(f)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1962, in _read_sized
+    raise ROSBagFormatException('error unpacking uint32: %s' % str(ex))
+rosbag.bag.ROSBagFormatException: error unpacking uint32: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2655, in start_reading
+    connection_info = self.read_connection_record(self.bag._file, True)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2725, in read_connection_record
+    header = self.bag._encryptor.read_encrypted_header(_read_header, f, _OP_CONNECTION)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 167, in read_encrypted_header
+    return read_header(f, req_op)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2020, in _read_header
+    raise ROSBagFormatException('Error reading header: %s' % str(ex))
+rosbag.bag.ROSBagFormatException: Error reading header: error unpacking uint32: unpack requires a buffer of 4 bytes
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "preprocess/process_uwb.py", line 246, in <module>
+    process_uwb(path)
+  File "preprocess/process_uwb.py", line 143, in process_uwb
+    machines[machine_id] = RosMachine(uwb_config, i)
+  File "/home/syedshabbir/uwb_calibration/pyuwbcalib/machine.py", line 291, in __init__
+    self.df_pose, self.df_uwb, self.df_passive = self._read_data()
+  File "/home/syedshabbir/uwb_calibration/pyuwbcalib/machine.py", line 314, in _read_data
+    bag = bagreader(self.pose_path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/bagpy/bagreader.py", line 206, in __init__
+    self.reader = rosbag.Bag(self.bagfile)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 467, in __init__
+    self._open(f, mode, allow_unindexed)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1428, in _open
+    if   mode == 'r': self._open_read(f, allow_unindexed)
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 1464, in _open_read
+    self._reader.start_reading()
+  File "/opt/ros/noetic/lib/python3/dist-packages/rosbag/bag.py", line 2676, in start_reading
+    raise ROSBagUnindexedException()
+rosbag.bag.ROSBagUnindexedException: Unindexed bag
+Traceback (most recent call last):
+  File "preprocess/cleanup_csv.py", line 133, in <module>
+    cleanup_csvs(join(path, file.split(".")[0]))
+  File "preprocess/cleanup_csv.py", line 45, in cleanup_csvs
+    files = [f for f in listdir(dir) if f.endswith('.csv')]
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/20/ifo001'
+Traceback (most recent call last):
+  File "src/ekf_imu.py", line 65, in <module>
+    miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 68, in __init__
+    self.data[id]["imu_px4"] = self.read_csv("imu_px4", id)
+  File "/home/syedshabbir/arepos/miluv/miluv/data.py", line 132, in read_csv
+    return pd.read_csv(path)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+  File "/home/syedshabbir/arepos/.venv_navlie/lib/python3.8/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+FileNotFoundError: [Errno 2] No such file or directory: '/media/syedshabbir/Seagate B/data/20/ifo001/imu_px4.csv'
+Reading bag file ifo001.bag
+Folder already exists for bag file ifo001.bag. Skipping bag reading...
+[INFO]  Data folder /media/syedshabbir/Seagate B/data/21b/ifo001 already exists. Not creating.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 38928/38928 [00:53<00:00, 730.32it/s]
+Average filter computation frequency (Hz):
+730.3196174815552
+Position RMSE for Experiment: 21b and robot ifo001: 5673422951870547.0 m
+Reading bag file ifo001.bag
+Folder already exists for bag file ifo001.bag. Skipping bag reading...
+[INFO]  Data folder /media/syedshabbir/Seagate B/data/23/ifo001 already exists. Not creating.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 36095/36095 [00:48<00:00, 746.85it/s]
+Average filter computation frequency (Hz):
+746.8561097945632
+Position RMSE for Experiment: 23 and robot ifo001: 7416302382127219.0 m
+Reading bag file ifo001.bag
+Folder already exists for bag file ifo001.bag. Skipping bag reading...
+[INFO]  Data folder /media/syedshabbir/Seagate B/data/24/ifo001 already exists. Not creating.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 42155/42155 [00:57<00:00, 735.43it/s]
+Average filter computation frequency (Hz):
+735.4379765833725
+Position RMSE for Experiment: 24 and robot ifo001: 4770946056875096.0 m
+Reading bag file ifo001.bag
+Folder already exists for bag file ifo001.bag. Skipping bag reading...
+[INFO]  Data folder /media/syedshabbir/Seagate B/data/30/ifo001 already exists. Not creating.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 34841/34841 [00:47<00:00, 734.30it/s]
+Average filter computation frequency (Hz):
+734.307478582405
+Position RMSE for Experiment: 30 and robot ifo001: 3835784164146915.0 m
+Reading bag file ifo001.bag
+Folder already exists for bag file ifo001.bag. Skipping bag reading...
+[INFO]  Data folder /media/syedshabbir/Seagate B/data/33/ifo001 already exists. Not creating.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 26757/26757 [00:37<00:00, 722.52it/s]
+Average filter computation frequency (Hz):
+722.530783953901
+Position RMSE for Experiment: 33 and robot ifo001: 2893202834804302.5 m
+Reading bag file ifo001.bag
+Folder already exists for bag file ifo001.bag. Skipping bag reading...
+[INFO]  Data folder /media/syedshabbir/Seagate B/data/35/ifo001 already exists. Not creating.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 31285/31285 [00:43<00:00, 722.54it/s]
+Average filter computation frequency (Hz):
+722.5472236990609
+Position RMSE for Experiment: 35 and robot ifo001: 1527169822669524.2 m
+

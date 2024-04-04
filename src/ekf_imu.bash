@@ -24,45 +24,50 @@
 # # python preprocess/cleanup_csv.py data/5
 # python src/ekf_imu.py --exp 5
 
-# # python preprocess/read_bags.py data/7c False
-# # python preprocess/process_uwb.py data/7c
-# # python preprocess/cleanup_csv.py data/7c
+# python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/6 False
+# python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/6
+# python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/6
+# python src/ekf_imu.py --exp 6
+
+# python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/7c False
+# python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/7c
+# python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/7c
 # python src/ekf_imu.py --exp 7c
 
-# # python preprocess/read_bags.py data/8b False
-# # python preprocess/process_uwb.py data/8b
-# # python preprocess/cleanup_csv.py data/8b
+# # # python preprocess/read_bags.py data/8b False
+# # # python preprocess/process_uwb.py data/8b
+# # # python preprocess/cleanup_csv.py data/8b
 # python src/ekf_imu.py --exp 8b
 
-# # python preprocess/read_bags.py data/9c False
-# # python preprocess/process_uwb.py data/9c
-# # python preprocess/cleanup_csv.py data/9c
+# # # python preprocess/read_bags.py data/9c False
+# # # python preprocess/process_uwb.py data/9c
+# # # python preprocess/cleanup_csv.py data/9c
 # python src/ekf_imu.py --exp 9c
 
-# # python preprocess/read_bags.py data/10c False
-# # python preprocess/process_uwb.py data/10c
-# # python preprocess/cleanup_csv.py data/10c
+# # # python preprocess/read_bags.py data/10c False
+# # # python preprocess/process_uwb.py data/10c
+# # # python preprocess/cleanup_csv.py data/10c
 # python src/ekf_imu.py --exp 10c
 
-# python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/11 False
-# python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/11
-python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/11
-# python src/ekf_imu.py --exp 11
+# # python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/11 False
+# # python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/11
+# # python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/11
+# # python src/ekf_imu.py --exp 11
 
-# # python preprocess/read_bags.py data/29 False
-# # python preprocess/process_uwb.py data/29
-# # python preprocess/cleanup_csv.py data/29
+# # # python preprocess/read_bags.py data/29 False
+# # # python preprocess/process_uwb.py data/29
+# # # python preprocess/cleanup_csv.py data/29
 # python src/ekf_imu.py --exp 29
 
-# # python preprocess/read_bags.py data/32 False
-# # python preprocess/process_uwb.py data/32
-# # python preprocess/cleanup_csv.py data/32
+# # # python preprocess/read_bags.py data/32 False
+# # # python preprocess/process_uwb.py data/32
+# # # python preprocess/cleanup_csv.py data/32
 # python src/ekf_imu.py --exp 32
 
-# 1 robot
-# python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/13 False
-# python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/13
-# python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/13
+# # 1 robot
+# # python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/13 False
+# # python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/13
+# # python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/13
 # python src/ekf_imu.py --exp 13
 
 # python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/14 False
@@ -74,6 +79,13 @@ python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/11
 # python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/15b
 # python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/15b
 # python src/ekf_imu.py --exp 15b
+
+# FAILED
+# python preprocess/read_bags.py data/16 False
+# python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/16 False
+# python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/16
+# python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/16
+# python src/ekf_imu.py --exp 16
 
 # python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/17 False
 # python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/17
@@ -90,6 +102,7 @@ python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/11
 # python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/19
 # python src/ekf_imu.py --exp 19
 
+###############################
 # python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/20 False
 # python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/20
 # python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/20

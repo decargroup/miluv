@@ -1,15 +1,14 @@
 """ 
 Extended Kalman Filter.
 """
-from utils import StateWithCovariance
+from utils.meas import Measurement
+from utils.states import StateWithCovariance
 import numpy as np
 from scipy.stats.distributions import chi2
-from utils.measurement import Measurement
 
 def check_outlier(error: np.ndarray, covariance: np.ndarray):
     """
-    Performs the Normalized-Innovation-Squared (NIS) test to identify
-    an outlier.
+    Normalized-Innovation-Squared (NIS) test to identify an outlier.
     """
     error = error.reshape((-1, 1))
     nis = np.ndarray.item(error.T @ np.linalg.solve(covariance, error))
@@ -37,18 +36,6 @@ class ExtendedKalmanFilter:
         
         x_new = x.copy()
 
-        # If state has no time stamp, load from measurement.
-        if x.state.stamp is None:
-            t_km1 = u.stamp
-        else:
-            t_km1 = x.state.stamp
-
-        if dt is None:
-            dt = u.stamp - t_km1
-
-        if dt < 0:
-            raise RuntimeError("dt is negative!")
-
         # Load dedicated jacobian evaluation point if user specified.
         if x_jac is None:
             x_jac = x.state
@@ -56,11 +43,10 @@ class ExtendedKalmanFilter:
         if u is not None:
             Q = self.process_model.covariance(x_jac, u, dt)
             x_new.state, A = self.process_model.evaluate_with_jacobian(
-                x.state, u, dt
-            )
+                x.state, u, dt)
             x_new.covariance = A @ x.covariance @ A.T + Q
             x_new.symmetrize()
-            x_new.state.stamp = t_km1 + dt
+            x_new.state.stamp = x.state.stamp + dt
 
         return x_new
 
@@ -85,14 +71,12 @@ class ExtendedKalmanFilter:
             dt = y.stamp - x.state.stamp
             if dt < -1e10:
                 raise RuntimeError(
-                    "Measurement stamp is earlier than state stamp"
-                )
+                    "Measurement stamp is earlier than state stamp")
             elif u is not None and dt > 1e-11:
                 x = self.predict(x, u, dt)
 
         if x_jac is None:
             x_jac = x.state
-
         y_check, G = y.model.evaluate_with_jacobian(x.state)
 
         if y_check is not None:
@@ -116,5 +100,4 @@ class ExtendedKalmanFilter:
                 x.state = x.state.plus(dx.ravel())
                 x.covariance = (np.identity(x.state.dof) - K @ G) @ P
                 x.symmetrize()
-
         return x

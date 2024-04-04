@@ -1,7 +1,8 @@
-import numpy as np
-from pymlg import SE3, SE23
 from typing import List
+import numpy as np
 import copy
+from pymlg import SE3, SE23
+
 
 class VectorState:
     """
@@ -30,8 +31,7 @@ class VectorState:
     def copy(self) -> "VectorState":
         return copy.deepcopy(self)
 
-class SE3State:
-    group = SE3
+class MatrixLieGroupState:
     
     def __init__(
         self,
@@ -43,25 +43,15 @@ class SE3State:
         
         self.direction = direction
         self.value: np.ndarray = value
-        self.dof = self.group.dof
         self.stamp = stamp
         self.state_id = (state_id) # Any
 
-    @property
-    def attitude(self) -> np.ndarray:
-        return self.value[0:3, 0:3]
-
-    @attitude.setter
-    def attitude(self, C):
-        self.value[0:3, 0:3] = C
-
-    @property
-    def position(self) -> np.ndarray:
-        return self.value[0:3, 3]
-
-    @position.setter
-    def position(self, r):
-        self.value[0:3, 3] = r
+        if value.shape == (4, 4):
+            self.group = SE3
+        elif value.shape == (5, 5):
+            self.group = SE23
+        
+        self.dof = self.group.dof
     
     def copy(self):
         return copy.deepcopy(self)
@@ -70,171 +60,59 @@ class SE3State:
         new = self.copy()
         if self.direction == "right":
             new.value = self.value @ self.group.Exp(dx)
-        elif self.direction == "left":
-            raise NotImplementedError("Left perturbation not implemented.")
         return new
 
     def minus(self, x) -> np.ndarray:
         if self.direction == "right":
             diff = self.group.Log(self.group.inverse(x.value) @ self.value)
-        elif self.direction == "left":
-            raise NotImplementedError("Left perturbation not implemented.")
-        return diff.ravel()
-    
-    @staticmethod
-    def jacobian_from_blocks(
-        attitude: np.ndarray = None, position: np.ndarray = None
-    ):
-        for jac in [attitude, position]:
-            if jac is not None:
-                dim = jac.shape[0]
-
-        if attitude is None:
-            attitude = np.zeros((dim, 3))
-        if position is None:
-            position = np.zeros((dim, 3))
-
-        return np.block([attitude, position])
-
-    def dot(self, other):
-        new = self.copy()
-        new.value = self.value @ other.value
-        return new
-
-class SE23State:
-    group = SE23
-
-    def __init__(
-        self,
-        value: np.ndarray,
-        stamp: float = None,
-        state_id=None,
-        direction="right",
-    ):
-        if isinstance(value, list):
-            value = np.array(value)
-
-        if value.size == self.group.dof:
-            value = self.group.Exp(value)
-        elif value.shape[0] != value.shape[1]:
-            raise ValueError(
-                f"value must either be a {self.group.dof}-length vector of exponential"
-                "coordinates or a matrix direct element of the group."
-            )
-    
-        self.direction = direction
-        self.value: np.ndarray = value
-        self.dof = self.group.dof
-        self.stamp = stamp
-        self.state_id = (state_id) # Any
-
-    @property
-    def pose(self) -> np.ndarray:
-        return self.value[0:5, 0:5]
-    
-    @pose.setter
-    def pose(self, T):
-        self.value[0:5, 0:5] = T
-
-    @property
-    def attitude(self) -> np.ndarray:
-        return self.value[0:3, 0:3]
-
-    @attitude.setter
-    def attitude(self, C):
-        self.value[0:3, 0:3] = C
-
-    @property
-    def position(self) -> np.ndarray:
-        return self.value[0:3, 4]
-
-    @position.setter
-    def position(self, r):
-        self.value[0:3, 4] = r.ravel()
-
-    @property
-    def velocity(self) -> np.ndarray:
-        return self.value[0:3, 3]
-
-    @velocity.setter
-    def velocity(self, v) -> np.ndarray:
-        self.value[0:3, 3] = v
-    
-    def copy(self):
-        return copy.deepcopy(self)
-    
-    def plus(self, dx: np.ndarray):
-        new = self.copy()
-        if self.direction == "right":
-            new.value = self.value @ self.group.Exp(dx)
-        elif self.direction == "left":
-            raise NotImplementedError("Left perturbation not implemented.")
-        return new
-
-    def minus(self, x) -> np.ndarray:
-        if self.direction == "right":
-            diff = self.group.Log(self.group.inverse(x.value) @ self.value)
-        elif self.direction == "left":
-            raise NotImplementedError("Left perturbation not implemented.")
         return diff.ravel()
 
-    @staticmethod
     def jacobian_from_blocks(
-        attitude: np.ndarray = None,
-        position: np.ndarray = None,
+        self, attitude: np.ndarray = None,
+        position: np.ndarray = None, 
         velocity: np.ndarray = None,
     ):
         for jac in [attitude, position, velocity]:
             if jac is not None:
                 dim = jac.shape[0]
-
+            
         if attitude is None:
             attitude = np.zeros((dim, 3))
         if position is None:
             position = np.zeros((dim, 3))
-        if velocity is None:
-            velocity = np.zeros((dim, 3))
 
-        return np.block([attitude, velocity, position])
+        if self.group == SE3:
+            return np.block([attitude, position])
+        
+        elif self.group == SE23:
+            if velocity is None:
+                velocity = np.zeros((dim, 3))
+            return np.block([attitude, velocity, position])
 
 class CompositeState:
     """
     A "composite" state object intended to hold a list of poses
-    as a single state at a specific time.
+    as a single state.
     """
-
     def __init__(
-        self, state_list: List, stamp: float = None, state_id=None
-    ):
-        #:List[State]: The substates are the CompositeState's value.
+        self, state_list: List, stamp: float = None, state_id=None):
         self.value = state_list
         self.stamp = stamp
         self.state_id = state_id
-
-    @property
-    def dof(self):
-        return sum([x.dof for x in self.value])
+        self.dof = sum([x.dof for x in self.value])
 
     def get_slices(self) -> List[slice]:
-        """
-        Get slices for each state in the list of states.
-        """
         slices = []
         counter = 0
         for state in self.value:
             slices.append(slice(counter, counter + state.dof))
             counter += state.dof
-
         return slices
 
     def get_slice_by_id(self, state_id, slices=None):
-        """
-        Get slice of a particular state_id in the list of states.
-        """
-
+        # Get slice of a particular state_id in the list of states.
         if slices is None:
             slices = self.get_slices()
-
         idx = [x.state_id for x in self.value].index(state_id)
         return slices[idx]
 
@@ -243,39 +121,29 @@ class CompositeState:
         return self.value[idx]
 
     def copy(self) -> "CompositeState":
-        return self.__class__(
-            [state.copy() for state in self.value], self.stamp, self.state_id
-        )
+        return copy.deepcopy(self)
 
     def plus(self, dx, new_stamp: float = None) -> "CompositeState":
-        """
-        Updates the value of each sub-state given a dx. Interally parses
-        the dx vector.
-        """
+        # Updates the value of each sub-state given a dx.
         new = self.copy()
         for i, state in enumerate(new.value):
             new.value[i] = state.plus(dx[: state.dof])
             dx = dx[state.dof :]
-
         if new_stamp is not None:
             new.set_stamp_for_all(new_stamp)
-
         return new
 
     def minus(self, x: "CompositeState") -> np.ndarray:
         dx = []
         for i, v in enumerate(x.value):
             dx.append(
-                self.value[i].minus(x.value[i]).reshape((self.value[i].dof,))
-            )
-
+            self.value[i].minus(x.value[i]).reshape((self.value[i].dof,)))
         return np.concatenate(dx).reshape((-1, 1))
 
     def jacobian_from_blocks(self, block_dict: dict):
         """
         Returns the jacobian of the entire composite state given jacobians
-        associated with some of the substates. These are provided as a dictionary
-        with the the keys being the substate IDs.
+        associated with some of the substates.
         """
         block: np.ndarray = list(block_dict.values())[0]
         m = block.shape[0]  # Dimension of "y" value
@@ -284,31 +152,14 @@ class CompositeState:
         for state_id, block in block_dict.items():
             slc = self.get_slice_by_id(state_id, slices)
             jac[:, slc] = block
-
         return jac
 
 class StateWithCovariance:
-    """
-    A data container containing a State object and a covariance array.
-    """
+    # A data container containing a State object and a covariance array.
     def __init__(self, state, covariance: np.ndarray):
-        if covariance.shape[0] != covariance.shape[1]:
-            raise ValueError("covariance must be an n x n array.")
-        
-        if covariance.shape[0] != state.dof:
-            raise ValueError(
-                "Covariance matrix does not correspond with state DOF.")
-        
         self.state = state
         self.covariance = covariance
-
-    @property
-    def stamp(self):
-        return self.state.stamp
-
-    @stamp.setter
-    def stamp(self, stamp):
-        self.state.stamp = stamp
+        self.stamp = state.stamp
 
     def symmetrize(self):
         self.covariance = 0.5 * (self.covariance + self.covariance.T)
