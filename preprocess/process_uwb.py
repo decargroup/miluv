@@ -241,8 +241,6 @@ if __name__ == '__main__':
         print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
         sys.exit(1)
     path = sys.argv[1]
-    # path = '/media/syedshabbir/Seagate B/data/13'
-    
     process_uwb(path)
 
     # Remove the bagreader-generated UWB csv files

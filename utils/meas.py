@@ -7,7 +7,7 @@ from utils.models import (
 from miluv.data import DataLoader
 import copy
 
-""" Measurement and Measurements Models """
+""" Measurement Handlers """
 
 class Measurement:
     # A data container containing a measurement.

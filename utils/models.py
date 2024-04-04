@@ -23,14 +23,12 @@ class BodyFrameVelocity:
         return x
 
     def jacobian(
-        self, x, u: VectorInput, dt: float
-    ) -> np.ndarray:
+        self, x, u: VectorInput, dt: float) -> np.ndarray:
         if x.direction == "right":
             return x.group.adjoint(x.group.Exp(-u.value * dt))
         
     def covariance(
-        self, x, u: VectorInput, dt: float
-    ) -> np.ndarray:
+        self, x, u: VectorInput, dt: float) -> np.ndarray:
         if x.direction == "right":
             L = dt * x.group.left_jacobian(-u.value * dt)
 

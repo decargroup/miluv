@@ -61,7 +61,6 @@ class IMUState(CompositeState):
             bias_gyro = np.zeros((dim, 3))
         if bias_accel is None:
             bias_accel = np.zeros((dim, 3))
-
         return np.hstack([SE23_state_jac, bias_gyro, bias_accel])
 
 def get_unbiased_imu(x: IMUState, u: IMU) -> IMU:

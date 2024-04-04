@@ -9,5 +9,8 @@ src/simulated_ekf_vel.py
 src/example_ekf_nobias.py
 range_data.csv
 src/results
+src/figures
 src/plot.py
 utils/range_data.py
+src/ekf_imu.bash
+src/ekf_vio.bash

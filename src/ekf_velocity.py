@@ -36,13 +36,10 @@ import os
 import sys
 import pickle
 import argparse
-import yaml
 
-def read_vio_yaml(exp_name:str, exp_dir:str, robot:str) -> pd.DataFrame:
-    """Read a yaml file for a given robot and topic."""
-    path = "vio/" + exp_name + "/" + robot + "_alignment_pose.yaml"
-    path = os.path.join(exp_dir, path)
-    return yaml.safe_load(open(path, 'r'))
+""" 
+All Matrix Lie groups are perturbed in the right direction.
+"""
 
 # Set the plotting environment
 set_plotting_env()
@@ -50,68 +47,63 @@ plt.rcParams.update({'font.size': 10})
 
 # plots
 ekf = True
-trajectory_plot = False
 error_plot = True
-vio_plot = False
-imu_plot = False
-save_fig = False
-body_frame_vel = False
-height_plot = False
+save_fig = True
 save_results = False
 
 
 """ Get data """
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--exp', required=True)
-# args = parser.parse_args()
-# exp = args.exp
-exp = "1c"
+parser = argparse.ArgumentParser()
+parser.add_argument('--exp', required=True)
+args = parser.parse_args()
+exp = args.exp
 folder = "/media/syedshabbir/Seagate B/data"
 miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+
+# Preliminaries
 robots = list(miluv.data.keys())
 input_sensor = "vio"
-start_time, end_time = miluv.get_timerange(
-                            sensors = input_sensor,)
-end_time = end_time - 50
-
 input_freq = 30
-query_stamps = np.arange(start_time, end_time, 1/input_freq)
 
-# Get input data
-vio = miluv.by_timestamps(query_stamps, sensors=input_sensor)
-imus = miluv.by_timestamps(query_stamps, sensors=["imu_px4"])
+# Get the time range
+start_time, end_time = miluv.get_timerange(
+                        sensors = input_sensor,)
+end_time = end_time - 5
+query_stamps = np.arange(start_time, 
+                         end_time, 
+                         1/input_freq)
 
-mag = miluv.by_timerange(start_time, end_time, sensors=["mag"])
-mag = [mag.data[robot]["mag"] for robot in robots]
+""" Get Data """
+vio = miluv.by_timestamps(query_stamps, 
+                          sensors=input_sensor)
 
-accel = miluv.by_timerange(start_time, end_time, sensors=["imu_px4"])
+imus = miluv.by_timestamps(query_stamps, 
+                           sensors=["imu_px4"])
 
-height = miluv.by_timerange(start_time, end_time, sensors=["height"])
+height = miluv.by_timerange(start_time, 
+                            end_time, 
+                            sensors=["height"])
+
 height = [height.data[robot]["height"] for robot in robots]
 min_height = [h['range'].min() for h in height]
 
-# Get pose data
 pose = [miluv.data[robot]["mocap"].pose_matrix(
-                            query_stamps) for robot in robots]
-position = [miluv.data[robot]["mocap"].position(
-                            query_stamps) for robot in robots]
-angular_velocity = [miluv.data[robot]["mocap"].angular_velocity(
-                            query_stamps) for robot in robots]
-velocity = [miluv.data[robot]["mocap"].velocity(
-                            query_stamps) for robot in robots]
+        query_stamps) for robot in robots]
     
-
-# Get range data
 range_data = RangeData(miluv)
 range_data = range_data.filter_by_bias( max_bias=0.3)
 range_data = range_data.by_timerange(start_time, end_time,
                                      sensors=["uwb_range"])
+""" Set Data """
+
+# Range measurements
 meas_data = range_data.to_measurements(
     reference_id = 'world')
 
-R = [3*0.1, 3*0.1, 10*0.1]
-bias = [height[n]['range'].mean() - position[n][:,2].mean() for n in range(len(robots))]
-# bias = [-0.0924, -0.0088, -0.1207]
+
+# Height measurements
+R = [3*0.1, 3*0.1, 3*0.1]
+bias = [-0.0924, -0.0088, -0.1207]
 for n, robot in enumerate(robots):
     for i in range(len(height[n])):
         y = Measurement(value = height[n].iloc[i]['range'],
@@ -159,18 +151,19 @@ input_data = []
 for i in range(len(query_stamps)):
     u = [VectorInput(
         value = np.hstack((
-        # angular_velocity[n][i],
+
         imus.data[robot]["imu_px4"].iloc[i][
         ['angular_velocity.x', 
         'angular_velocity.y', 
         'angular_velocity.z']].values, 
 
-        (pose[n][i][:3,:3].T @ 
+        (pose[n][i][:3,:3].T @ # Rotate to body frame
          (vio.data[robot]['vio'].iloc[i][
-        ['twist.linear.x', 'twist.linear.y', 'twist.linear.z']].values).
-        reshape(-1,1)).ravel(),
-    #    velocity[n][:,i],
-                            )),
+        ['twist.linear.x', 
+         'twist.linear.y', 
+         'twist.linear.z']].values).
+        reshape(-1,1)).ravel(),)),
+
         stamp = query_stamps[i], 
         state_id = robot)
         for n, robot in enumerate(robots)
@@ -215,6 +208,9 @@ if ekf:
     results = GaussianResultList(results_list)
 
 """ Print position RMSE """
+script_dir = os.path.dirname(
+    os.path.abspath(sys.argv[0]))
+
 if ekf:
     pos_rmse = {robot: {} for robot in robots}
     dof = 3
@@ -223,16 +219,12 @@ if ekf:
                         for r in results.state])
         true_pos = np.array([r.get_state_by_id(robot).value[0:3,-1] 
                              for r in results.state_true])
-        error = pos - true_pos
-        pos_rmse[robot] = np.sqrt(np.mean([e.T @ e / dof for e in error]))
-
-        error = error.ravel()
-        # pos_rmse[robot] = np.sqrt(error.T @ error / len(error))
+        error = (pos - true_pos).ravel()
+        pos_rmse[robot] = np.sqrt(error.T @ error / len(error))
     for robot in robots:
         print(f"Position RMSE for Experiment: {exp} and robot {robot}: {pos_rmse[robot]} m")
 
 if ekf and save_results:
-    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     folder = os.path.join(script_dir, f'results')
     os.umask(0)
     os.makedirs(folder, exist_ok=True)
@@ -266,73 +258,19 @@ if ekf and error_plot:
             j += 1
             if j == len(titles):
                 j = 0
-    
+         
     # Have one legend for each figure
     for i, (fig, axs) in enumerate(figs):
         for ax in axs:
             for a in ax:
                 if a == axs[0,-1]:
                     a.legend([robots[i]], handlelength=0)
-    
-
-if body_frame_vel:
-    for n, robot in enumerate(robots):
-        fig, ax = plt.subplots(3, 2)
-        ax[0,0].plot(query_stamps, angular_velocity[n][:,0], label="roll")
-        ax[1,0].plot(query_stamps, angular_velocity[n][:,1], label="pitch")
-        ax[2,0].plot(query_stamps, angular_velocity[n][:,2], label="yaw")
-        ax[0,1].plot(query_stamps, velocity[n][0,:], label="x")
-        ax[1,1].plot(query_stamps, velocity[n][1,:], label="y")
-        ax[2,1].plot(query_stamps, velocity[n][2,:], label="z")
-
-if imu_plot:
-    for n, robot in enumerate(robots):
-        fig, ax = plt.subplots(3)
-        ax[0].plot(query_stamps, angular_velocity[n][:,0], label="roll")
-        ax[0].plot(query_stamps, imus.data[robot]['imu_px4']['angular_velocity.x'].values, label="imu")
-        ax[1].plot(query_stamps, angular_velocity[n][:,1], label="pitch")
-        ax[1].plot(query_stamps, imus.data[robot]['imu_px4']['angular_velocity.y'].values, label="imu")
-        ax[2].plot(query_stamps, angular_velocity[n][:,2], label="yaw")
-        ax[2].plot(query_stamps, imus.data[robot]['imu_px4']['angular_velocity.z'].values, label="imu")
-
-if vio_plot:
-    for n, robot in enumerate(robots):
-
-        fig, ax = plt.subplots(3)
-        vins_velocity = []
-        vio_data = vio.data[robot]['vio'][['twist.linear.x', 'twist.linear.y', 'twist.linear.z']].values
-        # for v in vio_data:
-        #     vins_velocity.append((offset[robot]['C_vm'].T @ v.reshape(-1,1)).ravel())
-        for v in vio_data:
-            vins_velocity.append(v.ravel())
-        vins_velocity = np.array(vins_velocity)
-        ax[0].plot(query_stamps, velocity[n][:,0], label="true")
-        # ax[0].plot(query_stamps, velocity[n][0,:], label="true")
-        # ax[0].plot(query_stamps, vio.data[robot]['vio']['velocity.x'].values, label="vio")
-        ax[0].plot(query_stamps, vins_velocity[:,0], label="vio")
-        ax[0].set_ylabel("x (m/s)")
-        ax[1].plot(query_stamps, velocity[n][:,1])
-        # ax[1].plot(query_stamps, velocity[n][1,:], label="true")
-        # ax[1].plot(query_stamps, vio.data[robot]['vio']['velocity.y'].values)
-        ax[1].plot(query_stamps, vins_velocity[:,1])
-        ax[1].set_ylabel("y (m/s)")
-        ax[2].plot(query_stamps, velocity[n][:,2])
-        # ax[2].plot(query_stamps, velocity[n][2,:], label="true")
-        # ax[2].plot(query_stamps, vio.data[robot]['vio']['velocity.z'].values)
-        ax[2].plot(query_stamps, vins_velocity[:,2])
-        ax[2].set_ylabel("z (m/s)")
-        for a in ax:
-            a.legend(loc = "upper right")
-            a.set_xlabel("Time (s)")
-if height_plot:
-    for n, robot in enumerate(robots):
-        fig, ax = plt.subplots(1)
-        ax.plot(query_stamps, position[n][:,2], label="true")
-        ax.plot(height[n]['timestamp'], height[n]['range'], label="range")
-        ax.set_ylabel("z (m)")
-        ax.legend(loc = "upper right")
-        ax.set_xlabel("Time (s)")
-        ax.set_ylim(ymin = 0)
-
+                    
+    if save_fig:      
+        figs_folder = os.path.join(script_dir, 'figures')
+        os.umask(0)
+        os.makedirs(figs_folder, exist_ok=True)      
+        for i, (fig, axs) in enumerate(figs):
+            plt.savefig(os.path.join(figs_folder, f'error_vio_{exp}_{robots[i]}.png'))
 
 plt.show()

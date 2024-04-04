@@ -37,7 +37,7 @@ import os
 import sys
 import pickle
 import argparse
-import csv
+
 
 """ 
 All Matrix Lie groups are perturbed in the right direction.
@@ -50,72 +50,68 @@ plt.rcParams.update({'font.size': 10})
 
 # plots
 ekf = True
-imu_plot = False
-trajectory_plot = False
 error_plot = True
-save_fig = False
+save_fig = True
 save_results = False
 
 
-# """ Get data """
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--exp', required=True)
-# args = parser.parse_args()
-# exp = args.exp
-exp = "1c"
+""" Get data """
+parser = argparse.ArgumentParser()
+parser.add_argument('--exp', required=True)
+args = parser.parse_args()
+exp = args.exp
 folder = "/media/syedshabbir/Seagate B/data"
 miluv = DataLoader(exp, exp_dir = folder, barometer = False)
+
+# Preliminaries
 robots = list(miluv.data.keys())
 input_sensor = "imu_px4"
 input_freq = 190
 
 # Get the time range
 start_time, end_time = miluv.get_timerange(
-                            sensors = input_sensor)
+                      sensors = input_sensor)
 end_time = end_time - 5
-query_stamps = np.arange(start_time, end_time, 1/input_freq)
+query_stamps = np.arange(start_time, 
+                         end_time, 
+                         1/input_freq)
 
-# Get input data
-imus = miluv.by_timestamps(query_stamps, sensors=input_sensor)
+""" Get Data """
+imus = miluv.by_timestamps(query_stamps, 
+                           sensors=input_sensor)
 
-mag = miluv.by_timerange(start_time, end_time, sensors=["mag"])
-mag = [mag.data[robot]["mag"] for robot in robots]
+height = miluv.by_timerange(start_time, 
+                            end_time, 
+                            sensors=["height"])
 
-height = miluv.by_timerange(start_time, end_time, sensors=["height"])
 height = [height.data[robot]["height"] for robot in robots]
 min_height = [h['range'].min() for h in height]
 
-# Get pose data
 pose = [miluv.data[robot]["mocap"].extended_pose_matrix(
-                            query_stamps) for robot in robots]
-position = [miluv.data[robot]["mocap"].position(
-                            query_stamps) for robot in robots]
-gyro = [miluv.data[robot]["mocap"].angular_velocity(
-    query_stamps) for robot in robots]
-accel = [miluv.data[robot]["mocap"].accelerometer(
-    query_stamps) for robot in robots]
+        query_stamps) for robot in robots]
 
-
-# Get range data
 range_data = RangeData(miluv)
 range_data = range_data.filter_by_bias( max_bias=0.3)
 range_data = range_data.by_timerange(start_time, 
                                      end_time, 
                                      sensors=["uwb_range"])
+""" Set Data """
+
+# Range measurements
 meas_data = range_data.to_measurements(
     reference_id = 'world')
 
+# Height measurements
 R = [3*0.1, 3*0.1, 3*0.1]
-# bias = [-0.0924, -0.0088, -0.1207]
-bias = [height[n]['range'].mean() - position[n][:,2].mean() for n in range(len(robots))]
+bias = [-0.0924, -0.0088, -0.1207]
 for n, robot in enumerate(robots):
     for i in range(len(height[n])):
         y = Measurement(value = height[n].iloc[i]['range'],
-                            stamp = height[n].iloc[i]['timestamp'],
-                            model = AltitudeById(R = R[n], 
-                            state_id = robot,
-                            minimum=min_height[n],
-                            bias = bias[n]))
+                        stamp = height[n].iloc[i]['timestamp'],
+                        model = AltitudeById(R = R[n], 
+                        state_id = robot,
+                        minimum=min_height[n],
+                        bias = bias[n]))
         meas_data.append(y)
 
 # sort the measurements
@@ -181,15 +177,13 @@ for i in range(len(query_stamps)):
             ['angular_velocity.x', 
              'angular_velocity.y', 
              'angular_velocity.z']].values, 
-        # gyro = gyro[n][i],
         accel= imus.data[robot][input_sensor].iloc[i][
             ['linear_acceleration.x', 
              'linear_acceleration.y', 
              'linear_acceleration.z']].values,
-        # accel = accel[n][i],
         stamp = query_stamps[i], 
         state_id = robot)
-        for n, robot in enumerate(robots)
+        for robot in robots
         ]
     
     input_data.append(CompositeInput(u))
@@ -231,6 +225,9 @@ if ekf:
     results = GaussianResultList(results_list)
 
 """ Print position RMSE """
+script_dir = os.path.dirname(
+    os.path.abspath(sys.argv[0]))
+
 if ekf:
     pos_rmse = {robot: {} for robot in robots}
     dof = 3
@@ -239,18 +236,13 @@ if ekf:
                         for r in results.state])
         true_pos = np.array([r.get_state_by_id(robot).value[0].value[0:3, -1]
                              for r in results.state_true])
-        error = pos - true_pos
-        pos_rmse[robot] = np.sqrt(np.mean([e.T @ e / dof for e in error]))
+        error = (pos - true_pos).ravel()
+        pos_rmse[robot] = np.sqrt(error.T @ error / len(error))
+
     for robot in robots:
         print(f"Position RMSE for Experiment: {exp} and robot {robot}: {pos_rmse[robot]} m")
-        filename = 'results_imu.csv'
-        if not os.path.isfile(filename):
-            with open(filename, 'w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow([f"{exp}",f"{robot}",f"{pos_rmse[robot]}"])
 
 if ekf and save_results:
-    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
     folder = os.path.join(script_dir, f'results')
     os.umask(0)
     os.makedirs(folder, exist_ok=True)
@@ -280,14 +272,18 @@ if ekf and error_plot:
             j += 1
             if j == len(titles):
                 j = 0
-    
+         
     # Have one legend for each figure
     for i, (fig, axs) in enumerate(figs):
         for ax in axs:
             for a in ax:
                 if a == axs[0,-1]:
                     a.legend([robots[i]], handlelength=0)
-        if save_fig:
-            plt.savefig(f'./figures/error_' + robots[i] + '_' + init_stamp + '.png')
+    if save_fig:      
+        figs_folder = os.path.join(script_dir, 'figures')
+        os.umask(0)
+        os.makedirs(figs_folder, exist_ok=True)      
+        for i, (fig, axs) in enumerate(figs):
+            plt.savefig(os.path.join(figs_folder, f'error_imu_{exp}_{robots[i]}.png'))
 
 plt.show()

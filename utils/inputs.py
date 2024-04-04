@@ -12,9 +12,7 @@ class VectorInput:
     # Generic data container for timestamped information.
     def __init__(self, value: np.ndarray, stamp: float = None,
         state_id: Any = None, covariance=None,):
-        if not isinstance(value, np.ndarray):
-            value = np.array(value, dtype=np.float64)
-        self.value = value
+        self.value = np.array(value).ravel()
         self.dof = value.size
         self.stamp = stamp
         self.state_id = state_id
