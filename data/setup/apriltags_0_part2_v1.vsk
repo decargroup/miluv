@@ -1,0 +1,863 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<KinematicModel VERSION="3.2">
+	<Parameters>
+		<Parameter NAME="apriltags_00_1_apriltags_00_11_x" VALUE="-210.947509765625" PRIOR="-210.947509765625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_11_y" VALUE="2453.81103515625" PRIOR="2453.81103515625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_11_z" VALUE="-3.7983989715576172" PRIOR="-3.7983989715576172" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_12_x" VALUE="538.659423828125" PRIOR="538.659423828125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_12_y" VALUE="2485.775390625" PRIOR="2485.775390625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_12_z" VALUE="2.5332698822021484" PRIOR="2.5332698822021484" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_13_x" VALUE="1564.3946533203125" PRIOR="1564.3946533203125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_13_y" VALUE="2375.677001953125" PRIOR="2375.677001953125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_13_z" VALUE="0.95366001129150391" PRIOR="0.95366001129150391" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_14_x" VALUE="976.60015869140625" PRIOR="976.60015869140625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_14_y" VALUE="1756.2149658203125" PRIOR="1756.2149658203125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_14_z" VALUE="0.58828926086425781" PRIOR="0.58828926086425781" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_15_x" VALUE="353.95819091796875" PRIOR="353.95819091796875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_15_y" VALUE="1672.8018798828125" PRIOR="1672.8018798828125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_15_z" VALUE="1.3225898742675781" PRIOR="1.3225898742675781" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_16_x" VALUE="-265.8271484375" PRIOR="-265.8271484375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_16_y" VALUE="1691.1005859375" PRIOR="1691.1005859375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_16_z" VALUE="4.3601226806640625" PRIOR="4.3601226806640625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_17_x" VALUE="-720.6671142578125" PRIOR="-720.6671142578125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_17_y" VALUE="2030.2398681640625" PRIOR="2030.2398681640625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_17_z" VALUE="-0.58071422576904297" PRIOR="-0.58071422576904297" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_18_x" VALUE="-36.568096160888672" PRIOR="-36.568096160888672" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_18_y" VALUE="1073.6795654296875" PRIOR="1073.6795654296875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_18_z" VALUE="3.7872657775878906" PRIOR="3.7872657775878906" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_19_x" VALUE="813.982666015625" PRIOR="813.982666015625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_19_y" VALUE="1134.7491455078125" PRIOR="1134.7491455078125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_19_z" VALUE="3.0895528793334961" PRIOR="3.0895528793334961" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_110_x" VALUE="1528.583984375" PRIOR="1528.583984375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_110_y" VALUE="1100.371337890625" PRIOR="1100.371337890625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_110_z" VALUE="-1.8193645477294922" PRIOR="-1.8193645477294922" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_111_x" VALUE="635.81195068359375" PRIOR="635.81195068359375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_111_y" VALUE="481.28472900390625" PRIOR="481.28472900390625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_111_z" VALUE="8.6129846572875977" PRIOR="8.6129846572875977" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_112_x" VALUE="1116.452392578125" PRIOR="1116.452392578125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_112_y" VALUE="101.13076019287109" PRIOR="101.13076019287109" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_112_z" VALUE="10.383894920349121" PRIOR="10.383894920349121" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_113_x" VALUE="288.08200073242187" PRIOR="288.08200073242187" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_113_y" VALUE="154.29550170898437" PRIOR="154.29550170898437" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_113_z" VALUE="15.961651802062988" PRIOR="15.961651802062988" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_114_x" VALUE="-725.991455078125" PRIOR="-725.991455078125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_114_y" VALUE="595.73602294921875" PRIOR="595.73602294921875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_114_z" VALUE="10.252772331237793" PRIOR="10.252772331237793" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_115_x" VALUE="-347.57431030273437" PRIOR="-347.57431030273437" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_115_y" VALUE="123.18991088867187" PRIOR="123.18991088867187" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_115_z" VALUE="12.539886474609375" PRIOR="12.539886474609375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_116_x" VALUE="-1041.84765625" PRIOR="-1041.84765625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_116_y" VALUE="-175.71897888183594" PRIOR="-175.71897888183594" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_116_z" VALUE="20.745391845703125" PRIOR="20.745391845703125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_117_x" VALUE="-194.69992065429687" PRIOR="-194.69992065429687" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_117_y" VALUE="-550.35894775390625" PRIOR="-550.35894775390625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_117_z" VALUE="14.980977058410645" PRIOR="14.980977058410645" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_118_x" VALUE="332.1341552734375" PRIOR="332.1341552734375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_118_y" VALUE="-822.51611328125" PRIOR="-822.51611328125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_118_z" VALUE="21.604785919189453" PRIOR="21.604785919189453" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_119_x" VALUE="654.0262451171875" PRIOR="654.0262451171875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_119_y" VALUE="-1343.81787109375" PRIOR="-1343.81787109375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_119_z" VALUE="23.36042594909668" PRIOR="23.36042594909668" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_120_x" VALUE="1729.4287109375" PRIOR="1729.4287109375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_120_y" VALUE="-1699.3905029296875" PRIOR="-1699.3905029296875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_120_z" VALUE="20.139749526977539" PRIOR="20.139749526977539" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_121_x" VALUE="1365.2947998046875" PRIOR="1365.2947998046875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_121_y" VALUE="-1082.0595703125" PRIOR="-1082.0595703125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_121_z" VALUE="16.280612945556641" PRIOR="16.280612945556641" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_122_x" VALUE="1688.0037841796875" PRIOR="1688.0037841796875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_122_y" VALUE="-479.13372802734375" PRIOR="-479.13372802734375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_122_z" VALUE="15.00689697265625" PRIOR="15.00689697265625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_123_x" VALUE="1733.0203857421875" PRIOR="1733.0203857421875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_123_y" VALUE="258.507080078125" PRIOR="258.507080078125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_123_z" VALUE="7.4773654937744141" PRIOR="7.4773654937744141" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_124_x" VALUE="-201.51351928710937" PRIOR="-201.51351928710937" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_124_y" VALUE="-1501.502685546875" PRIOR="-1501.502685546875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_124_z" VALUE="27.778230667114258" PRIOR="27.778230667114258" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_125_x" VALUE="278.14447021484375" PRIOR="278.14447021484375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_125_y" VALUE="-1934.663330078125" PRIOR="-1934.663330078125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_125_z" VALUE="28.771961212158203" PRIOR="28.771961212158203" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_126_x" VALUE="966.0777587890625" PRIOR="966.0777587890625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_126_y" VALUE="-2143.151123046875" PRIOR="-2143.151123046875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_126_z" VALUE="26.785470962524414" PRIOR="26.785470962524414" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_127_x" VALUE="-468.498779296875" PRIOR="-468.498779296875" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_127_y" VALUE="-2248.001220703125" PRIOR="-2248.001220703125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_127_z" VALUE="31.932945251464844" PRIOR="31.932945251464844" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_128_x" VALUE="-809.31207275390625" PRIOR="-809.31207275390625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_128_y" VALUE="-1732.8880615234375" PRIOR="-1732.8880615234375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_128_z" VALUE="30.063562393188477" PRIOR="30.063562393188477" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_129_x" VALUE="-1188.1685791015625" PRIOR="-1188.1685791015625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_129_y" VALUE="-2112.124267578125" PRIOR="-2112.124267578125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_129_z" VALUE="35.566097259521484" PRIOR="35.566097259521484" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_130_x" VALUE="-1290.596923828125" PRIOR="-1290.596923828125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_130_y" VALUE="-677.0299072265625" PRIOR="-677.0299072265625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_130_z" VALUE="31.49736213684082" PRIOR="31.49736213684082" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_131_x" VALUE="-1349.9359130859375" PRIOR="-1349.9359130859375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_131_y" VALUE="1057.5579833984375" PRIOR="1057.5579833984375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_131_z" VALUE="11.461898803710938" PRIOR="11.461898803710938" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_132_x" VALUE="-1366.2115478515625" PRIOR="-1366.2115478515625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_132_y" VALUE="1831.61083984375" PRIOR="1831.61083984375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_132_z" VALUE="3.0862197875976562" PRIOR="3.0862197875976562" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_133_x" VALUE="-851.75390625" PRIOR="-851.75390625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_133_y" VALUE="1301.24853515625" PRIOR="1301.24853515625" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_133_z" VALUE="13.432086944580078" PRIOR="13.432086944580078" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_134_x" VALUE="-1337.9603271484375" PRIOR="-1337.9603271484375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_134_y" VALUE="2521.001708984375" PRIOR="2521.001708984375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_134_z" VALUE="4.8069362640380859" PRIOR="4.8069362640380859" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_135_x" VALUE="-938.328125" PRIOR="-938.328125" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_135_y" VALUE="-1162.974609375" PRIOR="-1162.974609375" HIDDEN="true"/>
+		<Parameter NAME="apriltags_00_1_apriltags_00_135_z" VALUE="22.637435913085938" PRIOR="22.637435913085938" HIDDEN="true"/>
+	</Parameters>
+	<Skeleton>
+		<Segment NAME="apriltags_00_1" OPACITY="255" BOUNDS="-50 -50 -50 50 50 50" MASS="0" MASS-CENTRE="0 0 0" INERTIA="0 0 0" RGB="255 164 0" HIDDEN="false" DRAW-END-RATIO="1" DRAW-HEIGHT="0.5" DRAW-TWIST="0" DRAW-WIDTH="0.5" DRAW-STYLE="box" DRAW-SHADING="shaded-smooth">
+			<JointFree NAME="World_apriltags_00_1" PRE-ORIENTATION="0 0 0" PRE-POSITION="0 0 0" INVERSE-POST-ORIENTATION="0 0 0" INVERSE-POST-POSITION="0 0 0" MEAN="0 0 0 0 0 0" COVARIANCE="2.464900016784668 0 0 0 0 0 0 2.464900016784668 0 0 0 0 0 0 246.49000549316406 0 0 0 0 0 0 1000000 0 0 0 0 0 0 1000000 0 0 0 0 0 0 1000000" T="* * * * * *" SIGNS="+ + + + + +" RANGE-CENTRING-STATE="0 0 0 0 0 0" RANGE-MATRIX="29.60881233215332 0 0 0 0 0 0 29.60881233215332 0 0 0 0 0 0 29.60881233215332 0 0 0 0 0 0 100000000 0 0 0 0 0 0 100000000 0 0 0 0 0 0 100000000">
+				<JointTemplate MEAN="0 0 0 0 0 0" COVARIANCE="2.464900016784668 0 0 0 0 0 0 2.464900016784668 0 0 0 0 0 0 246.49000549316406 0 0 0 0 0 0 1000000 0 0 0 0 0 0 1000000 0 0 0 0 0 0 1000000" TPOSE-MEAN="0 0 0 0 0 0" TPOSE-COVARIANCE="0.10000000149011612 0 0 0 0 0 0 0.10000000149011612 0 0 0 0 0 0 0.10000000149011612 0 0 0 0 0 0 0.10000000149011612 0 0 0 0 0 0 0.10000000149011612 0 0 0 0 0 0 0.10000000149011612" PRE-ORIENTATION="0 0 0" PRE-POSITION="0 0 0" INVERSE-POST-ORIENTATION="0 0 0" INVERSE-POST-POSITION="0 0 0"/>
+			</JointFree>
+		</Segment>
+	</Skeleton>
+	<MarkerSet>
+		<Markers>
+			<Marker NAME="apriltags_25" RADIUS="12.5" RGB="255 164 0" STATUS="required" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_27" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_42" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_43" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_46" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_19" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_18" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_24" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_30" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_20" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_14" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_21" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_29" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_37" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_34" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_0" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_41" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_35" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_38" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_33" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_26" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_44" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_31" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_28" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_39" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_1" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_40" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_45" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_22" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_17" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_16" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_15" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_36" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_32" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+			<Marker NAME="apriltags_23" RADIUS="12.5" RGB="255 164 0" STATUS="optional" VIEW-ANGLE="0"/>
+		</Markers>
+		<Sticks>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_27" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_42" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_43" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_46" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_19" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_18" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_24" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_30" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_20" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_25" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_42" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_43" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_46" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_19" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_18" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_24" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_30" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_20" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_27" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_43" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_46" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_19" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_18" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_24" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_30" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_20" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_42" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_46" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_19" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_18" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_24" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_30" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_20" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_43" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_19" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_18" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_24" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_30" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_20" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_46" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_18" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_24" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_30" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_20" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_19" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_24" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_30" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_20" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_18" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_30" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_20" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_24" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_20" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_30" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_14" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_20" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_21" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_14" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_29" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_21" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_37" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_29" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_34" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_37" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_0" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_34" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_41" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_0" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_35" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_41" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_38" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_35" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_33" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_38" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_26" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_33" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_44" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_26" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_31" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_44" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_28" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_31" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_39" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_28" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_1" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_39" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_1" MARKER2="apriltags_40" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_1" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_1" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_1" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_1" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_1" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_1" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_1" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_1" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_40" MARKER2="apriltags_45" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_40" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_40" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_40" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_40" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_40" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_40" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_40" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_45" MARKER2="apriltags_22" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_45" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_45" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_45" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_45" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_45" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_45" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_22" MARKER2="apriltags_17" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_22" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_22" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_22" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_22" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_22" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_17" MARKER2="apriltags_16" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_17" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_17" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_17" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_17" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_16" MARKER2="apriltags_15" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_16" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_16" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_16" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_15" MARKER2="apriltags_36" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_15" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_15" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_36" MARKER2="apriltags_32" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_36" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+			<Stick MARKER1="apriltags_32" MARKER2="apriltags_23" RGB1="255 164 0" RGB2="255 164 0"/>
+		</Sticks>
+	</MarkerSet>
+	<TargetSet>
+		<Targets>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_25" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_11_x' 'apriltags_00_1_apriltags_00_11_y' 'apriltags_00_1_apriltags_00_11_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_27" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_12_x' 'apriltags_00_1_apriltags_00_12_y' 'apriltags_00_1_apriltags_00_12_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_42" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_13_x' 'apriltags_00_1_apriltags_00_13_y' 'apriltags_00_1_apriltags_00_13_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_43" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_14_x' 'apriltags_00_1_apriltags_00_14_y' 'apriltags_00_1_apriltags_00_14_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_46" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_15_x' 'apriltags_00_1_apriltags_00_15_y' 'apriltags_00_1_apriltags_00_15_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_19" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_16_x' 'apriltags_00_1_apriltags_00_16_y' 'apriltags_00_1_apriltags_00_16_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_18" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_17_x' 'apriltags_00_1_apriltags_00_17_y' 'apriltags_00_1_apriltags_00_17_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_24" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_18_x' 'apriltags_00_1_apriltags_00_18_y' 'apriltags_00_1_apriltags_00_18_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_30" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_19_x' 'apriltags_00_1_apriltags_00_19_y' 'apriltags_00_1_apriltags_00_19_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_20" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_110_x' 'apriltags_00_1_apriltags_00_110_y' 'apriltags_00_1_apriltags_00_110_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_14" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_111_x' 'apriltags_00_1_apriltags_00_111_y' 'apriltags_00_1_apriltags_00_111_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_21" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_112_x' 'apriltags_00_1_apriltags_00_112_y' 'apriltags_00_1_apriltags_00_112_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_29" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_113_x' 'apriltags_00_1_apriltags_00_113_y' 'apriltags_00_1_apriltags_00_113_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_37" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_114_x' 'apriltags_00_1_apriltags_00_114_y' 'apriltags_00_1_apriltags_00_114_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_34" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_115_x' 'apriltags_00_1_apriltags_00_115_y' 'apriltags_00_1_apriltags_00_115_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_0" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_116_x' 'apriltags_00_1_apriltags_00_116_y' 'apriltags_00_1_apriltags_00_116_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_41" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_117_x' 'apriltags_00_1_apriltags_00_117_y' 'apriltags_00_1_apriltags_00_117_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_35" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_118_x' 'apriltags_00_1_apriltags_00_118_y' 'apriltags_00_1_apriltags_00_118_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_38" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_119_x' 'apriltags_00_1_apriltags_00_119_y' 'apriltags_00_1_apriltags_00_119_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_33" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_120_x' 'apriltags_00_1_apriltags_00_120_y' 'apriltags_00_1_apriltags_00_120_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_26" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_121_x' 'apriltags_00_1_apriltags_00_121_y' 'apriltags_00_1_apriltags_00_121_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_44" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_122_x' 'apriltags_00_1_apriltags_00_122_y' 'apriltags_00_1_apriltags_00_122_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_31" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_123_x' 'apriltags_00_1_apriltags_00_123_y' 'apriltags_00_1_apriltags_00_123_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_28" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_124_x' 'apriltags_00_1_apriltags_00_124_y' 'apriltags_00_1_apriltags_00_124_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_39" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_125_x' 'apriltags_00_1_apriltags_00_125_y' 'apriltags_00_1_apriltags_00_125_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_1" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_126_x' 'apriltags_00_1_apriltags_00_126_y' 'apriltags_00_1_apriltags_00_126_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_40" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_127_x' 'apriltags_00_1_apriltags_00_127_y' 'apriltags_00_1_apriltags_00_127_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_45" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_128_x' 'apriltags_00_1_apriltags_00_128_y' 'apriltags_00_1_apriltags_00_128_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_22" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_129_x' 'apriltags_00_1_apriltags_00_129_y' 'apriltags_00_1_apriltags_00_129_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_17" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_130_x' 'apriltags_00_1_apriltags_00_130_y' 'apriltags_00_1_apriltags_00_130_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_16" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_131_x' 'apriltags_00_1_apriltags_00_131_y' 'apriltags_00_1_apriltags_00_131_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_15" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_132_x' 'apriltags_00_1_apriltags_00_132_y' 'apriltags_00_1_apriltags_00_132_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_36" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_133_x' 'apriltags_00_1_apriltags_00_133_y' 'apriltags_00_1_apriltags_00_133_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_32" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_134_x' 'apriltags_00_1_apriltags_00_134_y' 'apriltags_00_1_apriltags_00_134_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+			<TargetLocalPointToWorldPoint COVARIANCE="1 0 0 0 1 0 0 0 1" FILL-GAPS="false" GAUSSIAN="true" HIDDEN="false" MARKER="apriltags_23" OPACITY="255" POSITION="'apriltags_00_1_apriltags_00_135_x' 'apriltags_00_1_apriltags_00_135_y' 'apriltags_00_1_apriltags_00_135_z'" RGB="93 93 93" SEGMENT="apriltags_00_1" WEIGHT="1" DRAW-STYLE="None">
+				<TargetLocalPointToWorldPointTemplate COVARIANCE="1 0 0 0 1 0 0 0 1"/>
+			</TargetLocalPointToWorldPoint>
+		</Targets>
+	</TargetSet>
+</KinematicModel>
+

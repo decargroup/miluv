@@ -3,7 +3,7 @@ import sys
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-from utils.meas import plot_error
+from utils.misc import plot_error
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 folder = os.path.join(script_dir, f'results')
 # robots = ["ifo001", "ifo002", "ifo003"]

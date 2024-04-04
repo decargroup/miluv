@@ -1,0 +1,33 @@
+#ACCELEROMETER:
+X Velocity Random Walk:  0.00124 m/s/sqrt(s)  0.07441 m/s/sqrt(hr)
+Y Velocity Random Walk:  0.00174 m/s/sqrt(s)  0.10461 m/s/sqrt(hr)
+Z Velocity Random Walk:  0.00182 m/s/sqrt(s)  0.10903 m/s/sqrt(hr)
+
+X Bias Correlation Time:  31.30000 s  0.00869 hr
+Y Bias Correlation Time:  25.90000 s  0.00719 hr
+Z Bias Correlation Time:  20.50000 s  0.00569 hr
+
+X Bias Instability:  0.00032 m/s^2  4173.79781 m/hr^2
+Y Bias Instability:  0.00067 m/s^2  8664.30562 m/hr^2
+Z Bias Instability:  0.00062 m/s^2  8061.85483 m/hr^2
+
+X Accel Random Walk:  0.00012 m/s^2/sqrt(s)
+Y Accel Random Walk:  0.00009 m/s^2/sqrt(s)
+Z Accel Random Walk:  0.00021 m/s^2/sqrt(s)
+
+#GYROSCOPE:
+X Angle Random Walk:  0.00596 deg/sqrt(s)  0.35755 deg/sqrt(hr)
+Y Angle Random Walk:  0.00694 deg/sqrt(s)  0.41616 deg/sqrt(hr)
+Z Angle Random Walk:  0.00546 deg/sqrt(s)  0.32776 deg/sqrt(hr)
+
+X Bias Correlation Time:  90.60000 s  0.02517 hr
+Y Bias Correlation Time:  743.50000 s  0.20653 hr
+Z Bias Correlation Time:  182.30000 s  0.05064 hr
+
+X Bias Instability:  0.00079 deg/s  2.84884 deg/hr
+Y Bias Instability:  0.00073 deg/s  2.63585 deg/hr
+Z Bias Instability:  0.00073 deg/s  2.63540 deg/hr
+
+X Rate Random Walk:  0.00015 deg/s/sqrt(s)
+Y Rate Random Walk:  0.00008 deg/s/sqrt(s)
+Z Rate Random Walk:  0.00009 deg/s/sqrt(s)
