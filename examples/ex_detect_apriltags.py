@@ -1,3 +1,8 @@
+# Code retrieved from: https://pyimagesearch.com/2020/11/02/apriltag-with-python/
+# Authored by Dr. Adrian Rosebrock on November 2nd, 2020
+
+# Code modified by Nicholas Dahdah
+
 from miluv.data import DataLoader
 import os
 import cv2
@@ -24,13 +29,13 @@ def main():
         cv2.imread(os.path.join(img_path, img)) for img in os.listdir(img_path)
     ]
 
+    # YOUR APRILTAG DETECTION CODE BELOW
     gray_imgs = [cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in imgs]
-
     options = apriltag.DetectorOptions(families="tag36h11")
     detector = apriltag.Detector(options)
     results = [detector.detect(gray) for gray in gray_imgs]
 
-    # loop over the AprilTag detection results
+    # THIS IS WHERE YOU WOULD PROCESS THE APRILTAG DETECTION RESULTS
     for image, result in zip(imgs, results):
         for r in result:
             # extract the bounding box (x, y)-coordinates for the AprilTag
@@ -52,10 +57,12 @@ def main():
             tagFamily = r.tag_family.decode("utf-8")
             cv2.putText(image, tagFamily, (ptA[0], ptA[1] - 15),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
         # show the output image after AprilTag detection
         cv2.imshow("Image", image)
         key = cv2.waitKey(0)
 
+        # press the escape key to break from the loop
         if key == 27:
             break
 
