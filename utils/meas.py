@@ -22,7 +22,7 @@ class Measurement:
         return self.value.reshape((-1, 1)) - y_check.reshape((-1, 1))
 
 
-class RangeData(DataLoader):
+class RangeData:
     # Class for storing UWB range data.
     def __init__(self, dataloader: DataLoader):
 
@@ -35,39 +35,6 @@ class RangeData(DataLoader):
                           sensor in self._sensors} for id in data}
     def copy(self):
         return copy.deepcopy(self)
-                
-    def by_timestamps(self, stamps: List[float], robot_id: List = None, 
-                      sensors: List = None):
-        
-        if robot_id is None:
-            robot_id = list(self.data.keys())
-
-        if sensors is not None and not all(
-            sensor in self._sensors for sensor in sensors):
-            raise ValueError(f"Invalid sensor. Must be one of {self._sensors}")
-        else:
-            sensors = self._sensors
-
-        return super().by_timestamps(stamps, 
-                                     robot_id, 
-                                     sensors)
-
-    def by_timerange(self, start_time: float, end_time: float, 
-                     robot_id: List = None, sensors: List = None):
-
-        if robot_id is None:
-            robot_id = list(self.data.keys())
-
-        if sensors is not None and not all(
-            sensor in self._sensors for sensor in sensors):
-            raise ValueError(f"Invalid sensor type. Must be one of {self._sensors}")
-        else:
-            sensors = self._sensors
-
-        return super().by_timerange(start_time, 
-                                    end_time, 
-                                    robot_id, 
-                                    sensors)
 
     def filter_by_bias(self, max_bias:float, 
                        min_bias :float = None) -> "RangeData":

@@ -9,24 +9,22 @@ from utils.meas import (
     Measurement,
     RangeData,
 )
-
-from utils.inputs import (
-    VectorInput,
-    CompositeInput,
-)
 from utils.states import (
     CompositeState,
     MatrixLieGroupState,
     StateWithCovariance,
 )
 from utils.models import (
-    BodyFrameVelocity,
-    CompositeProcessModel,
     AltitudeById,)
 from utils.misc import (
     GaussianResult,
     GaussianResultList,
     plot_error,
+)
+from utils.imu import (
+    Input,
+    BodyFrameVelocity,
+    CompositeProcessModel,
 )
 from miluv.data import DataLoader
 from src.filters import ExtendedKalmanFilter
@@ -53,10 +51,11 @@ save_results = False
 
 
 """ Get data """
-parser = argparse.ArgumentParser()
-parser.add_argument('--exp', required=True)
-args = parser.parse_args()
-exp = args.exp
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--exp', required=True)
+# args = parser.parse_args()
+# exp = args.exp
+exp = "1c"
 folder = "/media/syedshabbir/Seagate B/data"
 miluv = DataLoader(exp, exp_dir = folder, barometer = False)
 
@@ -68,7 +67,7 @@ input_freq = 30
 # Get the time range
 start_time, end_time = miluv.get_timerange(
                         sensors = input_sensor,)
-end_time = end_time - 5
+end_time = end_time - 50
 query_stamps = np.arange(start_time, 
                          end_time, 
                          1/input_freq)
@@ -89,11 +88,11 @@ min_height = [h['range'].min() for h in height]
 
 pose = [miluv.data[robot]["mocap"].pose_matrix(
         query_stamps) for robot in robots]
-    
-range_data = RangeData(miluv)
+
+range_data = miluv.by_timerange(start_time, end_time,
+                                sensors=["uwb_range"])
+range_data = RangeData(range_data)
 range_data = range_data.filter_by_bias( max_bias=0.3)
-range_data = range_data.by_timerange(start_time, end_time,
-                                     sensors=["uwb_range"])
 """ Set Data """
 
 # Range measurements
@@ -122,8 +121,7 @@ ground_truth = []
 for i in range(len(query_stamps)):
     x = [MatrixLieGroupState(  value = pose[n][i], 
                     state_id = robot,
-                    stamp = query_stamps[i],
-                    direction='right') 
+                    stamp = query_stamps[i],) 
         for n, robot in enumerate(robots)
         ]
     ground_truth.append(CompositeState(x,
@@ -149,27 +147,25 @@ Q = np.kron(np.eye(n_states), Q)
 """ Create input data """
 input_data = []
 for i in range(len(query_stamps)):
-    u = [VectorInput(
-        value = np.hstack((
+    u = [Input(
+        gyro = 
 
         imus.data[robot]["imu_px4"].iloc[i][
         ['angular_velocity.x', 
         'angular_velocity.y', 
         'angular_velocity.z']].values, 
 
-        (pose[n][i][:3,:3].T @ # Rotate to body frame
+        vio = (pose[n][i][:3,:3].T @ # Rotate to body frame
          (vio.data[robot]['vio'].iloc[i][
         ['twist.linear.x', 
          'twist.linear.y', 
-         'twist.linear.z']].values).
-        reshape(-1,1)).ravel(),)),
-
+         'twist.linear.z']].values)),
         stamp = query_stamps[i], 
         state_id = robot)
         for n, robot in enumerate(robots)
         ]
     
-    input_data.append(CompositeInput(u))
+    input_data.append(u)
 
 if ekf:
     """ Run the filter """
@@ -188,7 +184,7 @@ if ekf:
         u = input_data[k]
                 
         # Fuse any measurements that have occurred.
-        while y.stamp < input_data[k + 1].stamp and meas_idx < len(meas_data):
+        while y.stamp < input_data[k + 1][0].stamp and meas_idx < len(meas_data):
 
             x = ekf.correct(x, y, u)
 
@@ -197,7 +193,7 @@ if ekf:
             if meas_idx < len(meas_data):
                 y = meas_data[meas_idx]
 
-        dt = input_data[k + 1].stamp - x.stamp
+        dt = input_data[k + 1][0].stamp - x.stamp
         x = ekf.predict(x, u, dt)
 
         results_list.append(GaussianResult(x, ground_truth[k]))

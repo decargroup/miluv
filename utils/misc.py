@@ -9,32 +9,22 @@ class GaussianResult:
     A data container that simultaneously computes the error and three-sigma
     bounds of a state estimate.
     """
-    def __init__(
-        self,
-        estimate: StateWithCovariance,
-        state_true,
-    ):
-        state = estimate.state
-        covariance = estimate.covariance
-        self.stamp = state.stamp
-        self.state = state
+    def __init__( self, estimate: StateWithCovariance, state_true,):
+        self.stamp = estimate.state.stamp
+        self.state = estimate.state
         self.state_true = state_true
-        self.covariance = covariance
-        self.error = state_true.minus(state).ravel()
-        self.three_sigma = 3 * np.sqrt(np.diag(covariance))
+        self.covariance = estimate.covariance
+        self.error = state_true.minus(estimate.state).ravel()
+        self.three_sigma = 3 * np.sqrt(np.diag(estimate.covariance))
 
 class GaussianResultList:
     """
-    A data container that accepts a list of ``GaussianResult`` objects and
-    stacks the attributes in numpy arrays. Convenient for plotting.
+    Makes a list of results out of List[``GaussianResult`]` objects.
     """
     def __init__(self, result_list: List[GaussianResult]):
-        self.stamp = np.array([r.stamp for r in result_list])
-        self.state: List = np.array([r.state for r in result_list])
-        self.state_true: List = np.array([r.state_true for r in result_list])
-        self.covariance = np.array([r.covariance for r in result_list])
-        self.error = np.array([r.error for r in result_list])
-        self.three_sigma = np.array([r.three_sigma for r in result_list])
+        for attr in ['stamp', 'state', 'state_true', 
+                     'covariance', 'error', 'three_sigma']:
+            setattr(self, attr, np.array([getattr(r, attr) for r in result_list]))
 
 def plot_error(
     results: GaussianResultList,

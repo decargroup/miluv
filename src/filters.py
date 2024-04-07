@@ -31,17 +31,11 @@ class ExtendedKalmanFilter:
 
     def predict(
         self,
-        x: StateWithCovariance, u, dt: float = None, 
-        x_jac = None) -> StateWithCovariance:
+        x: StateWithCovariance, u, dt: float = None) -> StateWithCovariance:
         
         x_new = x.copy()
-
-        # Load dedicated jacobian evaluation point if user specified.
-        if x_jac is None:
-            x_jac = x.state
-
         if u is not None:
-            Q = self.process_model.covariance(x_jac, u, dt)
+            Q = self.process_model.covariance(x.state, u, dt)
             x_new.state, A = self.process_model.evaluate_with_jacobian(
                 x.state, u, dt)
             x_new.covariance = A @ x.covariance @ A.T + Q
@@ -69,35 +63,26 @@ class ExtendedKalmanFilter:
         # until current time.
         if y.stamp is not None:
             dt = y.stamp - x.state.stamp
-            if dt < -1e10:
-                raise RuntimeError(
-                    "Measurement stamp is earlier than state stamp")
-            elif u is not None and dt > 1e-11:
+            if u is not None and dt > 1e-11:
                 x = self.predict(x, u, dt)
 
-        if x_jac is None:
-            x_jac = x.state
         y_check, G = y.model.evaluate_with_jacobian(x.state)
 
         if y_check is not None:
             P = x.covariance
-            R = np.atleast_2d(y.model.covariance(x_jac))
+            R = np.atleast_2d(y.model.covariance(x.state))
             G = np.atleast_2d(G)
             z = y.minus(y_check)
             S = G @ P @ G.T + R
 
             outlier = False
-
             # Test for outlier if requested.
             if reject_outlier:
                 outlier = check_outlier(z, S)
-
             if not outlier:
                 # Do the correction
                 K = np.linalg.solve(S.T, (P @ G.T).T).T
-                dx = K @ z
-                dx = dx.ravel()
-                x.state = x.state.plus(dx.ravel())
+                x.state = x.state.plus((K @ z).ravel())
                 x.covariance = (np.identity(x.state.dof) - K @ G) @ P
                 x.symmetrize()
         return x
