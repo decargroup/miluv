@@ -47,12 +47,11 @@ save_results = False
 
 
 """ Load data """
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--exp', required=True)
-# args = parser.parse_args()
-# exp = args.exp
-exp = "1c"
-folder = "/media/syedshabbir/Seagate B/data"
+parser = argparse.ArgumentParser()
+parser.add_argument('--exp', required=True)
+args = parser.parse_args()
+exp = args.exp
+folder = "/media/syedshabbir/Seagate B/data" # Change this to the path of your data
 miluv = DataLoader(exp, exp_dir = folder, barometer = False)
 
 """ Preliminaries """
