@@ -10,10 +10,6 @@ from utils.states import (
     MatrixLieGroupState,
     StateWithCovariance,
 )
-from utils.models import (
-    Measurement,
-    AltitudeById,)
-
 from utils.misc import (
     RangeData,
     GaussianResult,
@@ -21,7 +17,7 @@ from utils.misc import (
     height_measurements,
     plot_error,
 )
-from utils.imu import (
+from utils.process_models import (
     Input,
     BodyFrameVelocity,
     CompositeProcessModel,

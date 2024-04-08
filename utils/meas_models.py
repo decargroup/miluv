@@ -1,7 +1,6 @@
 import numpy as np
 from typing import List, Any
-from utils.states import CompositeState
-from utils.imu import IMUState
+from utils.states import CompositeState, IMUState
 
 class Measurement:
     # A data container containing a measurement.
