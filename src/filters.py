@@ -1,7 +1,7 @@
 """ 
 Extended Kalman Filter.
 """
-from utils.meas import Measurement
+from utils.models import Measurement
 from utils.states import StateWithCovariance
 import numpy as np
 from scipy.stats.distributions import chi2
