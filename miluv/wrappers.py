@@ -120,7 +120,7 @@ class MocapTrajectory:
                         [q[1],q[2],q[3],q[0]]).as_matrix() 
                         for q in quat])
 
-    def pose_matrix(self, stamps):
+    def SE3_state(self, stamps):
         # Get the SE(3) pose matrix at one or more query times.
         r = self._pos_spline(stamps, 0).T
         C = self._rot_matrix(stamps)
@@ -130,7 +130,7 @@ class MocapTrajectory:
         T[:, 3, 3] = 1
         return T
 
-    def extended_pose_matrix(self, stamps):
+    def SE23_state(self, stamps):
         # Get the SE_2(3) extended pose matrix at one or more query times.
         r = self._pos_spline(stamps, 0).T
         C = self._rot_matrix(stamps)

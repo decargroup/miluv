@@ -2,8 +2,23 @@ import numpy as np
 from typing import List, Any
 from utils.states import CompositeState
 from utils.imu import IMUState
+
+class Measurement:
+    # A data container containing a measurement.
+    def __init__(self, value: np.ndarray, stamp: float = None,
+        model = None, state_id = None, ):
+        self.value = np.array(value) if np.isscalar(value) else value
+        self.stamp = stamp
+        self.model = model
+        self.state_id = state_id
+
+    def minus(self, y_check: np.ndarray) -> np.ndarray:
+        return self.value.reshape((-1, 1)) - y_check.reshape((-1, 1))
     
 class MeasurementModel:
+
+    def evaluate(self, x: CompositeState) -> np.ndarray:
+        pass
 
     def jacobian(self, x: np.ndarray, step_size = 1e-6) -> np.ndarray:
         """
@@ -54,18 +69,16 @@ class RangePoseToPose(MeasurementModel):
     Range model given two absolute poses of rigid bodies, each containing a tag 
     """
     def __init__(
-        self, tag_body_position1, tag_body_position2, state_id1, state_id2, R
-    ):
+        self, tag_body_position1, tag_body_position2, state_id1, state_id2, R):
         self.r_t1_1 = np.array(tag_body_position1).reshape((-1, 1))
         self.r_t2_2 = np.array(tag_body_position2).reshape((-1, 1))
         self.state_id1 = state_id1
         self.state_id2 = state_id2
-        self._R = R
+        self.R = R
 
     def evaluate(self, x: CompositeState) -> np.ndarray:
         x1 = x.get_state_by_id(self.state_id1)
         x2 = x.get_state_by_id(self.state_id2)
-
         if isinstance(x1, IMUState) and isinstance(x2, IMUState):
             _x1, _x2 = x1.value[0], x2.value[0]
         else:
@@ -79,15 +92,15 @@ class RangePoseToPose(MeasurementModel):
         return np.array(np.linalg.norm(r_t1t2_a.flatten()))
 
     def covariance(self, x: CompositeState) -> np.ndarray:
-        return self._R
+        return self.R
 
 class RangePoseToAnchorById(MeasurementModel):
     """
     Range model given a pose of another body relative to current pose.
     """
-    def __init__(
-        self, anchor_position: np.ndarray, 
+    def __init__(self, anchor_position: np.ndarray, 
         tag_body_position: np.ndarray,state_id: Any, R: np.ndarray,):
+
         self.model = RangePoseToAnchor(anchor_position, 
                                        tag_body_position, R)
         self.state_id = state_id
@@ -102,10 +115,8 @@ class Altitude(MeasurementModel):
     """
     A model that returns that z component of a position vector.
     """
-    def __init__(self, R: np.ndarray, minimum=None, bias=0.0):
+    def __init__(self, R: np.ndarray, minimum=-np.inf, bias=0.0):
         self.R = R # variance
-        if minimum is None:
-            minimum = -np.inf
         self.minimum = minimum # minimal height for the measurement to be valid
         self.bias = bias # fixed sensor bias
 
@@ -122,7 +133,7 @@ class Altitude(MeasurementModel):
 class AltitudeById(MeasurementModel):
 
     def __init__(
-        self, R: np.ndarray, state_id: Any, minimum=None, bias=0.0,):
+        self, R: np.ndarray, state_id: Any, minimum=-np.inf, bias=0.0,):
         self.model = Altitude(R, minimum, bias)
         self.state_id = state_id
 

@@ -1,6 +1,6 @@
 from pymlg import SO3, SE23
 import numpy as np
-from typing import Any, List
+from typing import List
 from utils.states import (
     IMUState,
     CompositeState)
@@ -11,10 +11,10 @@ class Input:
     """
     Data container for an Input.
     """
-    def __init__(
-        self, stamp: float, gyro: np.ndarray = None, accel: np.ndarray = None, 
-        vio: np.ndarray = None, state_id: Any = None, 
+    def __init__(self, stamp: float, gyro: np.ndarray = None, 
+        accel: np.ndarray = None, vio: np.ndarray = None, state_id = None, 
         covariance: np.ndarray = None,):
+        
         self.stamp = stamp
         self.state_id = state_id
         self.covariance = covariance
@@ -27,8 +27,10 @@ class Input:
 
 class ProcessModel:
     
-    def jacobian(self, x, u, dt: float, step_size=1e-6
-    ) -> np.ndarray:
+    def evaluate(self, x: CompositeState, u, dt):
+        pass
+
+    def jacobian(self, x: CompositeState, u, dt, step_size=1e-6):
         """
         Calculates the model jacobian with finite difference.
         """
@@ -42,7 +44,7 @@ class ProcessModel:
             jac_fd[:, i] = Y.minus(Y_bar).flatten() / step_size
         return jac_fd
     
-    def evaluate_with_jacobian(self, x: CompositeState, u: List, dt: float):
+    def evaluate_with_jacobian(self, x: CompositeState, u, dt):
         return self.evaluate(x, u, dt), self.jacobian(x, u, dt)
 
 class BodyFrameVelocity(ProcessModel):
@@ -66,7 +68,6 @@ class BodyFrameVelocity(ProcessModel):
         u = np.hstack((u.gyro, u.vio)).ravel()
         L = dt * x.group.left_jacobian(-u * dt)
         return L @ self._Q @ L.T
-    
 
 class CompositeProcessModel(ProcessModel):
 
@@ -107,7 +108,7 @@ def G_matrix(gravity, dt):
     G[3, 4] = -dt
     return G
 
-def L_matrix(unbiased_gyro, unbiased_accel, dt) -> np.ndarray:
+def L_matrix(unbiased_gyro, unbiased_accel, dt):
     """
     Computes the jacobian of the SE23_state with respect to the input.
     """
