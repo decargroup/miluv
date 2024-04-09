@@ -33,6 +33,7 @@ import argparse
 
 """ 
 All Matrix Lie groups are perturbed in the right direction.
+All jacobians for the EKF are computed using finite difference.
 """
 
 # Set the plotting environment
@@ -42,7 +43,7 @@ plt.rcParams.update({'font.size': 10})
 # plots
 ekf = True
 error_plot = True
-save_fig = True
+save_fig = False
 save_results = False
 
 

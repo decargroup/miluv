@@ -35,6 +35,7 @@ import argparse
 
 """ 
 All Matrix Lie groups are perturbed in the right direction.
+All jacobians for the EKF are computed using finite difference.
 """
 
 # Set the plotting environment
@@ -45,7 +46,7 @@ plt.rcParams.update({'font.size': 10})
 # plots
 ekf = True
 error_plot = True
-save_fig = True
+save_fig = False
 save_results = False
 
 
@@ -62,7 +63,7 @@ robots = list(miluv.data.keys())
 input_sensor = "imu_px4"
 input_freq = 190
 start_time, end_time = miluv.get_timerange(sensors = input_sensor)
-end_time = start_time +2
+end_time = end_time - 5
 query_stamps = np.arange(start_time, end_time, 1/input_freq)
 
 """ Get Data """

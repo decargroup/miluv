@@ -11,7 +11,10 @@ from utils.meas_models import (
     RangePoseToPose,
     AltitudeById,
 )
+from utils.states import IMUState
+from pymlg import SE23, SO3
 
+""" Functions related to storing results into lists """
 class GaussianResult:
     """
     A data container that simultaneously computes the error and three-sigma
@@ -34,6 +37,8 @@ class GaussianResultList:
                      'covariance', 'error', 'three_sigma']:
             setattr(self, attr, np.array([getattr(r, attr) for r in result_list]))
 
+
+""" Functions related to Measurement data """
 class RangeData:
     # Class for storing UWB range data.
     def __init__(self, dataloader: DataLoader):
@@ -145,6 +150,57 @@ def height_measurements(dataloader, start_time, end_time, R, bias):
                     bias = bias[n]))
             measurements.append(y)
     return measurements
+
+""" Functions related to IMUKinematics process model"""
+
+def get_unbiased_imu(x: IMUState, u):
+    u = u.copy()
+    u.gyro = u.gyro.ravel() - x.value[1].value.ravel()
+    u.accel = u.accel.ravel() - x.value[2].value.ravel()
+    return u
+
+def U_matrix(omega, accel, dt):
+    phi = omega * dt
+    a = accel.reshape((-1, 1))
+    U = np.identity(5)
+    U[:3, :3] = SO3.Exp(phi)
+    U[:3, 3] = np.ravel(dt * SO3.left_jacobian(phi) @ a)
+    U[:3, 4] = np.ravel(dt**2 / 2 * SO3.wedge(a) @ a)
+    U[3, 4] = dt
+    return U
+
+def G_matrix(gravity, dt):
+    G = np.identity(5)
+    G[:3, 3] = dt * gravity
+    G[:3, 4] = -0.5 * dt**2 * gravity
+    G[3, 4] = -dt
+    return G
+
+def L_matrix(unbiased_gyro, unbiased_accel, dt):
+    """
+    Computes the jacobian of the SE23_state with respect to the input.
+    """
+    a = unbiased_accel
+    om = unbiased_gyro
+    omdt = om * dt
+    J_att_inv_times_N = SO3.left_jacobian_inv(omdt) @ SO3.wedge(omdt)
+    xi = np.zeros((9,))
+    xi[:3] = dt * om
+    xi[3:6] = dt * a
+    xi[6:9] = (dt**2 / 2) * J_att_inv_times_N @ a
+    J = SE23.left_jacobian(-xi)
+    Om = SO3.wedge(omdt)
+    OmOm = Om @ Om
+    A = SO3.wedge(a)
+    Up = dt * np.eye(9, 6)
+    Up[6:9, 0:3] = (-0.5 * (dt**2 / 2) * ((1 / 360) * (dt**3)
+            * (OmOm @ A + Om @ (SO3.wedge(Om @ a)) + SO3.wedge(OmOm @ a))
+            - (1 / 6) * dt * A))
+    Up[6:9, 3:6] = (dt**2 / 2) * J_att_inv_times_N
+    L = J @ Up
+    return L
+
+"""Error plotting functions """
 
 def plot_error(
     results: GaussianResultList,
