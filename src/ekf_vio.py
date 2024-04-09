@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import tqdm
-import pandas as pd
 from pyuwbcalib.utils import (
     set_plotting_env,
 )
