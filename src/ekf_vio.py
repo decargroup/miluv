@@ -109,13 +109,12 @@ for i in range(len(query_stamps)):
         'angular_velocity.y', 
         'angular_velocity.z']].values, 
 
-        vio = (pose[n][i][:3,:3].T @ # Rotate to body frame
+        vio = (pose[n][i][:3,:3].T @ # Rotate to body frame of robot
          (input.data[robot]['vio'].iloc[i][
         ['twist.linear.x', 
          'twist.linear.y', 
          'twist.linear.z']].values)),
-        stamp = query_stamps[i], 
-        state_id = robot)
+        stamp = query_stamps[i], state_id = robot)
         for n, robot in enumerate(robots)]
     
     input_data.append(u)
