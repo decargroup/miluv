@@ -98,7 +98,7 @@ x0 = ground_truth[0].copy()
 
 # State and input covariance
 P0 = np.diag([0.1, 0.1, 0.1, 
-                0.1, 0.1, 0.1,
+             0.1, 0.1, 0.1,
              0.01, 0.01, 0.1,
              0.0001, 0.0001,0.0001,
              0.0001, 0.0001,0.0001])
@@ -140,8 +140,7 @@ for i in range(len(query_stamps)):
             ['linear_acceleration.x', 
              'linear_acceleration.y', 
              'linear_acceleration.z']].values,
-        stamp = query_stamps[i], 
-        state_id = robot)
+        stamp = query_stamps[i], state_id = robot) 
         for robot in robots]
     input_data.append(u)
 
