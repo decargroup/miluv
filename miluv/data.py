@@ -1,7 +1,7 @@
 import pandas as pd
 import cv2
 import os
-from miluv.wrappers import (
+from miluv.mocap_trajectory import (
     MocapTrajectory
 )
 import numpy as np
