@@ -29,11 +29,11 @@
 # python preprocess/copy_vios.py /media/syedshabbir/Seagate\ B/data/5
 # python src/ekf_vio.py --exp 5
 
-python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/6 False
-python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/6
-python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/6
-python preprocess/copy_vios.py /media/syedshabbir/Seagate\ B/data/6
-python src/ekf_vio.py --exp 6
+# python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/6 False
+# python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/6
+# python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/6
+# python preprocess/copy_vios.py /media/syedshabbir/Seagate\ B/data/6
+# python src/ekf_vio.py --exp 6
 
 # python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/7c False
 # python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/7c
@@ -95,6 +95,12 @@ python src/ekf_vio.py --exp 6
 # python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/15b
 # python preprocess/copy_vios.py /media/syedshabbir/Seagate\ B/data/15b
 # python src/ekf_vio.py --exp 15b
+
+# python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/16 False
+# python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/16
+# python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/16
+# python preprocess/copy_vios.py /media/syedshabbir/Seagate\ B/data/16
+python src/ekf_vio.py --exp 16
 
 # python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/17 False
 # python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/17

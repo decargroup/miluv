@@ -47,7 +47,7 @@ plt.rcParams.update({'font.size': 10})
 ekf = True
 error_plot = True
 save_fig = False
-save_results = False
+save_results = True
 
 
 """ Load data """

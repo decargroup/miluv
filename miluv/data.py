@@ -2,8 +2,7 @@ import pandas as pd
 import cv2
 import os
 from miluv.wrappers import (
-    MocapTrajectory,
-    tags_to_df
+    MocapTrajectory
 )
 import numpy as np
 from typing import List
@@ -11,7 +10,8 @@ import copy
 from miluv.utils import (
     get_experiment_info,
     get_anchors, 
-    get_tags
+    get_tags,
+    tags_to_df,
 )
 import yaml
 

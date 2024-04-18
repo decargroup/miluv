@@ -81,11 +81,11 @@
 # python src/ekf_imu.py --exp 15b
 
 # FAILED
-# python preprocess/read_bags.py data/16 False
 # python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/16 False
 # python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/16
 # python preprocess/cleanup_csv.py /media/syedshabbir/Seagate\ B/data/16
-# python src/ekf_imu.py --exp 16
+# python preprocess/copy_vios.py /media/syedshabbir/Seagate\ B/data/16
+python src/ekf_imu.py --exp 16
 
 # python preprocess/read_bags.py /media/syedshabbir/Seagate\ B/data/17 False
 # python preprocess/process_uwb.py /media/syedshabbir/Seagate\ B/data/17
