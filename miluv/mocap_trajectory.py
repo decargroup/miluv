@@ -15,11 +15,7 @@ class MocapTrajectory:
     of a trajectory from mocap data.
     """
 
-    def __init__(
-        self,
-        mocap: pd.DataFrame,
-        frame_id: Any = None,
-    ):
+    def __init__(self, mocap: pd.DataFrame,):
         self.stamps = np.array(mocap["timestamp"]).ravel()
         self.raw_position = mocap[["pose.position.x", 
                                 "pose.position.y", 
@@ -28,7 +24,6 @@ class MocapTrajectory:
                                     "pose.orientation.x", 
                                     "pose.orientation.y", 
                                     "pose.orientation.z"]].to_numpy()
-        self.frame_id = frame_id
         self._fit_position_spline(self.stamps, self.raw_position)
         self._fit_quaternion_spline(self.stamps, self.raw_quaternion)
 

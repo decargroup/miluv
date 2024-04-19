@@ -104,8 +104,7 @@ class DataLoader:
 
             self.data[id].update({"mocap": MocapTrajectory})
             self.data[id]["mocap"] = MocapTrajectory(
-                                     self.read_csv("mocap", id), 
-                                     frame_id=id)
+                                     self.read_csv("mocap", id))
             
         # Load anchors and moment arms from experiment info
         anchors = get_anchors(exp_info["anchor_constellation"])

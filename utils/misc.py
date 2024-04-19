@@ -3,7 +3,6 @@ import pandas as pd
 import copy
 import matplotlib.pyplot as plt
 from typing import List, Tuple, Any
-from utils.states import StateWithCovariance
 from miluv.data import DataLoader
 from utils.meas_models import (
     Measurement,
@@ -14,28 +13,20 @@ from utils.meas_models import (
 from utils.states import IMUState
 from pymlg import SE23, SO3
 
-""" Functions related to storing results into lists """
-class GaussianResult:
+class ResultList:
     """
     A data container that simultaneously computes the error and three-sigma
-    bounds of a state estimate.
+    bounds of a state estimate as a List.
     """
-    def __init__( self, estimate: StateWithCovariance, state_true,):
-        self.stamp = estimate.state.stamp
-        self.state = estimate.state
-        self.state_true = state_true
-        self.covariance = estimate.covariance
-        self.error = state_true.minus(estimate.state).ravel()
-        self.three_sigma = 3 * np.sqrt(np.diag(estimate.covariance))
-
-class GaussianResultList:
-    """
-    Makes a list of results out of List[GaussianResult] objects.
-    """
-    def __init__(self, result_list: List[GaussianResult]):
-        for attr in ['stamp', 'state', 'state_true', 
-                     'covariance', 'error', 'three_sigma']:
-            setattr(self, attr, np.array([getattr(r, attr) for r in result_list]))
+    def __init__(self, result_list):
+        estimate = [r[0] for r in result_list]
+        state_true = [r[1] for r in result_list]
+        self.stamp = np.array([r.state.stamp for r in estimate])
+        self.state = np.array([r.state for r in estimate])
+        self.state_true = np.array([r for r in state_true])
+        self.covariance = np.array([r.covariance for r in estimate])
+        self.error = np.array([state_true[i].minus(r.state).ravel() for i, r in enumerate(estimate)])
+        self.three_sigma = np.array([3 * np.sqrt(np.diag(r.covariance)) for r in estimate])
 
 
 """ Functions related to Measurement data """
@@ -203,7 +194,7 @@ def L_matrix(unbiased_gyro, unbiased_accel, dt):
 """Error plotting functions """
 
 def plot_error(
-    results: GaussianResultList,
+    results: ResultList,
     label: str = None,
     sharey: bool = False,
     color=None,
@@ -212,6 +203,9 @@ def plot_error(
 ) -> List[Tuple[plt.Figure, List[plt.Axes]]]:
     """
     A generic three-sigma bound plotter.
+    This plotter accepts an object that has a 
+    list of timestamps, errors, and three-sigma bounds
+    as attributes.
     """
     if separate_figs:
         no_of_plots = len(results.state[0].value)

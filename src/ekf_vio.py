@@ -11,8 +11,7 @@ from utils.states import (
 )
 from utils.misc import (
     RangeData,
-    GaussianResult,
-    GaussianResultList,
+    ResultList,
     height_measurements,
     plot_error,
 )
@@ -59,7 +58,7 @@ robots = list(miluv.data.keys())
 input_sensors = ['vio', 'imu_px4']
 input_freq = 30
 start_time, end_time = miluv.get_timerange(sensors = input_sensors)
-end_time = end_time - 5
+end_time = end_time - 50
 query_stamps = np.arange(start_time, end_time, 1/input_freq)
 
 """ Get Data """
@@ -143,8 +142,8 @@ if ekf:
 
         dt = input_data[k + 1][0].stamp - x.stamp
         x = ekf.predict(x, u, dt)
-        results_list.append(GaussianResult(x, ground_truth[k]))
-    results = GaussianResultList(results_list)
+        results_list.append([x, ground_truth[k]])
+    results = ResultList(results_list)
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if ekf:
@@ -159,16 +158,6 @@ if ekf:
         pos_rmse[robot] = np.sqrt(error.T @ error / len(error))
     for robot in robots:
         print(f"Position RMSE for Experiment: {exp} and robot {robot}: {pos_rmse[robot]} m")
-
-if ekf and save_results:
-    """ Save results to a pkl file """
-    folder = os.path.join(script_dir, f'results')
-    os.umask(0)
-    os.makedirs(folder, exist_ok=True)
-    filename = f'results_vio_{exp}.pkl'
-    file_path = os.path.join(folder, filename)
-    with open(file_path, 'wb') as file:
-        pickle.dump((results, pos_rmse), file)
 
 if ekf and error_plot:
     """ Plot error """
