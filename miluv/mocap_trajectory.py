@@ -1,29 +1,21 @@
-from typing import Any
 import numpy as np
 from csaps import csaps
-from pymlg import SO3
 import pandas as pd
 from scipy.spatial.transform import Rotation
 
-""" 
-This module contains data wrappers for:
-- MocapTrajectory
-"""
 class MocapTrajectory:
     """
     This class provides a spline representation 
     of a trajectory from mocap data.
+     Args:
+    - mocap: DataFrame containing mocap data.
     """
 
     def __init__(self, mocap: pd.DataFrame,):
         self.stamps = np.array(mocap["timestamp"]).ravel()
-        self.raw_position = mocap[["pose.position.x", 
-                                "pose.position.y", 
-                                "pose.position.z"]].to_numpy()
-        self.raw_quaternion = mocap[["pose.orientation.w", 
-                                    "pose.orientation.x", 
-                                    "pose.orientation.y", 
-                                    "pose.orientation.z"]].to_numpy()
+        self.raw_position = mocap[["pose.position.x", "pose.position.y", "pose.position.z"]].to_numpy()
+        self.raw_quaternion = mocap[["pose.orientation.w", "pose.orientation.x", "pose.orientation.y", 
+                                     "pose.orientation.z"]].to_numpy()
         self._fit_position_spline(self.stamps, self.raw_position)
         self._fit_quaternion_spline(self.stamps, self.raw_quaternion)
 
@@ -40,7 +32,7 @@ class MocapTrajectory:
         stamps = stamps[is_valid]
         quat = quat[is_valid]
         quat /= np.linalg.norm(quat, axis=1)[:, None]
-        
+    
         # Resolve quaternion ambiguities so that quaternion trajectories look
         # smooth.
         for idx, q in enumerate(quat[1:]):
@@ -52,9 +44,7 @@ class MocapTrajectory:
     def _rot_matrix(self, stamps):
         quat = self._quat_spline(stamps, 0).T
         quat = quat / np.linalg.norm(quat, axis=1)[:, None]
-        return np.array([Rotation.from_quat(
-                        [q[1],q[2],q[3],q[0]]).as_matrix() 
-                        for q in quat])
+        return np.array([Rotation.from_quat([q[1],q[2],q[3],q[0]]).as_matrix() for q in quat])
 
     def SE3_state(self, stamps):
         # Get the SE(3) pose matrix at one or more query times.
