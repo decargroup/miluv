@@ -28,28 +28,37 @@ vio_loop = [
     "orientation.w",
 ]
 
-def cleanup_vios(dir, path, exp):
+def cleanup_vios(dir, path, exp, aligned_and_shifted):
     # Find all csv files
     files = [f for f in listdir(dir) if f.endswith('.csv') if exp in f]
 
     for file in files:
-        if "vio_aligned_and_shifted" in file and "loop" not in file:
-            process_vio(dir, path, exp, file, vio, "vio")
-        elif "loop_aligned_and_shifted" in file:
-            process_vio(dir, path, exp, file, vio_loop, "vio_loop")
+        if aligned_and_shifted:
+            if "vio_aligned_and_shifted" in file and "loop" not in file:
+                copy_vio(dir, path, exp, file, vio, "vio")
+            elif "loop_aligned_and_shifted" in file:
+                copy_vio(dir, path, exp, file, vio_loop, "vio_loop")
+        else:
+            if "vio" in file and "loop" not in file and "aligned_and_shifted" not in file:
+                copy_vio(dir, path, exp, file, vio, "vio")
+            elif "loop" in file and "aligned_and_shifted" not in file:
+                copy_vio(dir, path, exp, file, vio_loop, "vio_loop")
 
 
-def process_vio(dir, path, exp, file, headers, name):
+def copy_vio(dir, path, exp, file, headers, name):
     df = pd.read_csv(join(dir, file))
     path = join(path, exp)
     df.to_csv(join(path, name + ".csv"), index=False)
 
 if __name__ == '__main__':
 
-    if len(sys.argv) != 2:
-        print(
-            "Not enough arguments. Usage: python process_vios.py path_to_csvs")
+    if len(sys.argv) < 2:
+        print("Not enough arguments. Usage: python vios folder path")
         sys.exit(1)
+    if len(sys.argv) < 3:
+        aligned_and_shifted = True
+    else:
+        aligned_and_shifted = eval(sys.argv[2])
 
     path = sys.argv[1]
     vio_path = join(dirname(path), 'vio', basename(path))
@@ -59,4 +68,5 @@ if __name__ == '__main__':
 
         cleanup_vios(dir = vio_path, 
                      path = path, 
-                     exp = file.split(".")[0])
+                     exp = file.split(".")[0],
+                     aligned_and_shifted = aligned_and_shifted)
