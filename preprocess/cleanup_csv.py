@@ -1,7 +1,8 @@
 import sys
 from os import listdir, remove, walk, rename
-from os.path import join
+from os.path import join, isfile
 import pandas as pd
+import yaml
 
 # headers to keep for every file
 imu = [
@@ -100,9 +101,15 @@ def find_min_timestamp(all_files):
     """Find the minimum timestamp in all csv files."""
     min_timestamp = float('inf')
     for file in all_files:
-        df = pd.read_csv(file)
-        if df["timestamp"].min() < min_timestamp:
-            min_timestamp = df["timestamp"].min()
+        if file.endswith('.csv'):
+            df = pd.read_csv(file)
+            if df["timestamp"].min() < min_timestamp:
+                min_timestamp = df["timestamp"].min()
+        elif file.endswith('.jpeg'):
+            img_timestamp = int(file.split(".")[0].split("/")[-1]) / 1e9
+            if img_timestamp < min_timestamp:
+                min_timestamp = img_timestamp
+       
     return min_timestamp
 
 
@@ -121,12 +128,29 @@ def shift_timestamps(path):
     for file in all_csvs:
         df = pd.read_csv(file)
         df["timestamp"] = df["timestamp"] - min_timestamp
+        if "timestamp_n" in df.columns:
+            df["timestamp_n"] = df["timestamp_n"] - min_timestamp
         df.to_csv(file, index=False)
     for file in all_jpegs:
-        img_timestamp = int(file.split(".")[0].split("/")[-1]) - min_timestamp
-        rename(
-            file, "/".join(file.split("/")[:-1]) + "/" + str(img_timestamp) +
-            ".jpeg")
+        img_timestamp = int(file.split(".")[0].split("/")[-1]) / 1e9 - min_timestamp
+        if img_timestamp < 0:
+            remove(file)
+        else:
+            rename(
+                file, 
+                "/".join(file.split("/")[:-1]) + "/" + str(img_timestamp) + ".jpeg"
+            )
+
+    # Save timeshift to yaml file        
+    if not isfile(path + "/timeshift.yaml"):
+        seconds = int(min_timestamp)
+        nanoseconds = int((min_timestamp - seconds) * 1e9)
+        with open(path + "/timeshift.yaml", 'w') as file:
+            yaml.dump(
+                {'timeshift_s': seconds, 'timeshift_ns': nanoseconds}, 
+                file,
+                default_flow_style=False
+            )
 
 
 if __name__ == '__main__':
@@ -137,6 +161,9 @@ if __name__ == '__main__':
         sys.exit(1)
 
     path = sys.argv[1]
+    if path.endswith('/'):
+        path = path[:-1]
+        
     files = [f for f in listdir(path) if f.endswith('.bag')]
 
     for file in files:

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>miluv</name>
+  <version>0.0.0</version>
+  <description>The miluv package</description>
+
+  <maintainer email="mohammed.shalaby@mail.mcgill.ca">Mohammed A. Shalaby</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export></export>
+</package>

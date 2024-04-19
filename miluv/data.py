@@ -1,3 +1,4 @@
+from .utils import get_mocap_splines
 import pandas as pd
 import cv2
 import os
@@ -50,16 +51,7 @@ class DataLoader:
         # TODO: read robots from configs
         exp_path = os.path.join(self.exp_dir, self.exp_name)
         exp_info = get_experiment_info(exp_path)
-        
-        if  exp_info["num_robots"] == 1:
-            robot_ids = ["ifo001"]
-        else:
-            robot_ids = [
-                "ifo001",
-                "ifo002",
-                "ifo003",
-            ]
-
+        robot_ids = [f"ifo00{i}" for i in range(1, exp_info["num_robots"].iloc[0] + 1)]
         self.data = {id: {} for id in robot_ids}
 
         for id in robot_ids:    
@@ -103,8 +95,11 @@ class DataLoader:
                 self.data[id]["barometer"] = self.read_csv("barometer", id)
 
             self.data[id].update({"mocap": MocapTrajectory})
-            self.data[id]["mocap"] = MocapTrajectory(
-                                     self.read_csv("mocap", id))
+            self.data[id]["mocap"] = MocapTrajectory(self.read_csv("mocap", id))
+            
+            mocap_df = self.read_csv("mocap", id)
+            self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
+                = get_mocap_splines(mocap_df)
             
         # Load anchors and moment arms from experiment info
         anchors = get_anchors(exp_info["anchor_constellation"])
@@ -117,6 +112,7 @@ class DataLoader:
         # TODO: Add april tags to the data
         # TODO: Load cam imu calibration
         # self.setup['imu_cam_calib'] = self.read_yaml("imu", "imu_cam_calib")
+            # self.data[id].update({"mocap": []})
 
         # TODO: Load timestamp-to-image mapping?
         # if cam == "both" or cam == "bottom":

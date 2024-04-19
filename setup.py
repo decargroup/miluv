@@ -16,4 +16,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.8",
+    install_requires=[
+        "pyuwbcalib @ git+https://github.com/decargroup/uwb_calibration@master",
+        "pymlg @ git+https://github.com/decargroup/pymlg@main",
+        "opencv-python>=4.9.0.80",
+    ],
 )

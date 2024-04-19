@@ -41,7 +41,10 @@ def generate_config(exp_info,
         })
         
     uwb_path = pose_path.copy()
-    anchors = get_anchors(str(exp_info["anchor_constellation"]))
+    if exp_info["num_anchors"] > 0:
+        anchors = get_anchors(str(exp_info["anchor_constellation"]))
+    else:
+        anchors = None
     machines = {}
     for i in range(int(exp_info["num_robots"])):
         machines.update({f"{i}": f"ifo00{i+1}"})
@@ -134,7 +137,8 @@ def process_uwb(path):
     uwb_config = generate_config(exp_info, path)
 
     # Read anchor positions
-    anchor_positions = read_anchor_positions(uwb_config)
+    if exp_info["num_anchors"] > 0:
+        anchor_positions = read_anchor_positions(uwb_config)
 
     # Create a RosMachine object for every machine
     machines = {}
@@ -143,7 +147,10 @@ def process_uwb(path):
         machines[machine_id] = RosMachine(uwb_config, i)
 
     # Process and merge the data from all the machines
-    data = PostProcess(machines, anchor_positions)
+    if exp_info["num_anchors"] > 0:
+        data = PostProcess(machines, anchor_positions)
+    else:
+        data = PostProcess(machines)
 
     # Load the UWB calibration results
     calib_results = load("config/uwb/uwb_calib.pickle", )
@@ -225,6 +232,10 @@ if __name__ == '__main__':
             "Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
         sys.exit(1)
     path = sys.argv[1]
+    
+    if path.endswith('/'):
+        path = path[:-1]
+
     process_uwb(path)
 
     # Remove the bagreader-generated UWB csv files
