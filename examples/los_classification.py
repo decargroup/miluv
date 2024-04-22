@@ -1,8 +1,9 @@
 import numpy as np
+from miluv.data import DataLoader
+
+# To run this example, you need to install the following extra packages (found in requirements_dev.txt):
 from sklearn.model_selection import train_test_split
 from lazypredict.Supervised import LazyClassifier
-
-from miluv.data import DataLoader
 
 
 def main():
@@ -18,15 +19,13 @@ def main():
         barometer=False,
     )
 
-    data = mv.data
-
     X = []
     y = []
 
-    for robot_id in data.keys():
+    for robot_id in mv.data.keys():
         for anchor_id, cir_data in zip(
-                data[robot_id]["uwb_cir"]["to_id"],
-                data[robot_id]["uwb_cir"]["cir"],
+                mv.data[robot_id]["uwb_cir"]["to_id"],
+                mv.data[robot_id]["uwb_cir"]["cir"],
         ):
             cir_data = cir_data.replace("[", "").replace("]", "").split(", ")
             cir_data = [int(x) for x in cir_data]

@@ -6,6 +6,8 @@
 from miluv.data import DataLoader
 import os
 import cv2
+
+# To run this example, you need to install the following extra packages (found in requirements_dev.txt):
 import apriltag
 
 
@@ -15,8 +17,6 @@ def main():
         cir=False,
         barometer=False,
     )
-
-    data = mv.data
 
     img_path = os.path.join(
         mv.exp_dir,
