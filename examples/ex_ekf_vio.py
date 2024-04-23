@@ -58,7 +58,7 @@ robots = list(miluv.data.keys())
 input_sensors = ['vio', 'imu_px4']
 input_freq = 30
 start_time, end_time = miluv.get_timerange(sensors = input_sensors)
-end_time = end_time - 50
+end_time = end_time - 5
 query_stamps = np.arange(start_time, end_time, 1/input_freq)
 
 """ Get Data """
