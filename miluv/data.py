@@ -2,18 +2,10 @@ from miluv.utils import get_mocap_splines
 import pandas as pd
 import cv2
 import os
-from miluv.mocap_trajectory import (
-    MocapTrajectory
-)
 import numpy as np
 from typing import List
 import copy
-from miluv.utils import (
-    get_experiment_info,
-    get_anchors, 
-    get_tags,
-    tags_to_df,
-)
+from miluv.utils import get_experiment_info, get_anchors,  get_tags, tags_to_df
 import yaml
 
 
@@ -48,7 +40,6 @@ class DataLoader:
                       'imu_px4_calib': None,
                       'imu_cam_calib': None,}
 
-        # TODO: read robots from configs
         exp_path = os.path.join(self.exp_dir, self.exp_name)
         exp_info = get_experiment_info(exp_path)
         robot_ids = [f"ifo00{i}" for i in range(1, exp_info["num_robots"] + 1)]
@@ -93,9 +84,6 @@ class DataLoader:
             if barometer:
                 self.data[id].update({"barometer": []})
                 self.data[id]["barometer"] = self.read_csv("barometer", id)
-
-            self.data[id].update({"mocap": MocapTrajectory})
-            self.data[id]["mocap"] = MocapTrajectory(self.read_csv("mocap", id))
             
             mocap_df = self.read_csv("mocap", id)
             self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
@@ -132,11 +120,9 @@ class DataLoader:
         path = os.path.join("config/" + sensor + "/" + topic + ".yaml")
         return yaml.safe_load(open(path, 'r'))
     
-
     def copy(self):
         return copy.deepcopy(self)
     
-
     def by_timestamps(self, stamps, 
                   robot_id:List = None, 
                   sensors:List = None):
@@ -342,7 +328,7 @@ class DataLoader:
 if __name__ == "__main__":
     mv = DataLoader(
         "1c",
-        exp_dir =  "/media/syedshabbir/Seagate B/data",
+        exp_dir =  "./data",
         barometer=False,
         height=False,
     )
