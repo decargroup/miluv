@@ -101,11 +101,9 @@ def get_mocap_splines(mocap: pd.DataFrame) -> Tuple[callable, callable]:
 
     # Get mocap data
     time = mocap['timestamp'].values
-    pos = mocap[["pose.position.x", "pose.position.y",
-                 "pose.position.z"]].values
+    pos = mocap[["pose.position.x", "pose.position.y", "pose.position.z"]].values
     quat = mocap[[
-        "pose.orientation.x", "pose.orientation.y", "pose.orientation.z",
-        "pose.orientation.w"
+        "pose.orientation.x", "pose.orientation.y", "pose.orientation.z", "pose.orientation.w"
     ]].values
 
     # Remove mocap gaps
@@ -165,9 +163,9 @@ def load_vins(exp_name, robot_id, loop=True):
     """
 
     if loop:
-        file = f"data/vins/{exp_name}/{robot_id}_vio_loop.csv"
+        file = f"data/{exp_name}/{robot_id}/vio_loop.csv"
     else:
-        file = f"data/vins/{exp_name}/{robot_id}_vio.csv"
+        file = f"data/{exp_name}/{robot_id}/vio.csv"
 
     data = pd.read_csv(file,
                        names=[
@@ -207,10 +205,10 @@ def save_vins(data: pd.DataFrame,
     - suffix: Suffix to append to the csv file name.
     """
     if loop:
-        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio_loop{suffix}.csv",
+        data.to_csv(f"data/{exp_name}/{robot_id}/vio_loop{suffix}.csv",
                     index=False)
     else:
-        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio{suffix}.csv",
+        data.to_csv(f"data/{exp_name}/{robot_id}/vio{suffix}.csv",
                     index=False)
 
 

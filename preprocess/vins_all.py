@@ -1,11 +1,11 @@
 # %%
 import subprocess
 import pandas as pd
-from examples.evaluate_vins import evaluate_vins
+from preprocess.evaluate_vins import evaluate_vins
 
 def call_vins(exp_name, robot_id):
     print("Running VINS for experiment", exp_name, "robot", robot_id)
-    subprocess.run(["./preprocess/run_vins.sh", exp_name, robot_id])
+    subprocess.run(["./examples/run_vins.sh", exp_name, robot_id])
     
     return evaluate_vins(exp_name, robot_id, False)
     
@@ -26,9 +26,7 @@ if __name__ == "__main__":
             })
             rmse_df = pd.concat([rmse_df, new_df], ignore_index=True)
             
-            rmse_df.to_csv("data/vins/vins_rmse.csv", index=False)
-            
-    # rmse_df.to_csv("data/vins/vins_rmse.csv", index=False)
-            
+            rmse_df.to_csv("data/vins_rmse.csv", index=False)
+                        
  
 # %%

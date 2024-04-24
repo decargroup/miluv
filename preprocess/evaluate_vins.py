@@ -40,7 +40,7 @@ def evaluate_vins(exp_name, robot_id, visualize):
     }
     
     # Save frame_alignment to a yaml file
-    with open(f"data/vins/{exp_name}/{robot_id}_alignment_pose.yaml", "w") as file:
+    with open(f"data/{exp_name}/{robot_id}/alignment_pose.yaml", "w") as file:
         yaml.dump(frame_alignment, file)
     save_vins(vins, exp_name, robot_id, suffix="_aligned_and_shifted")
     
