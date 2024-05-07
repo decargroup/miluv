@@ -194,9 +194,9 @@ def process_uwb(path):
     # Add back important info to df_passive
     df_iter = df.iloc[df_passive["idx"]]
     to_copy = [
-        "tx1", "rx1", "tx2", "rx2", "tx3", "rx3", "range", "bias", "tx1_raw",
+        "timestamp", "tx1", "rx1", "tx2", "rx2", "tx3", "rx3", "range", "bias", "tx1_raw",
         "rx1_raw", "tx2_raw", "rx2_raw", "tx3_raw", "rx3_raw", "range_raw",
-        "bias_raw", "gt_range", "timestamp"
+        "bias_raw", "gt_range"
     ]
     for col in to_copy:
         df_passive[col + "_n"] = df_iter[col].values
