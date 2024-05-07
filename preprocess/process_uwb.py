@@ -9,8 +9,15 @@ import os
 import pandas as pd
 import yaml
 
+abs_path = os.path.abspath(__file__)
+miluv_path = os.path.join(abs_path.split("miluv")[0], "miluv")
+
+data_path = miluv_path
+# data_path= r"/your/data/path/here"  # Change this to your data path
+
 
 def get_experiment_info(path):
+    os.chdir(miluv_path)
     exp_name = path.split('/')[-1]
     df = pd.read_csv(join("config", "experiments.csv"))
     df["experiment"] = df["experiment"].astype(str)
@@ -24,6 +31,7 @@ def get_anchors(anchor_constellation):
 
 
 def generate_config(exp_info):
+
     params = {
         "max_ts_value": "2**32",
         "ts_to_ns": "1e9 * (1.0 / 499.2e6 / 128.0)",
@@ -35,7 +43,10 @@ def generate_config(exp_info):
     }
 
     pose_path = {
-        "directory": f"data/{exp_info['experiment']}/",
+        "directory": os.path.join(
+            data_path,
+            f"data/{exp_info['experiment']}/",
+        ),
     }
     for i in range(exp_info["num_robots"]):
         pose_path.update({f"{i}": f"ifo00{i+1}.bag"})
@@ -129,6 +140,7 @@ def generate_config(exp_info):
 
 
 def process_uwb(path):
+    os.chdir(miluv_path)
     # The configuration files
     # TODO: must dynamically load the appropriate config file based on # of robots + if has anchors
     # config = join(path, "uwb_config.config")
@@ -188,18 +200,40 @@ def process_uwb(path):
                                                 calib_results["std_spl"])
 
     # Convert timestamps from seconds to nanoseconds
-    df["timestamp"] = df["time"]
-    df.drop(columns=["time"], inplace=True)
-    df_passive["timestamp"] = df_passive["time"]
-    df_passive.drop(columns=["time"], inplace=True)
+    if False:
+        df["timestamp"] = df["Time"]
+        df.drop(columns=["Time"], inplace=True)
+        df_passive["timestamp"] = df_passive["Time"]
+        df_passive.drop(columns=["Time"], inplace=True)
+    else:
+        df["timestamp"] = df["time"]
+        df.drop(columns=["time"], inplace=True)
+        df_passive["timestamp"] = df_passive["time"]
+        df_passive.drop(columns=["time"], inplace=True)
 
     # Add back important info to df_passive
     df_iter = df.iloc[df_passive["idx"]]
     to_copy = [
-        "tx1", "rx1", "tx2", "rx2", "tx3", "rx3", "range", "bias", "tx1_raw",
-        "rx1_raw", "tx2_raw", "rx2_raw", "tx3_raw", "rx3_raw", "range_raw",
-        "bias_raw", "gt_range", "timestamp"
+        "timestamp",
+        "tx1",
+        "rx1",
+        "tx2",
+        "rx2",
+        "tx3",
+        "rx3",
+        "range",
+        "bias",
+        "tx1_raw",
+        "rx1_raw",
+        "tx2_raw",
+        "rx2_raw",
+        "tx3_raw",
+        "rx3_raw",
+        "range_raw",
+        "bias_raw",
+        "gt_range",
     ]
+
     for col in to_copy:
         df_passive[col + "_n"] = df_iter[col].values
 
@@ -234,7 +268,7 @@ if __name__ == '__main__':
             "Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
         sys.exit(1)
     path = sys.argv[1]
-    
+
     if path.endswith('/'):
         path = path[:-1]
 
