@@ -32,3 +32,7 @@ experiment,num_robots,num_tags_per_robot,num_anchors,anchor_constellation,trajec
 33,1,2,6,2,remote_control_high_pace,false,false,true,true
 34,3,2,6,2,random3,true,false,true,true
 35,1,2,6,2b,remote_control_high_pace,false,false,false,true
+25,1,1,1,0,linear,true,false,false,false
+26,1,1,1,0,angular,true,false,false,false
+27,1,1,6,0,static,true,false,false,false
+27b,1,1,6,0,static,true,true,false,false
