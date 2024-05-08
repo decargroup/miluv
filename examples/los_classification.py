@@ -17,6 +17,9 @@ def main():
     mv = DataLoader(
         "12c",
         barometer=False,
+        vio=False,
+        vio_loop=False,
+        cir=True
     )
 
     X = []
