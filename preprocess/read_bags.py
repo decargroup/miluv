@@ -64,16 +64,18 @@ if __name__ == '__main__':
     path = sys.argv[1]
     if path.endswith('/'):
         path = path[:-1]
-        
+
     files = [f for f in listdir(path) if f.endswith('.bag')]
     files = rename_files(files, path)
 
     for file in files:
         print(f"Reading bag file {file}")
         if isdir(join(path, file.split(".")[0])):
-            print(f"Folder already exists for bag file {file}. Skipping bag reading...")
+            print(
+                f"Folder already exists for bag file {file}. Skipping bag reading..."
+            )
             continue
-        
+
         if vision:
             mkdir(join(path, file.split(".")[0]))
             mkdir(join(path, file.split(".")[0] + "/infra1"))
