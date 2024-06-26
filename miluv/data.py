@@ -1,4 +1,4 @@
-from utils import get_mocap_splines
+from .utils import get_mocap_splines
 import pandas as pd
 import cv2
 import os
