@@ -1,4 +1,4 @@
-from .utils import get_mocap_splines
+from utils import get_mocap_splines
 import pandas as pd
 import cv2
 import os
@@ -34,7 +34,9 @@ class DataLoader:
         # TODO: read robots from configs
         exp_data = pd.read_csv("config/experiments.csv")
         exp_data = exp_data[exp_data["experiment"].astype(str) == exp_name]
-        robot_ids = [f"ifo00{i}" for i in range(1, exp_data["num_robots"].iloc[0] + 1)]
+        robot_ids = [
+            f"ifo00{i}" for i in range(1, exp_data["num_robots"].iloc[0] + 1)
+        ]
         self.data = {id: {} for id in robot_ids}
         for id in robot_ids:
             if imu == "both" or imu == "px4":
@@ -97,7 +99,10 @@ class DataLoader:
         else:
             all_imgs = os.listdir(
                 os.path.join(self.exp_dir, self.exp_name, robot_id, sensor))
-            all_imgs = [int(img.split(".")[0]) for img in all_imgs]
+            all_imgs = [
+                float(img.split(".")[0].replace(r"_", r"."))
+                for img in all_imgs
+            ]
             not_over = [ts for ts in all_imgs if ts <= timestamp]
 
         if not_over == []:
@@ -176,9 +181,9 @@ class DataLoader:
                             # print("No", cam, "image found for timestamp",
                             #       timestamp, "for robot_id", robot_id)    # Debugging msg
                             continue
-                        img_path = os.path.join(self.exp_dir, self.exp_name,
-                                                robot_id, cam,
-                                                str(img_ts) + ".jpeg")
+                        img_path = os.path.join(
+                            self.exp_dir, self.exp_name, robot_id, cam,
+                            str(img_ts).replace(r".", r"_", 1) + ".jpeg")
                         imgs.append(cv2.imread(img_path))
                         valid_ts.append(img_ts)
                 img_by_robot[cam] = pd.DataFrame({
@@ -201,9 +206,10 @@ class DataLoader:
 
 if __name__ == "__main__":
     mv = DataLoader(
-        "1c",
+        "3a",
         barometer=False,
         height=False,
+        cir=False,
     )
 
     print("done!")
