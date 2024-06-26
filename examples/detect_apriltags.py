@@ -13,7 +13,7 @@ import apriltag
 
 def main():
     mv = DataLoader(
-        "1c",
+        "3a",
         cir=False,
         barometer=False,
     )
