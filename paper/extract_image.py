@@ -1,4 +1,3 @@
-# %%
 import matplotlib.pyplot as plt
 from cv_bridge import CvBridge
 import rosbag 
@@ -48,6 +47,3 @@ plt.axis('off')
 plt.savefig("figs/kalibr_calib.pdf")
 
 plt.show()
-
-
-# %%

@@ -85,9 +85,9 @@ def load_vins(exp_name, robot_id, loop=True):
     """
 
     if loop:
-        file = f"data/vins/{exp_name}/{robot_id}_vio_loop.csv"
+        file = f"data/{exp_name}/{robot_id}/vio_loop.csv"
     else:
-        file = f"data/vins/{exp_name}/{robot_id}_vio.csv"
+        file = f"data/{exp_name}/{robot_id}/vio.csv"
 
     data = pd.read_csv(file,
                        names=[
@@ -103,10 +103,8 @@ def load_vins(exp_name, robot_id, loop=True):
                            "twist.linear.y",
                            "twist.linear.z",
                        ],
-                       index_col=False)
-
-    timeshift = get_timeshift(exp_name)
-    data["timestamp"] = data["timestamp"] / 1e9 - timeshift
+                       index_col=False,
+                       header=0)
 
     return data
 
@@ -300,10 +298,8 @@ def compute_position_rmse(df1, df2):
     - rmse: RMSE.
     """
 
-    pos1 = df1[["pose.position.x", "pose.position.y",
-                "pose.position.z"]].values
+    pos1 = df1[["pose.position.x", "pose.position.y", "pose.position.z"]].values
 
-    pos2 = df2[["pose.position.x", "pose.position.y",
-                "pose.position.z"]].values
+    pos2 = df2[["pose.position.x", "pose.position.y", "pose.position.z"]].values
 
     return np.sqrt(np.mean(np.linalg.norm(pos1 - pos2, axis=1)**2))

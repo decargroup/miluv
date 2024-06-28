@@ -1,4 +1,3 @@
-# %%
 from miluv.data import DataLoader
 from miluv.utils import load_vins, align_frames, compute_position_rmse, save_vins, apply_transformation
 import pandas as pd
@@ -130,5 +129,3 @@ if __name__ == "__main__":
         visualize = False
     
     evaluate_vins(exp_name, robot_id, visualize)
-
-# %%

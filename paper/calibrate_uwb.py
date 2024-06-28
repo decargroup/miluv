@@ -1,4 +1,3 @@
-# %%
 from pyuwbcalib.machine import RosMachine
 from pyuwbcalib.postprocess import PostProcess
 from pyuwbcalib.utils import save, set_plotting_env, merge_calib_results
@@ -107,6 +106,3 @@ fig.savefig('figs/calib_results.pdf')
 fig2.savefig('figs/bias_histogram.pdf')
 
 plt.show()
-    
-
-# %%

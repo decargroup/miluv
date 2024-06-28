@@ -1,4 +1,3 @@
-# %%
 from pyuwbcalib.machine import RosMachine
 from pyuwbcalib.postprocess import PostProcess
 from pyuwbcalib.utils import load, read_anchor_positions
@@ -249,5 +248,3 @@ if __name__ == '__main__':
             file_path = os.path.join(robot_folder, file)
             if robot_id in file and "uwb" in file and "cir" not in file:
                 os.remove(file_path)
-
-# %%

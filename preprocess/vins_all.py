@@ -1,4 +1,3 @@
-# %%
 import subprocess
 import pandas as pd
 from examples.evaluate_vins import evaluate_vins
@@ -30,5 +29,3 @@ if __name__ == "__main__":
             
     # rmse_df.to_csv("data/vins/vins_rmse.csv", index=False)
             
- 
-# %%
