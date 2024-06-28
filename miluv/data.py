@@ -1,11 +1,13 @@
-from .utils import get_mocap_splines
-import pandas as pd
-import cv2
+"""This module is used to load data from a given MILUV experiment."""
+
 import os
+import cv2
+import pandas as pd
+from .utils import get_mocap_splines
 
 
-# TODO: look into dataclasses
 class DataLoader:
+    """Class to load data from a MILUV given experiment."""
 
     def __init__(
         self,
@@ -24,6 +26,25 @@ class DataLoader:
         mag: bool = True,
         barometer: bool = True,
     ):
+        """
+        Initializes a DataLoader object to load data from a given experiment.
+        Parameters:
+        ----------
+        exp_name: str
+            The name of the experiment.
+        exp_dir: str, optional
+            The directory where the experiment data is stored. Defaults to "./data".
+        imu: str, optional
+            The type of inertial measurement unit data to load. Can be 'both', 'left', 'right', or 'none'. Defaults to 'both'.
+        cam: list, optional
+            The types of camera data to load. Can include 'color', 'bottom', 'infra1', and 'infra2'. Defaults to all types.
+        uwb: bool, optional
+            Whether to load ultra-wideband data. Defaults to True.
+        cir: bool, optional
+            Whether to load channel impulse response data. Defaults to True.
+        height: bool, optional
+            Whether to load height data from laser-rangefinder. Defaults to True.
+        """
 
         VALID_EXP_NAMES = [
             "1a",
