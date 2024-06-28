@@ -132,25 +132,26 @@ def shift_timestamps(path):
             df["timestamp_n"] = df["timestamp_n"] - min_timestamp
         df.to_csv(file, index=False)
     for file in all_jpegs:
-        img_timestamp = int(file.split(".")[0].split("/")[-1]) / 1e9 - min_timestamp
+        img_timestamp = int(
+            file.split(".")[0].split("/")[-1]) / 1e9 - min_timestamp
         if img_timestamp < 0:
             remove(file)
         else:
             rename(
-                file, 
-                "/".join(file.split("/")[:-1]) + "/" + str(img_timestamp) + ".jpeg"
-            )
+                file, "/".join(file.split("/")[:-1]) + "/" +
+                str(img_timestamp).replace(r".", r"_", 1) + ".jpeg")
 
-    # Save timeshift to yaml file        
+    # Save timeshift to yaml file
     if not isfile(path + "/timeshift.yaml"):
         seconds = int(min_timestamp)
         nanoseconds = int((min_timestamp - seconds) * 1e9)
         with open(path + "/timeshift.yaml", 'w') as file:
-            yaml.dump(
-                {'timeshift_s': seconds, 'timeshift_ns': nanoseconds}, 
-                file,
-                default_flow_style=False
-            )
+            yaml.dump({
+                'timeshift_s': seconds,
+                'timeshift_ns': nanoseconds
+            },
+                      file,
+                      default_flow_style=False)
 
 
 if __name__ == '__main__':
@@ -163,7 +164,7 @@ if __name__ == '__main__':
     path = sys.argv[1]
     if path.endswith('/'):
         path = path[:-1]
-        
+
     files = [f for f in listdir(path) if f.endswith('.bag')]
 
     for file in files:

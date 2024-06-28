@@ -1,29 +1,37 @@
 experiment,num_robots,num_tags_per_robot,num_anchors,anchor_constellation,trajectory,cir_bool,obstacles_bool,apriltags_bool,barometer_bool
-1c,3,2,6,0,random,false,false,true,false
-2c,3,2,6,0b,moving triangle,false,false,true,true
-3b,3,2,6,0,bias calibration,false,false,true,false
-4,3,2,6,1,random3,false,false,true,true
-5,3,2,6,2,random3,false,false,true,true
-6,3,2,6,2b,random3,false,false,false,true
-7c,3,2,6,0b,random,false,false,true,true
-8b,3,1,6,0,random,false,false,true,false
-9c,3,2,6,0,random2,false,false,true,false
-10c,3,2,6,0b,random3,false,false,true,true
-11,3,2,6,0,random3,true,false,true,false
-12c,3,2,6,0,random,true,true,true,false
-29,3,2,6,1,bias calibration,false,false,true,true
-32,3,2,6,2,bias calibration,false,false,true,true
-13,1,2,6,0,circular 2d,false,false,true,false
-14,1,2,6,0,circular 2d,false,false,true,false
-15b,1,2,6,0b,remote controlled high paced,false,false,true,true
-16,1,2,6,2b,random3,false,false,false,true
-17,1,2,6,0,random3,false,false,true,false
-18,1,2,6,1,random3,false,false,true,true
-19,1,2,6,2,random3,false,false,true,true
-20,1,1,6,0,random3,false,false,true,false
-21b,1,2,6,0b,random3,false,true,TRUE,TRUE
-23,1,2,6,0,remote controlled low pace 1,FALSE,FALSE,TRUE,FALSE
-24,1,2,6,0,remote controlled low pace 2,FALSE,FALSE,TRUE,FALSE
-30,1,2,6,1,remote controlled high paced,FALSE,FALSE,TRUE,TRUE
-33,1,2,6,2,remote controlled high paced,FALSE,FALSE,TRUE,TRUE
-35,1,2,6,2b,remote controlled high paced,FALSE,FALSE,FALSE,TRUE
+3a,3,2,6,0,random,false,false,true,false
+3b,3,2,6,0b,moving_triangle,false,false,true,true
+3c,3,2,6,0,bias_calibration,false,false,true,false
+3d,3,2,6,1,random3,false,false,true,true
+3e,3,2,6,2,random3,false,false,true,true
+3f,3,2,6,2b,random3,false,false,false,true
+3g,3,2,6,0b,random,false,false,true,true
+3h,3,1,6,0,random,false,false,true,false
+3i,3,2,6,0,randm2,false,false,true,false
+3j,3,2,6,0b,random3,false,false,true,true
+3k,3,2,6,0,random3,true,false,true,false
+3l,3,2,6,0,random,true,true,true,false
+3m,3,2,6,1,bias_calibration,false,false,true,true
+3n,3,2,6,1,random3,true,false,true,true
+3o,3,2,6,2,bias_calibration,false,false,true,true
+3p,3,2,6,2,random3,true,false,true,true
+1a,1,2,6,0,circular_2d,false,false,true,false
+1b,1,2,6,0,circular_3d,false,false,true,false
+1c,1,2,6,0b,remote_control_high_pace,false,false,true,true
+1d,1,2,6,2b,random3,false,false,false,true
+1e,1,2,6,0,random3,false,false,true,false
+1f,1,2,6,1,random3,false,false,true,true
+1g,1,2,6,2,random3,false,false,true,true
+1h,1,1,6,0,random3,false,false,true,false
+1i,1,2,6,0b,random3,false,true,true,true
+1j,1,2,6,0,random3,true,true,true,false
+1k,1,2,6,0,remote_control_low_pace_1,false,false,true,false
+1l,1,2,6,0,remote_control_low_pace_2,false,false,true,false
+1m,1,1,1,0,linear,true,false,false,false
+1n,1,1,1,0,angular,true,false,false,false
+1o,1,1,6,0,static,true,false,false,false
+1p,1,1,6,0,static,true,true,false,false
+1q,1,2,6,0,circular_2d,true,false,true,false
+1r,1,2,6,1,remote_control_high_pace,false,false,true,true
+1s,1,2,6,2,remote_control_high_pace,false,false,true,true
+1t,1,2,6,2b,remote_control_high_pace,false,false,false,true

@@ -181,10 +181,8 @@ def load_vins(exp_name, robot_id, loop=True):
                            "twist.linear.y",
                            "twist.linear.z",
                        ],
-                       index_col=False)
-
-    timeshift = get_timeshift(exp_name)
-    data["timestamp"] = data["timestamp"] / 1e9 - timeshift
+                       index_col=False,
+                       header=0)
 
     return data
 

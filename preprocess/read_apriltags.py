@@ -1,4 +1,3 @@
-# %% 
 import xml.etree.ElementTree as ET
 import pandas as pd
 import yaml
@@ -100,6 +99,3 @@ data = {
 }
 with open('config/apriltags/apriltags.yaml', 'w') as file:
     yaml.dump(data, file)
-
-
-# %%

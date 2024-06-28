@@ -1,7 +1,9 @@
-from miluv.utils import get_mocap_splines
-import pandas as pd
-import cv2
+"""This module is used to load data from a given MILUV experiment."""
+
 import os
+import cv2
+import pandas as pd
+from miluv.utils import get_mocap_splines
 import numpy as np
 from typing import List
 import copy
@@ -9,8 +11,9 @@ from miluv.utils import get_experiment_info, get_anchors,  get_tags, tags_to_df
 import yaml
 
 
-# TODO: look into dataclasses
 class DataLoader:
+    """Class to load data from a MILUV given experiment."""
+
     def __init__(
         self,
         exp_name: str,
@@ -30,8 +33,67 @@ class DataLoader:
         mag: bool = True,
         barometer: bool = True,
     ):
+        """
+        Initializes a DataLoader object to load data from a given experiment.
+        Parameters:
+        ----------
+        exp_name: str
+            The name of the experiment.
+        exp_dir: str, optional
+            The directory where the experiment data is stored. Defaults to "./data".
+        imu: str, optional
+            The type of inertial measurement unit data to load. Can be 'both', 'left', 'right', or 'none'. Defaults to 'both'.
+        cam: list, optional
+            The types of camera data to load. Can include 'color', 'bottom', 'infra1', and 'infra2'. Defaults to all types.
+        uwb: bool, optional
+            Whether to load ultra-wideband data. Defaults to True.
+        cir: bool, optional
+            Whether to load channel impulse response data. Defaults to True.
+        height: bool, optional
+            Whether to load height data from laser-rangefinder. Defaults to True.
+        """
 
-        # TODO: Add checks for valid exp dir and name
+        VALID_EXP_NAMES = [
+            "1a",
+            "1b",
+            "1c",
+            "1d",
+            "1e",
+            "1f",
+            "1g",
+            "1h",
+            "1i",
+            "1j",
+            "1k",
+            "1l",
+            "1m",
+            "1n",
+            "1o",
+            "1p",
+            "1q",
+            "1r",
+            "1s",
+            "1t",
+            "3a",
+            "3b",
+            "3c",
+            "3d",
+            "3e",
+            "3f",
+            "3g",
+            "3h",
+            "3i",
+            "3j",
+            "3k",
+            "3l",
+            "3m",
+            "3n",
+            "3o",
+            "3p",
+        ]
+        if exp_name not in VALID_EXP_NAMES:
+            raise ValueError(f"Invalid experiment name: {exp_name}.")
+
         self.exp_name = exp_name
         self.exp_dir = exp_dir
         self.cam = cam
@@ -84,38 +146,51 @@ class DataLoader:
             if barometer:
                 self.data[id].update({"barometer": []})
                 self.data[id]["barometer"] = self.read_csv("barometer", id)
-            
+
             mocap_df = self.read_csv("mocap", id)
             self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
                 = get_mocap_splines(mocap_df)
-            
-        # Load anchors and moment arms from experiment info
-        anchors = get_anchors(exp_info["anchor_constellation"])
-        tags = get_tags()
-        (self.setup["uwb_tags"], 
-        self.setup["april_tags"]) = tags_to_df(anchors, tags)
-        self.setup["imu_px4_calib"] = self.read_yaml("imu", "imu_px4_calib")
-
-        
-        # TODO: Add april tags to the data
-        # TODO: Load cam imu calibration
-        # self.setup['imu_cam_calib'] = self.read_yaml("imu", "imu_cam_calib")
-            # self.data[id].update({"mocap": []})
-
-        # TODO: Load timestamp-to-image mapping?
-        # if cam == "both" or cam == "bottom":
-        #     self.load_imgs("bottom")
-        # if cam == "both" or cam == "front":
-        #     self.load_imgs("front")
 
     def read_csv(self, topic: str, robot_id) -> pd.DataFrame:
         """Read a csv file for a given robot and topic."""
         path = os.path.join(self.exp_dir, self.exp_name, robot_id,
                             topic + ".csv")
         return pd.read_csv(path)
+
+    def closest_past_timestamp(self, robot_id: str, sensor: str,
+                               timestamp: float) -> int:
+        """Return the closest timestamp in the past for a given sensor."""
+        not_over = None
+        if sensor != "bottom" and sensor != "color" and sensor != "infra1" and sensor != "infra2":
+            not_over = [
+                ts for ts in self.data[robot_id][sensor]["timestamp"]
+                if ts <= timestamp
+            ]
+        else:
+            all_imgs = os.listdir(
+                os.path.join(self.exp_dir, self.exp_name, robot_id, sensor))
+            all_imgs = [
+                float(img.split(".")[0].replace(r"_", r".")) for img in all_imgs
+            ]
+            not_over = [ts for ts in all_imgs if ts <= timestamp]
+
+        if not_over == []:
+            return None
+        return max(not_over)
+
+    def data_from_timestamp(
+        self,
+        timestamps: list,
+        robot_ids=None,
+        sensors=None,
+    ) -> dict:
+        """Return all data from a given timestamp."""
+
+        def data_from_timestamp_robot(robot_id: str, timestamps: list) -> dict:
+            """Return all data from a given timestamp for a given robot."""
+            data_by_robot = {}
     
     def read_yaml(self, sensor:str, topic: str) -> pd.DataFrame:
-
         """Read a yaml file for a given robot and topic."""
         path = os.path.join("config/" + sensor + "/" + topic + ".yaml")
         return yaml.safe_load(open(path, 'r'))
@@ -159,8 +234,6 @@ class DataLoader:
             indices_dict = {}
             data = {sensor: self.data[id][sensor].copy() 
                     for sensor in sensors}
-
-
             for sensor in sensors:
                 indices = []
                 for s in stamps:
@@ -302,9 +375,9 @@ class DataLoader:
                             # print("No", cam, "image found for timestamp",
                             #       timestamp, "for robot_id", robot_id)    # Debugging msg
                             continue
-                        img_path = os.path.join(self.exp_dir, self.exp_name,
-                                                robot_id, cam,
-                                                str(img_ts) + ".jpeg")
+                        img_path = os.path.join(
+                            self.exp_dir, self.exp_name, robot_id, cam,
+                            str(img_ts).replace(r".", r"_", 1) + ".jpeg")
                         imgs.append(cv2.imread(img_path))
                         valid_ts.append(img_ts)
                 img_by_robot[cam] = pd.DataFrame({
@@ -328,7 +401,7 @@ class DataLoader:
 if __name__ == "__main__":
     mv = DataLoader(
         "1c",
-        exp_dir =  "./data",
+        exp_dir = "./data",
         barometer=False,
         height=False,
     )

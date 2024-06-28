@@ -1,4 +1,3 @@
-# %%
 import numpy as np
 from bagpy import bagreader
 import matplotlib.pyplot as plt
@@ -25,5 +24,3 @@ plt.ylim([0, 7000])
 plt.legend()
 
 plt.savefig("figs/cir_example.pdf")
-
-# %%

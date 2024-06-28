@@ -1,4 +1,3 @@
-# %%
 import subprocess
 import pandas as pd
 from preprocess.evaluate_vins import evaluate_vins
