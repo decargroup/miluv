@@ -15,10 +15,8 @@ def main():
     ]
 
     mv = DataLoader(
-        "12c",
+        "3l",
         barometer=False,
-        vio=False,
-        vio_loop=False,
         cir=True
     )
 
