@@ -23,15 +23,53 @@ class DataLoader:
         height: bool = True,
         mag: bool = True,
         barometer: bool = True,
-        # calib_uwb: bool = True,
     ):
 
-        # TODO: Add checks for valid exp dir and name
+        VALID_EXP_NAMES = [
+            "1a",
+            "1b",
+            "1c",
+            "1d",
+            "1e",
+            "1f",
+            "1g",
+            "1h",
+            "1i",
+            "1j",
+            "1k",
+            "1l",
+            "1m",
+            "1n",
+            "1o",
+            "1p",
+            "1q",
+            "1r",
+            "1s",
+            "1t",
+            "3a",
+            "3b",
+            "3c",
+            "3d",
+            "3e",
+            "3f",
+            "3g",
+            "3h",
+            "3i",
+            "3j",
+            "3k",
+            "3l",
+            "3m",
+            "3n",
+            "3o",
+            "3p",
+        ]
+        if exp_name not in VALID_EXP_NAMES:
+            raise ValueError(f"Invalid experiment name: {exp_name}.")
+
         self.exp_name = exp_name
         self.exp_dir = exp_dir
         self.cam = cam
 
-        # TODO: read robots from configs
         exp_data = pd.read_csv("config/experiments.csv")
         exp_data = exp_data[exp_data["experiment"].astype(str) == exp_name]
         robot_ids = [
@@ -70,16 +108,9 @@ class DataLoader:
                 self.data[id].update({"barometer": []})
                 self.data[id]["barometer"] = self.read_csv("barometer", id)
 
-            # self.data[id].update({"mocap": []})
             mocap_df = self.read_csv("mocap", id)
             self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
                 = get_mocap_splines(mocap_df)
-
-        # TODO: Load timestamp-to-image mapping?
-        # if cam == "both" or cam == "bottom":
-        #     self.load_imgs("bottom")
-        # if cam == "both" or cam == "front":
-        #     self.load_imgs("front")
 
     def read_csv(self, topic: str, robot_id) -> pd.DataFrame:
         """Read a csv file for a given robot and topic."""
@@ -100,8 +131,7 @@ class DataLoader:
             all_imgs = os.listdir(
                 os.path.join(self.exp_dir, self.exp_name, robot_id, sensor))
             all_imgs = [
-                float(img.split(".")[0].replace(r"_", r"."))
-                for img in all_imgs
+                float(img.split(".")[0].replace(r"_", r".")) for img in all_imgs
             ]
             not_over = [ts for ts in all_imgs if ts <= timestamp]
 
@@ -132,19 +162,18 @@ class DataLoader:
             col_names = self.data[robot_id][sensor].columns
             df = pd.DataFrame(columns=col_names)
             for timestamp in timestamps:
-                if timestamp in self.data[robot_id][sensor][
-                        "timestamp"].values:
+                if timestamp in self.data[robot_id][sensor]["timestamp"].values:
                     df = pd.concat([
                         df if not df.empty else None, self.data[robot_id]
-                        [sensor].loc[self.data[robot_id][sensor]["timestamp"]
-                                     == timestamp]
+                        [sensor].loc[self.data[robot_id][sensor]["timestamp"] ==
+                                     timestamp]
                     ])
                 else:
                     df = pd.concat([
-                        df if not df.empty else None, self.data[robot_id]
-                        [sensor].loc[self.data[robot_id][sensor]["timestamp"]
-                                     == self.closest_past_timestamp(
-                                         robot_id, sensor, timestamp)]
+                        df if not df.empty else None,
+                        self.data[robot_id][sensor].loc[
+                            self.data[robot_id][sensor]["timestamp"] == self.
+                            closest_past_timestamp(robot_id, sensor, timestamp)]
                     ])
             return df
 
@@ -202,14 +231,3 @@ class DataLoader:
             img_by_timestamp[robot_id] = imgs_from_timestamp_robot(
                 robot_id, cams, timestamps)
         return img_by_timestamp
-
-
-if __name__ == "__main__":
-    mv = DataLoader(
-        "3a",
-        barometer=False,
-        height=False,
-        cir=False,
-    )
-
-    print("done!")
