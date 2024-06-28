@@ -1,3 +1,0 @@
-[submodule "uwb_calibration"]
-	path = uwb_calibration
-	url = https://github.com/decargroup/uwb_calibration.git
