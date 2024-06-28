@@ -109,7 +109,7 @@ def find_min_timestamp(all_files):
             img_timestamp = int(file.split(".")[0].split("/")[-1]) / 1e9
             if img_timestamp < min_timestamp:
                 min_timestamp = img_timestamp
-
+       
     return min_timestamp
 
 
