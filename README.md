@@ -5,7 +5,7 @@ TODO:
 - Fit spline to mocap and have it as an attribute of MILUV to be called by the user
 - Load the CIR files. Is it possible to match each to range/passive measurements?
 
-## <img src="docs/_static/decar_logo.png" alt="DECAR Logo" width="14"/> DECAR &mdash; MILUV devkit
+## <img src="doc/_static/decar_logo.png" alt="DECAR Logo" width="14"/> DECAR &mdash; MILUV devkit
 Welcome to the MILUV devkit page. This Python devkit provides useful functions and examples to accompany the MILUV dataset, which can be downloaded at (ADD LINK HERE). To begin using this devkit, clone or download and extract the repository.
 ![](/docs/_static/banner_image.jpg)
 
