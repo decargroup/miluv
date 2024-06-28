@@ -38,11 +38,6 @@ def evaluate_vins(exp_name, robot_id, visualize):
         "r_vm_m": results["r"].tolist(),
     }
     
-    # Save frame_alignment to a yaml file
-    with open(f"data/vins/{exp_name}/{robot_id}_alignment_pose.yaml", "w") as file:
-        yaml.dump(frame_alignment, file)
-    save_vins(vins, exp_name, robot_id, suffix="_aligned_and_shifted")
-    
     rmse_loop = compute_position_rmse(vins, df_mocap)
     print(f"Position RMSE w Loop Closure for \Experiment {exp_name} \
                                         and Robot {robot_id}: {rmse_loop} m")
@@ -63,7 +58,6 @@ def evaluate_vins(exp_name, robot_id, visualize):
         "pose.orientation.w": quat_no_loop[3],
     })
     vins_no_loop = apply_transformation(vins_no_loop, results["C"], results["r"])
-    save_vins(vins_no_loop, exp_name, robot_id, loop=False, suffix="_aligned_and_shifted")
     rmse_no_loop = compute_position_rmse(vins_no_loop, df_mocap_no_loop)
     print(f"Position RMSE w/o Loop Closure for Experiment {exp_name} \
                                         and Robot {robot_id}: {rmse_no_loop} m")
