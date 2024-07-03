@@ -8,7 +8,6 @@ Welcome to the MILUV devkit page. This Python devkit provides useful functions a
 - [Getting started with MILUV](#getting-started-with-MILUV)
     - [Setting up the dataset](#setting-up-the-dataset)
     - [Examples](#examples)
-- [Wiki](#wiki)
 - [License](#license)
 
 ## Changelog
@@ -78,9 +77,6 @@ data_at_timestamps = mv_1c.data_from_timestamps(
     sensors,
     )
 ```
-
-## Wiki
-For more information, refer to the GitHub wiki page.
 
 ## License
 This development kit is distributed under the MIT License.
