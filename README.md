@@ -78,5 +78,8 @@ data_at_timestamps = mv_1c.data_from_timestamps(
     )
 ```
 
+## Wiki
+For more information regarding the MILUV development kit, please refer to the GitHub [Wiki page](https://github.com/decargroup/miluv/wiki).
+
 ## License
 This development kit is distributed under the MIT License.
