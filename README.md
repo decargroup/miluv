@@ -8,6 +8,7 @@ Welcome to the MILUV devkit page. This Python devkit provides useful functions a
 - [Getting started with MILUV](#getting-started-with-MILUV)
     - [Setting up the dataset](#setting-up-the-dataset)
     - [Examples](#examples)
+- [Wiki](#wiki)
 - [License](#license)
 
 ## Changelog
