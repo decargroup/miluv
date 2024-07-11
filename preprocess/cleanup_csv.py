@@ -93,7 +93,7 @@ def process_cir(dir, file, headers):
 def merge_time(df):
     sec = df["header.stamp.secs"]
     nsec = df["header.stamp.nsecs"]
-    df["timestamp"] = sec + nsec / 1e9
+    df["timestamp"] = sec + nsec/1e9
     return df
 
 

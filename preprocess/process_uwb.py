@@ -8,22 +8,20 @@ from os.path import join
 import os
 import pandas as pd
 import yaml
+from miluv.utils import (
+    get_experiment_info, 
+    get_anchors, 
+    get_tags
+)
 
+    
+def generate_config(exp_info, 
+                    exp_path = None,
+                    ):
+    
+    if exp_path is None:
+        exp_path = f"data/{exp_info['experiment']}"
 
-def get_experiment_info(path):
-    exp_name = path.split('/')[-1]
-    df = pd.read_csv(join("config", "experiments.csv"))
-    df["experiment"] = df["experiment"].astype(str)
-    row: pd.DataFrame = df[df["experiment"] == exp_name]
-    return row.to_dict(orient="records")[0]
-
-
-def get_anchors(anchor_constellation):
-    with open('config/uwb/anchors.yaml', 'r') as file:
-        return yaml.safe_load(file)[anchor_constellation]
-
-
-def generate_config(exp_info):
     params = {
         "max_ts_value": "2**32",
         "ts_to_ns": "1e9 * (1.0 / 499.2e6 / 128.0)",
@@ -35,49 +33,49 @@ def generate_config(exp_info):
     }
 
     pose_path = {
-        "directory": f"data/{exp_info['experiment']}/",
+        "directory": join(exp_path, ""),
     }
-    for i in range(exp_info["num_robots"]):
-        pose_path.update({f"{i}": f"ifo00{i+1}.bag"})
-
+    for i in range(int(exp_info["num_robots"])):
+        pose_path.update({
+            f"{i}": f"ifo00{i+1}.bag"
+        })
+        
     uwb_path = pose_path.copy()
     if exp_info["num_anchors"] > 0:
         anchors = get_anchors(str(exp_info["anchor_constellation"]))
     else:
         anchors = None
     machines = {}
-    for i in range(exp_info["num_robots"]):
+    for i in range(int(exp_info["num_robots"])):
         machines.update({f"{i}": f"ifo00{i+1}"})
 
     tags = {}
-    for i in range(exp_info["num_robots"]):
+    for i in range(int(exp_info["num_robots"])):
         if exp_info["num_tags_per_robot"] == 2:
             tags.update({f"{i}": f"[{(i+1)*10}, {(i+1)*10 + 1}]"})
         elif exp_info["num_tags_per_robot"] == 1:
             tags.update({f"{i}": f"[{(i+1)*10}]"})
-
-    moment_arms = {
-        "10": "[0.13189,-0.17245,-0.05249]",
-        "11": "[-0.17542,0.15712,-0.05307]",
-        "20": "[0.16544,-0.15085,-0.03456]",
-        "21": "[-0.15467,0.16972,-0.01680]",
-        "30": "[0.16685,-0.18113,-0.05576]",
-        "31": "[-0.13485,0.15468,-0.05164]",
-    }
-
+        
+    moment_arms = get_tags(flatten=True)
+    
     pose_topic = {}
-    for i in range(exp_info["num_robots"]):
-        pose_topic.update(
-            {f"{i}": f"/ifo00{i+1}/vrpn_client_node/ifo00{i+1}/pose"})
-
+    for i in range(int(exp_info["num_robots"])):
+        pose_topic.update({
+            f"{i}": f"/ifo00{i+1}/vrpn_client_node/ifo00{i+1}/pose"
+        })
+        
     uwb_topic = {}
-    for i in range(exp_info["num_robots"]):
-        uwb_topic.update({f"{i}": f"/ifo00{i+1}/uwb/range"})
-
+    for i in range(int(exp_info["num_robots"])):
+        uwb_topic.update({
+            f"{i}": f"/ifo00{i+1}/uwb/range"
+        })
+        
     listening_topic = {}
-    for i in range(exp_info["num_robots"]):
-        listening_topic.update({f"{i}": f"/ifo00{i+1}/uwb/passive"})
-
+    for i in range(int(exp_info["num_robots"])):
+        listening_topic.update({
+            f"{i}": f"/ifo00{i+1}/uwb/passive"
+        })
+    
     uwb_message = {
         "from_id": "from_id",
         "to_id": "to_id",
@@ -136,7 +134,7 @@ def process_uwb(path):
     # parser = ConfigParser(interpolation=ExtendedInterpolation())
     # parser.read(config)
     exp_info = get_experiment_info(path)
-    uwb_config = generate_config(exp_info)
+    uwb_config = generate_config(exp_info, path)
 
     # Read anchor positions
     if exp_info["num_anchors"] > 0:
@@ -196,9 +194,9 @@ def process_uwb(path):
     # Add back important info to df_passive
     df_iter = df.iloc[df_passive["idx"]]
     to_copy = [
-        "tx1", "rx1", "tx2", "rx2", "tx3", "rx3", "range", "bias", "tx1_raw",
+        "timestamp", "tx1", "rx1", "tx2", "rx2", "tx3", "rx3", "range", "bias", "tx1_raw",
         "rx1_raw", "tx2_raw", "rx2_raw", "tx3_raw", "rx3_raw", "range_raw",
-        "bias_raw", "gt_range", "timestamp"
+        "bias_raw", "gt_range"
     ]
     for col in to_copy:
         df_passive[col + "_n"] = df_iter[col].values

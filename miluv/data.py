@@ -1,12 +1,24 @@
-from .utils import get_mocap_splines
+from miluv.utils import get_mocap_splines
 import pandas as pd
 import cv2
 import os
+from miluv.mocap_trajectory import (
+    MocapTrajectory
+)
+import numpy as np
+from typing import List
+import copy
+from miluv.utils import (
+    get_experiment_info,
+    get_anchors, 
+    get_tags,
+    tags_to_df,
+)
+import yaml
 
 
 # TODO: look into dataclasses
 class DataLoader:
-
     def __init__(
         self,
         exp_name: str,
@@ -19,24 +31,30 @@ class DataLoader:
             "infra2",
         ],
         uwb: bool = True,
-        cir: bool = True,
+        cir: bool = False,
+        vio: bool = True,
+        vio_loop: bool = False,
         height: bool = True,
         mag: bool = True,
         barometer: bool = True,
-        # calib_uwb: bool = True,
     ):
 
         # TODO: Add checks for valid exp dir and name
         self.exp_name = exp_name
         self.exp_dir = exp_dir
         self.cam = cam
+        self.setup = {'uwb_tags': None,  
+                      'april_tags': None,
+                      'imu_px4_calib': None,
+                      'imu_cam_calib': None,}
 
         # TODO: read robots from configs
-        exp_data = pd.read_csv("config/experiments.csv")
-        exp_data = exp_data[exp_data["experiment"].astype(str) == exp_name]
-        robot_ids = [f"ifo00{i}" for i in range(1, exp_data["num_robots"].iloc[0] + 1)]
+        exp_path = os.path.join(self.exp_dir, self.exp_name)
+        exp_info = get_experiment_info(exp_path)
+        robot_ids = [f"ifo00{i}" for i in range(1, exp_info["num_robots"] + 1)]
         self.data = {id: {} for id in robot_ids}
-        for id in robot_ids:
+
+        for id in robot_ids:    
             if imu == "both" or imu == "px4":
                 self.data[id].update({"imu_px4": []})
                 self.data[id]["imu_px4"] = self.read_csv("imu_px4", id)
@@ -52,6 +70,14 @@ class DataLoader:
                 self.data[id].update({"uwb_passive": []})
                 self.data[id]["uwb_passive"] = self.read_csv("uwb_passive", id)
 
+            if vio:
+                self.data[id].update({"vio": []})
+                self.data[id]["vio"] = self.read_csv("vio", id)
+
+            if vio_loop:
+                self.data[id].update({"vio_loop": []})
+                self.data[id]["vio_loop"] = self.read_csv("vio_loop", id)
+                
             if cir:
                 self.data[id].update({"uwb_cir": []})
                 self.data[id]["uwb_cir"] = self.read_csv("uwb_cir", id)
@@ -68,10 +94,25 @@ class DataLoader:
                 self.data[id].update({"barometer": []})
                 self.data[id]["barometer"] = self.read_csv("barometer", id)
 
-            # self.data[id].update({"mocap": []})
+            self.data[id].update({"mocap": MocapTrajectory})
+            self.data[id]["mocap"] = MocapTrajectory(self.read_csv("mocap", id))
+            
             mocap_df = self.read_csv("mocap", id)
             self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
                 = get_mocap_splines(mocap_df)
+            
+        # Load anchors and moment arms from experiment info
+        anchors = get_anchors(exp_info["anchor_constellation"])
+        tags = get_tags()
+        (self.setup["uwb_tags"], 
+        self.setup["april_tags"]) = tags_to_df(anchors, tags)
+        self.setup["imu_px4_calib"] = self.read_yaml("imu", "imu_px4_calib")
+
+        
+        # TODO: Add april tags to the data
+        # TODO: Load cam imu calibration
+        # self.setup['imu_cam_calib'] = self.read_yaml("imu", "imu_cam_calib")
+            # self.data[id].update({"mocap": []})
 
         # TODO: Load timestamp-to-image mapping?
         # if cam == "both" or cam == "bottom":
@@ -84,76 +125,175 @@ class DataLoader:
         path = os.path.join(self.exp_dir, self.exp_name, robot_id,
                             topic + ".csv")
         return pd.read_csv(path)
+    
+    def read_yaml(self, sensor:str, topic: str) -> pd.DataFrame:
 
-    def closest_past_timestamp(self, robot_id: str, sensor: str,
-                               timestamp: float) -> int:
-        """Return the closest timestamp in the past for a given sensor."""
-        not_over = None
-        if sensor != "bottom" and sensor != "color" and sensor != "infra1" and sensor != "infra2":
-            not_over = [
-                ts for ts in self.data[robot_id][sensor]["timestamp"]
-                if ts <= timestamp
-            ]
-        else:
-            all_imgs = os.listdir(
-                os.path.join(self.exp_dir, self.exp_name, robot_id, sensor))
-            all_imgs = [int(img.split(".")[0]) for img in all_imgs]
-            not_over = [ts for ts in all_imgs if ts <= timestamp]
+        """Read a yaml file for a given robot and topic."""
+        path = os.path.join("config/" + sensor + "/" + topic + ".yaml")
+        return yaml.safe_load(open(path, 'r'))
+    
 
-        if not_over == []:
-            return None
-        return max(not_over)
+    def copy(self):
+        return copy.deepcopy(self)
+    
 
-    def data_from_timestamp(
-        self,
-        timestamps: list,
-        robot_ids=None,
-        sensors=None,
-    ) -> dict:
-        """Return all data from a given timestamp."""
+    def by_timestamps(self, stamps, 
+                  robot_id:List = None, 
+                  sensors:List = None):
+        """
+        Get the data at one or more query times.
 
-        def data_from_timestamp_robot(robot_id: str, timestamps: list) -> dict:
-            """Return all data from a given timestamp for a given robot."""
-            data_by_robot = {}
+        Parameters
+        ----------
+        stamps : np.ndarray
+            Query times
+
+        Returns
+        -------
+        Data
+            data at the closest time to the query time
+            data is at the lower bound of the time window
+            data is not interpolated
+        """
+        stamps = np.array(stamps)
+
+        if robot_id is None:
+            robot_id = self.data.keys()
+
+
+        robot_id = [robot_id] if type(robot_id) is str else robot_id
+        sensors = [sensors] if type(sensors) is str else sensors
+
+        out = self.copy()
+        out.data = {id: {} for id in robot_id}
+        for id in robot_id:
+            if sensors is None:
+                sensors = list(self.data[id].keys() - ["mocap"])
+
+            indices_dict = {}
+            data = {sensor: self.data[id][sensor].copy() 
+                    for sensor in sensors}
+
+
             for sensor in sensors:
-                data_by_robot[sensor] = data_from_timestamp_sensor(
-                    robot_id, sensor, timestamps)
+                indices = []
+                for s in stamps:
+                    index = self._get_index(s, id, sensor)
+                    indices.append(index)
+                indices_dict[sensor] = indices
+                data[sensor] = data[sensor].loc[indices_dict[sensor]]
 
-            return data_by_robot
+            out.data[id] = data
 
-        def data_from_timestamp_sensor(robot_id: str, sensor: str,
-                                       timestamps: list) -> dict:
-            """Return all data from a given timestamp for a given sensor for a given robot."""
-            col_names = self.data[robot_id][sensor].columns
-            df = pd.DataFrame(columns=col_names)
-            for timestamp in timestamps:
-                if timestamp in self.data[robot_id][sensor][
-                        "timestamp"].values:
-                    df = pd.concat([
-                        df if not df.empty else None, self.data[robot_id]
-                        [sensor].loc[self.data[robot_id][sensor]["timestamp"]
-                                     == timestamp]
-                    ])
-                else:
-                    df = pd.concat([
-                        df if not df.empty else None, self.data[robot_id]
-                        [sensor].loc[self.data[robot_id][sensor]["timestamp"]
-                                     == self.closest_past_timestamp(
-                                         robot_id, sensor, timestamp)]
-                    ])
-            return df
+        return out
+    
+    def by_timerange(self, 
+                    start_time: float, 
+                    end_time: float,
+                    robot_id:List = None, 
+                    sensors:List = None):
+            """
+            Get the data within a time range.
+    
+            Parameters
+            ----------
+            start_time : float
+                Start time of the range
+            end_time : float
+                End time of the range
+    
+            Returns
+            -------
+            Data
+                data within the time range
+            """
+            start_time = start_time
+            end_time = end_time
+    
+            if robot_id is None:
+                robot_id = self.data.keys()
+    
+            robot_id = [robot_id] if type(robot_id) is str else robot_id
+            sensors = [sensors] if type(sensors) is str else sensors
+    
+            out = self.copy()
+            out.data = {id: {} for id in robot_id}
+            for id in robot_id:
+                if sensors is None:
+                    sensors = list(self.data[id].keys() - ["mocap"])
+    
+                data = {sensor: self.data[id][sensor].copy() 
+                        for sensor in sensors}
+    
+                for sensor in sensors:
+                    mask = (data[sensor]["timestamp"] >= start_time
+                            ) & (data[sensor]["timestamp"] <= end_time)
+                    
+                    data[sensor] = data[sensor].loc[mask]
+    
+                out.data[id] = data
+    
+            return out
 
-        if robot_ids is None:
-            robot_ids = self.data.keys()
-        if sensors is None:
-            sensors = self.data['ifo001'].keys()
+    def get_timerange(self, 
+                   robot_id:List = None, 
+                   sensors: List = None) -> float:
+        """
+        Get the start time of the data for a robot.
 
-        data_by_timestamp = {}
-        for robot_id in robot_ids:
-            data_by_timestamp[robot_id] = data_from_timestamp_robot(
-                robot_id, timestamps)
+        Parameters
+        ----------
+        robot_id : str
+            The robot ID
 
-        return data_by_timestamp
+        Returns
+        -------
+        float
+            Start time of the data
+        """
+        start_times = []
+        end_times = []
+
+        if robot_id is None:
+            robot_id = self.data.keys()
+
+        robot_id = [robot_id] if type(robot_id) is str else robot_id
+        sensors = [sensors] if type(sensors) is str else sensors
+
+
+        for id in robot_id:
+            if sensors is None:
+                sensors = list(self.data[id].keys() - ["mocap"])
+            
+            for sensor in sensors:
+                start_times.append(self.data[id][sensor]["timestamp"].iloc[0])
+                end_times.append(self.data[id][sensor]["timestamp"].iloc[-1])
+
+        start_time = max(start_times)
+        end_time = min(end_times)
+
+        return (start_time, end_time)
+        
+
+    def _get_index(self, stamp: float, robot_id: str, topic: str, ) -> int:
+        """
+        Get the index of the closest earlier time to the query time.
+
+        Parameters
+        ----------
+        topic : str
+            The topic to query
+        stamp : float
+            Query time
+
+        Returns
+        -------
+        int
+            index of the closest earlier time to the query time
+        """
+        mask = self.data[robot_id][topic]["timestamp"] <= stamp
+        last_index = mask[::-1].idxmax() if mask.any() else None
+        return last_index
 
     def imgs_from_timestamps(self,
                              timestamps: list,
@@ -202,6 +342,7 @@ class DataLoader:
 if __name__ == "__main__":
     mv = DataLoader(
         "1c",
+        exp_dir =  "/media/syedshabbir/Seagate B/data",
         barometer=False,
         height=False,
     )
