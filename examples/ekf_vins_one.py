@@ -7,7 +7,7 @@ import numpy as np
 #################### LOAD SENSOR DATA ####################
 miluv = DataLoader("13", imu = "px4", cam = None, mag = False)
 data = miluv.data["ifo001"]
-# vins = load_vins("13", "ifo001", postprocessed = True) # TODO: load postprocessed vins data
+vins = load_vins("13", "ifo001", postprocessed = True)
 
 #################### ALIGN SENSOR DATA TIMESTAMPS ####################
 # TODO DOCUMENTATION: Timestamps where range measurements or height are available, assume vins measurements are constant between these timestamps

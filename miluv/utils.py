@@ -105,7 +105,7 @@ def get_timeshift(exp_name):
     return timeshift_s + timeshift_ns / 1e9
 
 
-def load_vins(exp_name, robot_id, loop=True):
+def load_vins(exp_name, robot_id, loop = True, postprocessed: bool = False) -> pd.DataFrame:
     """
     Load VINS data.
     
@@ -113,34 +113,44 @@ def load_vins(exp_name, robot_id, loop=True):
     - exp_name: Experiment name.
     - robot_id: Robot ID.
     - loop: Whether to load VINS data with loop closure or not.
+    - postprocessed: Whether to load postprocessed (aligned and shifted) VINS data or not.
     
     Returns:
     - vins: VINS data.
     """
+    
+    if postprocessed:
+        suffix = "_aligned_and_shifted"
+    else:
+        suffix = ""
 
     if loop:
-        file = f"data/vins/{exp_name}/{robot_id}_vio_loop.csv"
+        file = f"data/vins_results/{exp_name}/{robot_id}_vio_loop{suffix}.csv"
     else:
-        file = f"data/vins/{exp_name}/{robot_id}_vio.csv"
+        file = f"data/vins_results/{exp_name}/{robot_id}_vio{suffix}.csv"
 
-    data = pd.read_csv(file,
-                       names=[
-                           "timestamp",
-                           "pose.position.x",
-                           "pose.position.y",
-                           "pose.position.z",
-                           "pose.orientation.x",
-                           "pose.orientation.y",
-                           "pose.orientation.z",
-                           "pose.orientation.w",
-                           "twist.linear.x",
-                           "twist.linear.y",
-                           "twist.linear.z",
-                       ],
-                       index_col=False)
+    data = pd.read_csv(
+        file,
+        names=[
+            "timestamp",
+            "pose.position.x",
+            "pose.position.y",
+            "pose.position.z",
+            "pose.orientation.x",
+            "pose.orientation.y",
+            "pose.orientation.z",
+            "pose.orientation.w",
+            "twist.linear.x",
+            "twist.linear.y",
+            "twist.linear.z",
+        ],
+        index_col=False,
+        header = (0 if postprocessed else None)
+    )
 
     timeshift = get_timeshift(exp_name)
-    data["timestamp"] = data["timestamp"] / 1e9 - timeshift
+    if not postprocessed:
+        data["timestamp"] = data["timestamp"] / 1e9 - timeshift
 
     return data
 
@@ -149,7 +159,7 @@ def save_vins(data: pd.DataFrame,
               exp_name: str,
               robot_id: str,
               loop: bool = True,
-              suffix: str = ""):
+              postprocessed: bool = False):
     """
     Save VINS data.
     
@@ -158,13 +168,19 @@ def save_vins(data: pd.DataFrame,
     - exp_name: Experiment name.
     - robot_id: Robot ID.
     - loop: Whether loop closure was enabled or not, only affects csv file name.
-    - suffix: Suffix to append to the csv file name.
+    - postprocessed: Whether the data is postprocessed or not, only affects csv file name.
     """
+    
+    if postprocessed:
+        suffix = "_aligned_and_shifted"
+    else:
+        suffix = ""
+    
     if loop:
-        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio_loop{suffix}.csv",
+        data.to_csv(f"data/vins_results/{exp_name}/{robot_id}_vio_loop{suffix}.csv",
                     index=False)
     else:
-        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio{suffix}.csv",
+        data.to_csv(f"data/vins_results/{exp_name}/{robot_id}_vio{suffix}.csv",
                     index=False)
 
 
