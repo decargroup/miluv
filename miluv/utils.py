@@ -6,6 +6,40 @@ import scipy as sp
 import yaml
 import matplotlib.pyplot as plt
 
+def zero_order_hold(query_timestamps, data):
+    """
+    Zero-order hold interpolation for data.
+    
+    Args:
+    - query_timestamps: Query timestamps.
+    - data: Data to interpolate.
+    
+    Returns:
+    - data: Interpolated data.
+    """
+    new_data = pd.DataFrame()
+    
+    # Ensure that query timestamps and data timestamps are sorted in ascending order
+    query_timestamps = np.sort(query_timestamps)
+    data.sort_values("timestamp", inplace=True)
+
+    # Find the indices associated with the query timestamps using a zero-order hold
+    idx_to_keep = []
+    most_recent_idx = 0
+    
+    new_data["timestamp"] = query_timestamps
+    for timestamp in query_timestamps:
+        while most_recent_idx < len(data) and data["timestamp"].iloc[most_recent_idx] <= timestamp:
+            most_recent_idx += 1
+        idx_to_keep.append(most_recent_idx - 1)
+        
+    # Add the columns at the indices associated with the query timestamps
+    for col in data.columns:
+        if col == "timestamp":
+            continue
+        new_data[col] = data.iloc[idx_to_keep][col].values
+
+    return data
 
 def get_mocap_splines(mocap: pd.DataFrame) -> 'tuple[callable, callable]':
     """

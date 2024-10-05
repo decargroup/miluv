@@ -1,10 +1,11 @@
-from .utils import get_mocap_splines
+from miluv.utils import get_mocap_splines, zero_order_hold
+
 import pandas as pd
+import numpy as np
 import cv2
 import os
+from typing import List
 
-
-# TODO: look into dataclasses
 class DataLoader:
 
     def __init__(
@@ -19,11 +20,10 @@ class DataLoader:
             "infra2",
         ],
         uwb: bool = True,
-        cir: bool = True,
         height: bool = True,
         mag: bool = True,
-        barometer: bool = True,
-        # calib_uwb: bool = True,
+        cir: bool = False,
+        barometer: bool = False,
     ):
 
         # TODO: Add checks for valid exp dir and name
@@ -84,6 +84,44 @@ class DataLoader:
         path = os.path.join(self.exp_dir, self.exp_name, robot_id,
                             topic + ".csv")
         return pd.read_csv(path)
+
+    def by_timestamps(
+        self, 
+        stamps: np.ndarray, 
+        robot_id: List = None, 
+        sensors: List = None
+    ) -> pd.DataFrame:
+        """
+        Get the data at one or more query times. The return data is at the lower bound 
+        of the time window where data is available, i.e., a zero-order hold.
+
+        Parameters
+        ----------
+        stamps : np.ndarray
+            The query times for which data is requested.
+
+        Returns
+        -------
+        pd.DataFrame
+            The data at the query times.
+        """
+        stamps = np.array(stamps)
+
+        if robot_id is None:
+            robot_id = self.data.keys()
+
+        robot_id = [robot_id] if type(robot_id) is str else robot_id
+        sensors = [sensors] if type(sensors) is str else sensors
+
+        new_data: pd.DataFrame = self.data.copy()
+        for id in robot_id:
+            if sensors is None:
+                sensors = list(self.data[id].keys() - ["mocap"])
+
+            for sensor in sensors:
+                new_data[id][sensor] = zero_order_hold(stamps, self.data[sensor])
+
+        return new_data
 
     def closest_past_timestamp(self, robot_id: str, sensor: str,
                                timestamp: float) -> int:
