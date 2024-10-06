@@ -85,9 +85,9 @@ class DataLoader:
                             topic + ".csv")
         return pd.read_csv(path)
 
-    def by_timestamps(
+    def query_by_timestamps(
         self, 
-        stamps: np.ndarray, 
+        timestamps: np.ndarray, 
         robots: List = None, 
         sensors: List = None
     ) -> pd.DataFrame:
@@ -97,7 +97,7 @@ class DataLoader:
 
         Parameters
         ----------
-        stamps : np.ndarray
+        timestamps : np.ndarray
             The query times for which data is requested.
         robots : List, optional
             The robots for which data is requested. If None, data for all robots is returned.
@@ -109,7 +109,7 @@ class DataLoader:
         pd.DataFrame
             The data at the query times.
         """
-        stamps = np.array(stamps)
+        timestamps = np.array(timestamps)
 
         if robots is None:
             robots = self.data.keys()
@@ -124,7 +124,7 @@ class DataLoader:
                 sensors = list(self.data[id].keys() - ["mocap"])
 
             for sensor in sensors:
-                new_data[id][sensor] = zero_order_hold(stamps, self.data[id][sensor])
+                new_data[id][sensor] = zero_order_hold(timestamps, self.data[id][sensor])
 
         return new_data
 
