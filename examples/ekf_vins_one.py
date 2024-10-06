@@ -7,7 +7,7 @@ import numpy as np
 #################### LOAD SENSOR DATA ####################
 miluv = DataLoader("13", imu = "px4", cam = None, mag = False)
 data = miluv.data["ifo001"]
-vins = load_vins("13", "ifo001", postprocessed = True)
+vins = load_vins("13", "ifo001", loop = False, postprocessed = True)
 
 #################### ALIGN SENSOR DATA TIMESTAMPS ####################
 # TODO DOCUMENTATION: Timestamps where range measurements or height are available, assume vins measurements are constant between these timestamps
@@ -17,8 +17,8 @@ query_timestamps = np.append(
 )
 query_timestamps = np.sort(np.unique(query_timestamps))
 
-data_at_query_timestamps = miluv.by_timestamps(query_timestamps)["ifo001"]
-gyro = data_at_query_timestamps["imu_px4"][["angular_velocity.x", "angular_velocity.y", "angular_velocity.z"]]
+imu_at_query_timestamps = miluv.by_timestamps(query_timestamps, robots="ifo001", sensors="imu_px4")["ifo001"]
+gyro = imu_at_query_timestamps["imu_px4"][["timestamp", "angular_velocity.x", "angular_velocity.y", "angular_velocity.z"]]
 vins = zero_order_hold(query_timestamps, vins) # add this and use it in by_timestamp inside the dataloader
 
 #################### LOAD GROUND TRUTH DATA ####################

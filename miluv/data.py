@@ -88,7 +88,7 @@ class DataLoader:
     def by_timestamps(
         self, 
         stamps: np.ndarray, 
-        robot_id: List = None, 
+        robots: List = None, 
         sensors: List = None
     ) -> pd.DataFrame:
         """
@@ -99,6 +99,10 @@ class DataLoader:
         ----------
         stamps : np.ndarray
             The query times for which data is requested.
+        robots : List, optional
+            The robots for which data is requested. If None, data for all robots is returned.
+        sensors : List, optional
+            The sensors for which data is requested. If None, data for all sensors is returned.
 
         Returns
         -------
@@ -107,19 +111,20 @@ class DataLoader:
         """
         stamps = np.array(stamps)
 
-        if robot_id is None:
-            robot_id = self.data.keys()
+        if robots is None:
+            robots = self.data.keys()
 
-        robot_id = [robot_id] if type(robot_id) is str else robot_id
+        robots = [robots] if type(robots) is str else robots
         sensors = [sensors] if type(sensors) is str else sensors
 
-        new_data: pd.DataFrame = self.data.copy()
-        for id in robot_id:
+        new_data: dict = {}
+        for id in robots:
+            new_data[id] = {}
             if sensors is None:
                 sensors = list(self.data[id].keys() - ["mocap"])
 
             for sensor in sensors:
-                new_data[id][sensor] = zero_order_hold(stamps, self.data[sensor])
+                new_data[id][sensor] = zero_order_hold(stamps, self.data[id][sensor])
 
         return new_data
 
