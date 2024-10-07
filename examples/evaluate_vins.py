@@ -119,7 +119,7 @@ def evaluate_vins(exp_name, robot_id, visualize):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Not enough arguments. Usage: python vins.py exp_name robot_id")
+        print("Not enough arguments. Usage: python evaluate_vins.py exp_name robot_id")
         sys.exit(1)
     exp_name = sys.argv[1]
     robot_id = sys.argv[2]
