@@ -4,7 +4,51 @@ import pandas as pd
 from scipy.spatial.transform import Rotation
 import scipy as sp
 import yaml
-import matplotlib.pyplot as plt
+
+def get_anchors():
+    """
+    Get anchor positions.
+    
+    Returns: 
+    dict
+    - Anchor positions.
+    """
+    
+    with open(f"config/uwb/anchors.yaml", "r") as file:
+        anchor_positions = yaml.safe_load(file)
+    
+    for constellation in anchor_positions:
+        anchors = list(anchor_positions[constellation].keys())
+        for anchor in anchors:
+            pos = np.array([eval(anchor_positions[constellation][anchor])]).reshape(3, 1)
+            anchor_positions[constellation][int(anchor)] = pos
+            anchor_positions[constellation].pop(anchor)
+    
+    return anchor_positions
+
+def get_tag_moment_arms():
+    """
+    Get tag moment arms.
+    
+    Args:
+    - exp_name: Experiment name.
+    
+    Returns:
+    dict
+    - Tag moment arms in the robot's own body frame.
+    """
+    
+    with open(f"config/uwb/tags.yaml", "r") as file:
+        tag_moment_arms = yaml.safe_load(file)
+    
+    for robot in tag_moment_arms:
+        tags = list(tag_moment_arms[robot].keys())
+        for tag in tags:
+            pos = np.array([eval(tag_moment_arms[robot][tag])]).reshape(3, 1)
+            tag_moment_arms[robot][int(tag)] = pos
+            tag_moment_arms[robot].pop(tag)
+    
+    return tag_moment_arms
 
 def zero_order_hold(query_timestamps, data):
     """

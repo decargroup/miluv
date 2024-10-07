@@ -1,4 +1,4 @@
-from miluv.utils import get_mocap_splines, zero_order_hold
+import miluv.utils as utils
 
 import pandas as pd
 import numpy as np
@@ -31,10 +31,15 @@ class DataLoader:
         self.exp_dir = exp_dir
         self.cam = cam
 
-        # TODO: read robots from configs
         exp_data = pd.read_csv("config/experiments.csv")
         exp_data = exp_data[exp_data["experiment"].astype(str) == exp_name]
+        
         robot_ids = [f"ifo00{i}" for i in range(1, exp_data["num_robots"].iloc[0] + 1)]
+        self.anchors = utils.get_anchors()[exp_data["anchor_constellation"].iloc[0]]
+        
+        tag_moment_arms = utils.get_tag_moment_arms()
+        self.tag_moment_arms = {id: tag_moment_arms[id] for id in robot_ids}
+        
         self.data = {id: {} for id in robot_ids}
         for id in robot_ids:
             if imu == "both" or imu == "px4":
@@ -71,7 +76,7 @@ class DataLoader:
             # self.data[id].update({"mocap": []})
             mocap_df = self.read_csv("mocap", id)
             self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
-                = get_mocap_splines(mocap_df)
+                = utils.get_mocap_splines(mocap_df)
 
         # TODO: Load timestamp-to-image mapping?
         # if cam == "both" or cam == "bottom":
@@ -124,7 +129,7 @@ class DataLoader:
                 sensors = list(self.data[id].keys() - ["mocap"])
 
             for sensor in sensors:
-                new_data[id][sensor] = zero_order_hold(timestamps, self.data[id][sensor])
+                new_data[id][sensor] = utils.zero_order_hold(timestamps, self.data[id][sensor])
 
         return new_data
 

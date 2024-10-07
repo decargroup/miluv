@@ -13,7 +13,7 @@ class EKF:
         self.x = state #TODO: add noise
         self.P = P0
         self.anchors = anchors
-        self.tag_moment_arms = tag_moment_arms
+        self.tag_moment_arms = tag_moment_arms["ifo001"]
 
     def predict(self, u, dt):
         A = self._process_jacobian(self.x, u, dt)
