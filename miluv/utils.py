@@ -59,7 +59,8 @@ def zero_order_hold(query_timestamps, data):
     - data: Data to interpolate.
     
     Returns:
-    - data: Interpolated data.
+    pd.DataFrame
+    - Interpolated data.
     """
     new_data = pd.DataFrame()
     
@@ -83,7 +84,7 @@ def zero_order_hold(query_timestamps, data):
             continue
         new_data[col] = data.iloc[idx_to_keep][col].values
 
-    return data
+    return new_data
 
 def get_mocap_splines(mocap: pd.DataFrame) -> 'tuple[callable, callable]':
     """
