@@ -150,6 +150,39 @@ def get_timeshift(exp_name):
 
     return timeshift_s + timeshift_ns / 1e9
 
+def get_imu_noise_params(robot_name, sensor_name):
+    """
+    Get IMU noise parameters that were generated using allan_variance_ros, available at
+    https://github.com/ori-drs/allan_variance_ros. The noise parameters are stored in 
+    the config/imu directory.
+    
+    Args:
+    - robot_name: Robot name, e.g., "ifo001".
+    - sensor_name: Sensor name, options are "px4" and "cam".
+    
+    Returns:
+    dict
+    - gyro: Gyroscope noise parameters.
+    - accel: Accelerometer noise parameters.
+    """
+    
+    with open(f"config/imu/{robot_name}/{sensor_name}_output.log", "r") as file:
+        imu_params = yaml.safe_load(file)
+    
+    gyro = np.array([
+        eval(imu_params["X Angle Random Walk"].split(" ")[0]),
+        eval(imu_params["Y Angle Random Walk"].split(" ")[0]),
+        eval(imu_params["Z Angle Random Walk"].split(" ")[0])
+    ])
+    accel = np.array([
+        eval(imu_params["X Velocity Random Walk"].split(" ")[0]),
+        eval(imu_params["Y Velocity Random Walk"].split(" ")[0]),
+        eval(imu_params["Z Velocity Random Walk"].split(" ")[0])
+    ])
+    
+    return {"gyro": gyro, "accel": accel}
+    
+
 def load_vins(exp_name, robot_id, loop = True, postprocessed: bool = False) -> pd.DataFrame:
     """
     Load VINS data.

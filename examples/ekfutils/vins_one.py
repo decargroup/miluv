@@ -2,16 +2,25 @@ import numpy as np
 from pymlg import SE3
 
 import examples.ekfutils.common as common
+import miluv.utils as utils
 
 # EKF parameters
 state_dimension = 6
 np.random.seed(0)
 
 # Covariance matrices
-P0 = np.diag([0.01, 0.01, 0.01, 0.1, 0.1, 0.1])
-Q = np.diag([0.001, 0.001, 0.001, 0.1 , 0.1, 0.1])
-R_range = 0.3
-R_height = 0.3
+P0 = np.diag([0.01, 0.01, 0.01, 0.1, 0.1, 0.1]) # Initial state covariance
+
+imu_noise_params = utils.get_imu_noise_params("ifo001", "px4")
+Q = np.diag([
+    imu_noise_params["gyro"][0]**2, 
+    imu_noise_params["gyro"][1]**2,
+    imu_noise_params["gyro"][2]**2,
+    0.1 , 0.1, 0.1
+]) # Process noise covariance
+
+R_range = 0.3**2 # Range measurement noise covariance
+R_height = 0.5**2 # Height measurement noise covariance
 
 class EKF:
     def __init__(self, state, anchors, tag_moment_arms):
