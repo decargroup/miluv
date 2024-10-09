@@ -1,10 +1,11 @@
-from .utils import get_mocap_splines
+import miluv.utils as utils
+
 import pandas as pd
+import numpy as np
 import cv2
 import os
+from typing import List
 
-
-# TODO: look into dataclasses
 class DataLoader:
 
     def __init__(
@@ -19,11 +20,10 @@ class DataLoader:
             "infra2",
         ],
         uwb: bool = True,
-        cir: bool = True,
         height: bool = True,
         mag: bool = True,
-        barometer: bool = True,
-        # calib_uwb: bool = True,
+        cir: bool = False,
+        barometer: bool = False,
     ):
 
         # TODO: Add checks for valid exp dir and name
@@ -31,10 +31,15 @@ class DataLoader:
         self.exp_dir = exp_dir
         self.cam = cam
 
-        # TODO: read robots from configs
         exp_data = pd.read_csv("config/experiments.csv")
         exp_data = exp_data[exp_data["experiment"].astype(str) == exp_name]
+        
         robot_ids = [f"ifo00{i}" for i in range(1, exp_data["num_robots"].iloc[0] + 1)]
+        self.anchors = utils.get_anchors()[exp_data["anchor_constellation"].iloc[0]]
+        
+        tag_moment_arms = utils.get_tag_moment_arms()
+        self.tag_moment_arms = {id: tag_moment_arms[id] for id in robot_ids}
+        
         self.data = {id: {} for id in robot_ids}
         for id in robot_ids:
             if imu == "both" or imu == "px4":
@@ -71,7 +76,7 @@ class DataLoader:
             # self.data[id].update({"mocap": []})
             mocap_df = self.read_csv("mocap", id)
             self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
-                = get_mocap_splines(mocap_df)
+                = utils.get_mocap_splines(mocap_df)
 
         # TODO: Load timestamp-to-image mapping?
         # if cam == "both" or cam == "bottom":
@@ -84,6 +89,49 @@ class DataLoader:
         path = os.path.join(self.exp_dir, self.exp_name, robot_id,
                             topic + ".csv")
         return pd.read_csv(path)
+
+    def query_by_timestamps(
+        self, 
+        timestamps: np.ndarray, 
+        robots: List = None, 
+        sensors: List = None
+    ) -> pd.DataFrame:
+        """
+        Get the data at one or more query times. The return data is at the lower bound 
+        of the time window where data is available, i.e., a zero-order hold.
+
+        Parameters
+        ----------
+        timestamps : np.ndarray
+            The query times for which data is requested.
+        robots : List, optional
+            The robots for which data is requested. If None, data for all robots is returned.
+        sensors : List, optional
+            The sensors for which data is requested. If None, data for all sensors is returned.
+
+        Returns
+        -------
+        pd.DataFrame
+            The data at the query times.
+        """
+        timestamps = np.array(timestamps)
+
+        if robots is None:
+            robots = self.data.keys()
+
+        robots = [robots] if type(robots) is str else robots
+        sensors = [sensors] if type(sensors) is str else sensors
+
+        new_data: dict = {}
+        for id in robots:
+            new_data[id] = {}
+            if sensors is None:
+                sensors = list(self.data[id].keys() - ["mocap"])
+
+            for sensor in sensors:
+                new_data[id][sensor] = utils.zero_order_hold(timestamps, self.data[id][sensor])
+
+        return new_data
 
     def closest_past_timestamp(self, robot_id: str, sensor: str,
                                timestamp: float) -> int:
