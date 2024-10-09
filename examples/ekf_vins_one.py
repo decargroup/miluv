@@ -18,8 +18,6 @@ data = miluv.data["ifo001"]
 vins = utils.load_vins(exp_name, "ifo001", loop = False, postprocessed = True)
 
 #################### ALIGN SENSOR DATA TIMESTAMPS ####################
-# TODO DOCUMENTATION: Timestamps where range measurements or height are available, assume vins measurements are constant between these timestamps
-# We also get rid of timestamps before the first vins measurement and after the last vins measurement
 query_timestamps = np.append(
     data["uwb_range"]["timestamp"].to_numpy(), data["height"]["timestamp"].to_numpy()
 )
@@ -80,7 +78,6 @@ for i in range(0, len(query_timestamps)):
 #################### POSTPROCESS ####################
 analysis = postprocessing.Evaluate(gt_se3, ekf_history, exp_name)
 
-# TODO: Mention in the documentation that we need to create the results/plots directory
 analysis.plot_error()
 analysis.plot_poses()
 analysis.save_results()

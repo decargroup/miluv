@@ -44,6 +44,9 @@ class Evaluate:
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
         axs[0, 0].legend()
+        
+        if not os.path.exists('results/plots/ekf_vins_one'):
+            os.makedirs('results/plots/ekf_vins_one')
         plt.savefig(f"results/plots/ekf_vins_one/{self.exp_name}_poses.pdf")
         plt.close()
 
@@ -62,6 +65,9 @@ class Evaluate:
             axs[i % 3, int(i > 2)].set_ylabel(self.error_titles[i])
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
+        
+        if not os.path.exists('results/plots/ekf_vins_one'):
+            os.makedirs('results/plots/ekf_vins_one')
         plt.savefig(f"results/plots/ekf_vins_one/{self.exp_name}_error.pdf")
         plt.close()
 
