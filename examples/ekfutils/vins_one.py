@@ -5,6 +5,7 @@ import examples.ekfutils.common as common
 
 # EKF parameters
 state_dimension = 6
+np.random.seed(0)
 
 # Covariance matrices
 P0 = np.diag([0.01, 0.01, 0.01, 0.1, 0.1, 0.1])
@@ -14,7 +15,9 @@ R_height = 0.3
 
 class EKF:
     def __init__(self, state, anchors, tag_moment_arms):
-        self.x = state
+        # Add noise to the initial state using P0 to reflect uncertainty in the initial state
+        self.x = state @ SE3.Exp(np.random.multivariate_normal(np.zeros(state_dimension), P0))
+        
         self.P = P0
         self.anchors = anchors
         self.tag_moment_arms = tag_moment_arms["ifo001"]
