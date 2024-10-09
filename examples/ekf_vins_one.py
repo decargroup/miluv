@@ -35,6 +35,9 @@ gt_se3 = liegroups.get_se3_poses(
     data["mocap_pos"](query_timestamps), data["mocap_quat"](query_timestamps)
 )
 
+# Use ground truth data to convert VINS data from the absolute (mocap) frame to the robot's body frame
+vins = utils.convert_vins_velocity_to_body_frame(vins, gt_se3)
+
 #################### EKF ####################
 # Initialize a variable to store the EKF state and covariance at each query timestamp for postprocessing
 ekf_history = postprocessing.History()

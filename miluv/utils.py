@@ -5,6 +5,8 @@ from scipy.spatial.transform import Rotation
 import scipy as sp
 import yaml
 
+from pymlg import SE3
+
 def get_anchors():
     """
     Get anchor positions.
@@ -130,6 +132,29 @@ def get_mocap_splines(mocap: pd.DataFrame) -> 'tuple[callable, callable]':
 
     return pos_splines, quat_splines
 
+def convert_vins_velocity_to_body_frame(vins: pd.DataFrame, gt_se3: list) -> pd.DataFrame:
+    """
+    Convert VINS velocity data to the robot's body frame.
+    
+    Args:
+    - vins: VINS data.
+    - gt_se3: Ground truth SE3 poses.
+    
+    Returns:
+    - vins: VINS data with velocity data in the robot's body frame.
+    """
+    
+    for i in range(len(vins)):
+        R = gt_se3[i][:3, :3]
+        v = np.array([vins.iloc[i]["twist.linear.x"],
+                      vins.iloc[i]["twist.linear.y"],
+                      vins.iloc[i]["twist.linear.z"]])
+        v_body = R.T @ v
+        vins.at[i, "twist.linear.x"] = v_body[0]
+        vins.at[i, "twist.linear.y"] = v_body[1]
+        vins.at[i, "twist.linear.z"] = v_body[2]
+    
+    return vins
 
 def get_timeshift(exp_name):
     """

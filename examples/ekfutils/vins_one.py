@@ -1,12 +1,14 @@
 import numpy as np
 from pymlg import SE3
 
+# EKF parameters
 state_dimension = 6
 
-P0 = np.eye(6)
-Q = np.eye(6) / 1e3
-R_range = 0.1
-R_height = 0.1
+# Covariance matrices
+P0 = np.diag([0.01, 0.01, 0.01, 0.1, 0.1, 0.1])
+Q = np.diag([0.001, 0.001, 0.001, 0.1 , 0.1, 0.1])
+R_range = 0.3
+R_height = 0.3
 
 class EKF:
     def __init__(self, state, anchors, tag_moment_arms):
