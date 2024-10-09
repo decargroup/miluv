@@ -1,6 +1,8 @@
 import numpy as np
 from pymlg import SE3
 
+import examples.ekfutils.common as common
+
 # EKF parameters
 state_dimension = 6
 
@@ -12,7 +14,7 @@ R_height = 0.3
 
 class EKF:
     def __init__(self, state, anchors, tag_moment_arms):
-        self.x = state #TODO: add noise
+        self.x = state
         self.P = P0
         self.anchors = anchors
         self.tag_moment_arms = tag_moment_arms["ifo001"]
@@ -40,10 +42,18 @@ class EKF:
         else:
             return
         
-        K = self.P @ H.T / (H @ self.P @ H.T + R)
+        z = np.array([actual_measurement - predicted_measurement])
+        S = H @ self.P @ H.T + R
         
-        self.x = self.x @ SE3.Exp(K @ np.array([actual_measurement - predicted_measurement]))
+        if common.is_outlier(z, S):
+            return
+        
+        K = self.P @ H.T / S
+        
+        self.x = self.x @ SE3.Exp(K @ z)
         self.P = (np.eye(6) - K @ H) @ self.P
+        
+        # Ensure symmetric covariance matrix
         self.P = 0.5 * (self.P + self.P.T)
         
     @staticmethod

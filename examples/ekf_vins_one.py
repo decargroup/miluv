@@ -4,6 +4,7 @@ import utils.liegroups as liegroups
 import miluv.utils as utils
 import examples.ekfutils.vins_one as vins_one
 import examples.ekfutils.postprocessing as postprocessing
+import examples.ekfutils.common as common
 
 import numpy as np
 import pandas as pd
@@ -36,7 +37,7 @@ gt_se3 = liegroups.get_se3_poses(
 )
 
 # Use ground truth data to convert VINS data from the absolute (mocap) frame to the robot's body frame
-vins = utils.convert_vins_velocity_to_body_frame(vins, gt_se3)
+vins = common.convert_vins_velocity_to_body_frame(vins, gt_se3)
 
 #################### EKF ####################
 # Initialize a variable to store the EKF state and covariance at each query timestamp for postprocessing
