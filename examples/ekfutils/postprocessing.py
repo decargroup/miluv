@@ -28,7 +28,7 @@ class Evaluate:
         for i in range(0, len(self.gt_se3)):
             self.error[i, :] = SE3.Log(SE3.inverse(self.gt_se3[i]) @ self.states[i]).ravel()
             
-        self.error_titles = [r"$\delta_{\theta_x}$", r"$\delta_{\theta_y}$", r"$\delta_{\theta_z}$", 
+        self.error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
                              r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
 
     def plot_poses(self):
