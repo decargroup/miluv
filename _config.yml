@@ -38,7 +38,7 @@ url: https://decargroup.github.io/miluv/
 color_scheme: dark
 
 # Exclude from processing.
-exclude: ['README.md', 'Gemfile.lock', 'Gemfile']
+exclude: ['README.md']
 
 defaults:
   - scope:
