@@ -31,10 +31,22 @@ jobs:
         publish_dir: ./_site      
         enable_jekyll: true
         
-    - name: Clean up gh-pages branch before deployment
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_branch: gh-pages
-        keep_files: false  
-        enable_jekyll: true
+    # - name: Clean up gh-pages branch before deployment
+    #   uses: peaceiris/actions-gh-pages@v4
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     publish_branch: gh-pages
+    #     keep_files: false  
+    #     enable_jekyll: true
+
+  # Deployment job
+  deploy:
+    environment:
+      name: gh-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
