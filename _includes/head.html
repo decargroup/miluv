@@ -55,8 +55,9 @@
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
 	tex2jax: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']], // Enable $...$ and \( ... \)
-            displayMath: [['$$', '$$'], ['\\[', '\\]']] // Enable $$...$$ and \[ ... \]
+            inlineMath: [ ['$', '$'], ['\\(', '\\)']],
+            displayMath: [ ['$$', '$$'], ['\\[', '\\]']],
+	    processEscapes: true
         },	
         TeX: { equationNumbers: { autoNumber: "AMS" } }
         });
