@@ -5,6 +5,8 @@
 title: Home
 nav_order: 1
 usemathjax: true
+permalink: /
+layout: home
 ---
 
 # MILUV Dataset
