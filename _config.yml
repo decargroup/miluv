@@ -19,17 +19,23 @@
 # in the templates via {{ site.myvariable }}.
 
 title: MILUV
-email: mohammed.shalaby@mail.mcgill.ca
-description: >- # this means to ignore newlines until "baseurl:"
-  A Multi-UAV Indoor Localization dataset with UWB and Vision
+description: A Multi-UAV Indoor Localization dataset with UWB and Vision
+
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-github_username:  decargroup
+url: ""
+
+github_username: decargroup
+email: mohammed.shalaby@mail.mcgill.ca
 
 # Build settings
-theme: minima
+theme: just-the-docs
 plugins:
   - jekyll-feed
+
+domain: decargroup.github.io
+url: https://decargroup.github.io/miluv/
+
+color_scheme: dark
 
 # Exclude from processing.
 # The following items will not be processed, by default.
@@ -50,3 +56,16 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+defaults:
+  - scope:
+      path: "docs"
+      type: "posts"
+      usemathjax: true
+    values:
+      layout: "default"
+
+
+nav_enable: true
+
+markdown: kramdown
