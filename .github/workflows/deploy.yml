@@ -29,6 +29,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_branch: gh-pages  
         publish_dir: ./_site      
+        enable_jekyll: true
         
     - name: Clean up gh-pages branch before deployment
       uses: peaceiris/actions-gh-pages@v4
@@ -36,3 +37,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_branch: gh-pages
         keep_files: false  
+        enable_jekyll: true
