@@ -3,7 +3,7 @@ name: Deploy GitHub Pages
 on:
   push:
     branches:
-      - gh-pages  # Trigger on push to gh-pages branch
+      - docs  
 
 jobs:
   build:
@@ -12,22 +12,27 @@ jobs:
     steps:
     - name: Checkout the repository
       uses: actions/checkout@v3
-
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.0'  # Use the Ruby version you prefer
+        ruby-version: '3.0'
 
     - name: Install dependencies
       run: |
         gem install bundler
         bundle install
-
     - name: Build the site
       run: bundle exec jekyll build
-
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./_site  # Assuming default Jekyll build directory
+        publish_branch: gh-pages  
+        publish_dir: ./_site      
+        
+    - name: Clean up gh-pages branch before deployment
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        keep_files: false  
