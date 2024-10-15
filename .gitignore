@@ -8,3 +8,7 @@ TODO
 calib
 dist
 build
+results
+_site
+.DS_Store
+Gemfile.lock

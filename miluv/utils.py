@@ -4,8 +4,89 @@ import pandas as pd
 from scipy.spatial.transform import Rotation
 import scipy as sp
 import yaml
-import matplotlib.pyplot as plt
 
+from pymlg import SE3
+
+def get_anchors() -> dict[str, dict[int, np.ndarray]]:
+    """
+    Get anchor positions.
+    
+    Returns: 
+    dict
+    - Anchor positions.
+    """
+    
+    with open(f"config/uwb/anchors.yaml", "r") as file:
+        anchor_positions = yaml.safe_load(file)
+    
+    for constellation in anchor_positions:
+        anchors = list(anchor_positions[constellation].keys())
+        for anchor in anchors:
+            pos = np.array([eval(anchor_positions[constellation][anchor])]).reshape(3, 1)
+            anchor_positions[constellation][int(anchor)] = pos
+            anchor_positions[constellation].pop(anchor)
+    
+    return anchor_positions
+
+def get_tag_moment_arms() -> dict[str, dict[int, np.ndarray]]:
+    """
+    Get tag moment arms in the robot's own body frame.
+    
+    Args:
+    - exp_name: Experiment name.
+    
+    Returns:
+    dict
+    - Tag moment arms in the robot's own body frame.
+    """
+    
+    with open(f"config/uwb/tags.yaml", "r") as file:
+        tag_moment_arms = yaml.safe_load(file)
+    
+    for robot in tag_moment_arms:
+        tags = list(tag_moment_arms[robot].keys())
+        for tag in tags:
+            pos = np.array([eval(tag_moment_arms[robot][tag])]).reshape(3, 1)
+            tag_moment_arms[robot][int(tag)] = pos
+            tag_moment_arms[robot].pop(tag)
+    
+    return tag_moment_arms
+
+def zero_order_hold(query_timestamps, data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Zero-order hold interpolation for data.
+    
+    Args:
+    - query_timestamps: Query timestamps.
+    - data: Data to perform zero-order hold interpolation on.
+    
+    Returns:
+    pd.DataFrame
+    - New data with zero-order hold interpolation.
+    """
+    new_data = pd.DataFrame()
+    
+    # Ensure that query timestamps and data timestamps are sorted in ascending order
+    query_timestamps = np.sort(query_timestamps)
+    data.sort_values("timestamp", inplace=True)
+
+    # Find the indices associated with the query timestamps using a zero-order hold
+    idx_to_keep = []
+    most_recent_idx = 0
+    
+    new_data["timestamp"] = query_timestamps
+    for timestamp in query_timestamps:
+        while most_recent_idx < len(data) and data["timestamp"].iloc[most_recent_idx] <= timestamp:
+            most_recent_idx += 1
+        idx_to_keep.append(most_recent_idx - 1)
+        
+    # Add the columns at the indices associated with the query timestamps
+    for col in data.columns:
+        if col == "timestamp":
+            continue
+        new_data[col] = data.iloc[idx_to_keep][col].values
+
+    return new_data
 
 def get_mocap_splines(mocap: pd.DataFrame) -> 'tuple[callable, callable]':
     """
@@ -51,7 +132,6 @@ def get_mocap_splines(mocap: pd.DataFrame) -> 'tuple[callable, callable]':
 
     return pos_splines, quat_splines
 
-
 def get_timeshift(exp_name):
     """
     Get timeshift.
@@ -70,8 +150,40 @@ def get_timeshift(exp_name):
 
     return timeshift_s + timeshift_ns / 1e9
 
+def get_imu_noise_params(robot_name, sensor_name):
+    """
+    Get IMU noise parameters that were generated using allan_variance_ros, available at
+    https://github.com/ori-drs/allan_variance_ros. The noise parameters are stored in 
+    the config/imu directory.
+    
+    Args:
+    - robot_name: Robot name, e.g., "ifo001".
+    - sensor_name: Sensor name, options are "px4" and "cam".
+    
+    Returns:
+    dict
+    - gyro: Gyroscope noise parameters.
+    - accel: Accelerometer noise parameters.
+    """
+    
+    with open(f"config/imu/{robot_name}/{sensor_name}_output.log", "r") as file:
+        imu_params = yaml.safe_load(file)
+    
+    gyro = np.array([
+        eval(imu_params["X Angle Random Walk"].split(" ")[0]),
+        eval(imu_params["Y Angle Random Walk"].split(" ")[0]),
+        eval(imu_params["Z Angle Random Walk"].split(" ")[0])
+    ])
+    accel = np.array([
+        eval(imu_params["X Velocity Random Walk"].split(" ")[0]),
+        eval(imu_params["Y Velocity Random Walk"].split(" ")[0]),
+        eval(imu_params["Z Velocity Random Walk"].split(" ")[0])
+    ])
+    
+    return {"gyro": gyro, "accel": accel}
+    
 
-def load_vins(exp_name, robot_id, loop=True):
+def load_vins(exp_name, robot_id, loop = True, postprocessed: bool = False) -> pd.DataFrame:
     """
     Load VINS data.
     
@@ -79,34 +191,44 @@ def load_vins(exp_name, robot_id, loop=True):
     - exp_name: Experiment name.
     - robot_id: Robot ID.
     - loop: Whether to load VINS data with loop closure or not.
+    - postprocessed: Whether to load postprocessed (aligned and shifted) VINS data or not.
     
     Returns:
     - vins: VINS data.
     """
+    
+    if postprocessed:
+        suffix = "_aligned_and_shifted"
+    else:
+        suffix = ""
 
     if loop:
-        file = f"data/vins/{exp_name}/{robot_id}_vio_loop.csv"
+        file = f"data/vins_results/{exp_name}/{robot_id}_vio_loop{suffix}.csv"
     else:
-        file = f"data/vins/{exp_name}/{robot_id}_vio.csv"
+        file = f"data/vins_results/{exp_name}/{robot_id}_vio{suffix}.csv"
 
-    data = pd.read_csv(file,
-                       names=[
-                           "timestamp",
-                           "pose.position.x",
-                           "pose.position.y",
-                           "pose.position.z",
-                           "pose.orientation.x",
-                           "pose.orientation.y",
-                           "pose.orientation.z",
-                           "pose.orientation.w",
-                           "twist.linear.x",
-                           "twist.linear.y",
-                           "twist.linear.z",
-                       ],
-                       index_col=False)
+    data = pd.read_csv(
+        file,
+        names=[
+            "timestamp",
+            "pose.position.x",
+            "pose.position.y",
+            "pose.position.z",
+            "pose.orientation.x",
+            "pose.orientation.y",
+            "pose.orientation.z",
+            "pose.orientation.w",
+            "twist.linear.x",
+            "twist.linear.y",
+            "twist.linear.z",
+        ],
+        index_col=False,
+        header = (0 if postprocessed else None)
+    )
 
     timeshift = get_timeshift(exp_name)
-    data["timestamp"] = data["timestamp"] / 1e9 - timeshift
+    if not postprocessed:
+        data["timestamp"] = data["timestamp"] / 1e9 - timeshift
 
     return data
 
@@ -115,7 +237,7 @@ def save_vins(data: pd.DataFrame,
               exp_name: str,
               robot_id: str,
               loop: bool = True,
-              suffix: str = ""):
+              postprocessed: bool = False):
     """
     Save VINS data.
     
@@ -124,13 +246,19 @@ def save_vins(data: pd.DataFrame,
     - exp_name: Experiment name.
     - robot_id: Robot ID.
     - loop: Whether loop closure was enabled or not, only affects csv file name.
-    - suffix: Suffix to append to the csv file name.
+    - postprocessed: Whether the data is postprocessed or not, only affects csv file name.
     """
+    
+    if postprocessed:
+        suffix = "_aligned_and_shifted"
+    else:
+        suffix = ""
+    
     if loop:
-        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio_loop{suffix}.csv",
+        data.to_csv(f"data/vins_results/{exp_name}/{robot_id}_vio_loop{suffix}.csv",
                     index=False)
     else:
-        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio{suffix}.csv",
+        data.to_csv(f"data/vins_results/{exp_name}/{robot_id}_vio{suffix}.csv",
                     index=False)
 
 
