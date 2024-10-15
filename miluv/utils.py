@@ -30,7 +30,7 @@ def get_anchors():
 
 def get_tag_moment_arms():
     """
-    Get tag moment arms.
+    Get tag moment arms in the robot's own body frame.
     
     Args:
     - exp_name: Experiment name.
@@ -58,11 +58,11 @@ def zero_order_hold(query_timestamps, data):
     
     Args:
     - query_timestamps: Query timestamps.
-    - data: Data to interpolate.
+    - data: Data to perform zero-order hold interpolation on.
     
     Returns:
     pd.DataFrame
-    - Interpolated data.
+    - New data with zero-order hold interpolation.
     """
     new_data = pd.DataFrame()
     

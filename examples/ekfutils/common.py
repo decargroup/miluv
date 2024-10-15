@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import chi2
 import pandas as pd
 
-def is_outlier(error: np.ndarray, covariance: np.ndarray):
+def is_outlier(error: np.ndarray, covariance: np.ndarray) -> bool:
     """
     Perform a normalized innovation squared (NIS) test on the given error and covariance.
     This is essentially a chi-squared test in the context of filtering. More details can be found
@@ -10,8 +10,8 @@ def is_outlier(error: np.ndarray, covariance: np.ndarray):
     in Section 5.4.2.
     
     Args:
-    error: The error vector to test.
-    covariance: The covariance matrix of the error vector.
+    - error: The error vector to test.
+    - covariance: The covariance matrix of the error vector.
     
     Returns:
     bool
@@ -30,7 +30,8 @@ def convert_vins_velocity_to_body_frame(vins: pd.DataFrame, gt_se3: list) -> pd.
     - gt_se3: Ground truth SE3 poses.
     
     Returns:
-    - vins: VINS data with velocity data in the robot's body frame.
+    pd.DataFrame
+    - VINS data with velocity data in the robot's body frame.
     """
     
     for i in range(len(vins)):

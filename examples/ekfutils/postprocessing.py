@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from pymlg import SE3
 
-class History:
+class StateHistory:
     def __init__(self):
         self.timestamps = np.empty(0)
         self.states = np.empty((0, 4, 4))
@@ -18,7 +18,7 @@ class History:
     def get(self):
         return self.timestamps, self.states, self.covariances
     
-class Evaluate:
+class EvaluateEKF:
     def __init__(self, gt_se3, ekf_history, exp_name):
         self.timestamps, self.states, self.covariances = ekf_history.get()
         self.gt_se3 = gt_se3
@@ -45,9 +45,9 @@ class Evaluate:
         axs[2, 1].set_xlabel("Time [s]")
         axs[0, 0].legend()
         
-        if not os.path.exists('results/plots/ekf_vins_one'):
-            os.makedirs('results/plots/ekf_vins_one')
-        plt.savefig(f"results/plots/ekf_vins_one/{self.exp_name}_poses.pdf")
+        if not os.path.exists('results/plots/ekf_vins_one_robot'):
+            os.makedirs('results/plots/ekf_vins_one_robot')
+        plt.savefig(f"results/plots/ekf_vins_one_robot/{self.exp_name}_poses.pdf")
         plt.close()
 
     def plot_error(self):
@@ -66,9 +66,9 @@ class Evaluate:
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
         
-        if not os.path.exists('results/plots/ekf_vins_one'):
-            os.makedirs('results/plots/ekf_vins_one')
-        plt.savefig(f"results/plots/ekf_vins_one/{self.exp_name}_error.pdf")
+        if not os.path.exists('results/plots/ekf_vins_one_robot'):
+            os.makedirs('results/plots/ekf_vins_one_robot')
+        plt.savefig(f"results/plots/ekf_vins_one_robot/{self.exp_name}_error.pdf")
         plt.close()
 
     def save_results(self):
@@ -76,11 +76,11 @@ class Evaluate:
         
         myCsvRow = f"{self.exp_name},{pos_rmse},{att_rmse}\n"
         
-        if not os.path.exists('results/ekf_vins_one.csv'):
-            with open('results/ekf_vins_one.csv','w') as file:
+        if not os.path.exists('results/ekf_vins_one_robot.csv'):
+            with open('results/ekf_vins_one_robot.csv','w') as file:
                 file.write("exp_name,pos_rmse,att_rmse\n")
         
-        with open('results/ekf_vins_one.csv','a') as file:
+        with open('results/ekf_vins_one_robot.csv','a') as file:
             file.write(myCsvRow)
                 
     def get_rmse(self):
