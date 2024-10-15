@@ -2,6 +2,8 @@ import numpy as np
 from scipy.stats import chi2
 import pandas as pd
 
+from pymlg import SE3
+
 def is_outlier(error: np.ndarray, covariance: np.ndarray) -> bool:
     """
     Perform a normalized innovation squared (NIS) test on the given error and covariance.
@@ -21,7 +23,7 @@ def is_outlier(error: np.ndarray, covariance: np.ndarray) -> bool:
     nis = np.ndarray.item(error.T @ np.linalg.solve(covariance, error))
     return (nis > chi2.ppf(0.99, df=error.size))
 
-def convert_vins_velocity_to_body_frame(vins: pd.DataFrame, gt_se3: list) -> pd.DataFrame:
+def convert_vins_velocity_to_body_frame(vins: pd.DataFrame, gt_se3: list[SE3]) -> pd.DataFrame:
     """
     Convert VINS velocity data to the robot's body frame.
     

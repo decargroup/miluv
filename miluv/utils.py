@@ -7,7 +7,7 @@ import yaml
 
 from pymlg import SE3
 
-def get_anchors():
+def get_anchors() -> dict[str, dict[int, np.ndarray]]:
     """
     Get anchor positions.
     
@@ -28,7 +28,7 @@ def get_anchors():
     
     return anchor_positions
 
-def get_tag_moment_arms():
+def get_tag_moment_arms() -> dict[str, dict[int, np.ndarray]]:
     """
     Get tag moment arms in the robot's own body frame.
     
@@ -52,7 +52,7 @@ def get_tag_moment_arms():
     
     return tag_moment_arms
 
-def zero_order_hold(query_timestamps, data):
+def zero_order_hold(query_timestamps, data: pd.DataFrame) -> pd.DataFrame:
     """
     Zero-order hold interpolation for data.
     

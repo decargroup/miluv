@@ -1,6 +1,7 @@
+import numpy as np
 from pymlg import SO3, SE3
 
-def get_se3_poses(pos, quat):
+def get_se3_poses(pos: np.ndarray, quat: np.ndarray) -> list[SE3]:
     """
     Get SE3 poses from position and quaternion data.
     
