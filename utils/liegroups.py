@@ -13,8 +13,8 @@ def get_se3_poses(pos: np.ndarray, quat: np.ndarray) -> list[SE3]:
     - SE3 poses.
     """
     
-    se3 = []
+    poses = []
     for i in range(pos.shape[1]):
         R = SO3.from_quat(quat[:, i], "xyzw")
-        se3.append(SE3.from_components(R, pos[:, i]))
-    return se3
+        poses.append(SE3.from_components(R, pos[:, i]))
+    return poses

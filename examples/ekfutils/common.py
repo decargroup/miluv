@@ -47,3 +47,47 @@ def convert_vins_velocity_to_body_frame(vins: pd.DataFrame, gt_se3: list[SE3]) -
         vins.at[i, "twist.linear.z"] = v_body[2]
     
     return vins
+
+class StateHistory:
+    """
+    A class to store the history of the state and covariance at each timestamp.
+    """
+    def __init__(self, state_dim: int) -> None:
+        """
+        Constructor for the StateHistory class.
+        
+        Args:
+        - state_dim: The dimension of the state vector.
+        """
+        self.state_dim = state_dim
+        
+        self.timestamps = np.empty(0)
+        self.states = np.empty((0, self.state_dim))
+        self.covariances = np.empty((0, self.state_dim, self.state_dim))
+
+    def add(self, timestamp: float, state: np.ndarray, covariance: np.ndarray) -> None:
+        """
+        Add a timestamped state and covariance to the history.
+        
+        Args:
+        - timestamp: The timestamp of the state and covariance.
+        - state: The state vector.
+        - covariance: The covariance matrix of the state vector.
+        """
+        self.timestamps = np.append(self.timestamps, timestamp)
+        self.states = np.append(self.states, state.reshape(1, self.state_dim), axis=0)
+        self.covariances = np.append(
+            self.covariances, 
+            covariance.reshape(1, self.state_dim, self.state_dim), 
+            axis=0,
+        )
+
+    def get(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Get the timestamps, states, and covariances stored in the history.
+
+        Returns:
+        tuple[np.ndarray, np.ndarray, np.ndarray]
+        - The timestamps, states, and covariances.
+        """
+        return self.timestamps, self.states, self.covariances

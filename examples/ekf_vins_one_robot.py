@@ -1,13 +1,13 @@
 # %%
+from pymlg import SE3
+import numpy as np
+import pandas as pd
+
 from miluv.data import DataLoader
 import utils.liegroups as liegroups
 import miluv.utils as utils
 import examples.ekfutils.vins_one_robot as vins_one_robot
-import examples.ekfutils.postprocessing as postprocessing
 import examples.ekfutils.common as common
-
-import numpy as np
-import pandas as pd
 
 #################### EXPERIMENT DETAILS ####################
 exp_name = "13"
@@ -41,7 +41,7 @@ vins_body_frame = common.convert_vins_velocity_to_body_frame(vins_at_query_times
 
 #################### EKF ####################
 # Initialize a variable to store the EKF state and covariance at each query timestamp for postprocessing
-ekf_history = postprocessing.StateHistory()
+ekf_history = common.StateHistory(state_dim=6)
 
 # Initialize the EKF with the first ground truth pose, the anchor postions, and UWB tag moment arms
 ekf = vins_one_robot.EKF(gt_se3[0], miluv.anchors, miluv.tag_moment_arms)
@@ -75,10 +75,10 @@ for i in range(0, len(query_timestamps)):
         height_data = data["height"].iloc[height_idx]
         ekf.correct({"height": float(height_data["range"].iloc[0])})
         
-    ekf_history.add(query_timestamps[i], ekf.x, ekf.P)
+    ekf_history.add(query_timestamps[i], SE3.Log(ekf.x), ekf.P)
 
 #################### POSTPROCESS ####################
-analysis = postprocessing.EvaluateEKF(gt_se3, ekf_history, exp_name)
+analysis = vins_one_robot.EvaluateEKF(gt_se3, ekf_history, exp_name)
 
 analysis.plot_error()
 analysis.plot_poses()
