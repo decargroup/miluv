@@ -107,9 +107,8 @@ class EKF:
         return (a.T @ x @ SE3.odot(b))
 
 class EvaluateEKF:
-    def __init__(self, gt_se3: list[SE3], ekf_history: common.StateHistory, exp_name: str):
-        self.timestamps, vector_states, self.covariances = ekf_history.get()
-        self.states = np.array([SE3.Exp(state) for state in vector_states])
+    def __init__(self, gt_se3: list[SE3], ekf_history: common.MatrixStateHistory, exp_name: str):
+        self.timestamps, self.states, self.covariances = ekf_history.get()
         self.gt_se3 = gt_se3
         self.exp_name = exp_name
         

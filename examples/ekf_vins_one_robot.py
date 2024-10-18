@@ -1,5 +1,4 @@
 # %%
-from pymlg import SE3
 import numpy as np
 import pandas as pd
 
@@ -41,7 +40,7 @@ vins_body_frame = common.convert_vins_velocity_to_body_frame(vins_at_query_times
 
 #################### EKF ####################
 # Initialize a variable to store the EKF state and covariance at each query timestamp for postprocessing
-ekf_history = common.StateHistory(state_dim=6)
+ekf_history = common.MatrixStateHistory(state_dim=4, covariance_dim=6)
 
 # Initialize the EKF with the first ground truth pose, the anchor postions, and UWB tag moment arms
 ekf = vins_one_robot.EKF(gt_se3[0], miluv.anchors, miluv.tag_moment_arms)
@@ -75,7 +74,8 @@ for i in range(0, len(query_timestamps)):
         height_data = data["height"].iloc[height_idx]
         ekf.correct({"height": float(height_data["range"].iloc[0])})
         
-    ekf_history.add(query_timestamps[i], SE3.Log(ekf.x), ekf.P)
+    # Store the EKF state and covariance at this query timestamp
+    ekf_history.add(query_timestamps[i], ekf.x, ekf.P)
 
 #################### POSTPROCESS ####################
 analysis = vins_one_robot.EvaluateEKF(gt_se3, ekf_history, exp_name)
