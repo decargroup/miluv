@@ -4,6 +4,23 @@ import pandas as pd
 
 from pymlg import SE3
 
+def get_robot_from_tag(tag_id: int, tag_moment_arms: dict[str, dict[int, np.ndarray]]) -> str:
+    """
+    Get the robot name from a tag ID.
+    
+    Args:
+    - tag_id: The tag ID.
+    - tag_moment_arms: Tag moment arms separated by robot.
+    
+    Returns:
+    str
+    - The robot name.
+    """
+    for robot in tag_moment_arms:
+        if tag_id in tag_moment_arms[robot]:
+            return robot
+    return None
+
 def is_outlier(error: np.ndarray, covariance: np.ndarray) -> bool:
     """
     Perform a normalized innovation squared (NIS) test on the given error and covariance.
