@@ -19,7 +19,7 @@ vins = {robot: utils.load_vins(exp_name, robot, loop = False, postprocessed = Tr
 
 # Merge the UWB range and height data from all robots into a single dataframe
 uwb_range = pd.concat([data[robot]["uwb_range"] for robot in data.keys()])
-height = pd.concat([data[robot]["height"] for robot in data.keys()])
+height = pd.concat([data[robot]["height"].assign(robot=robot) for robot in data.keys()])
 
 #################### ALIGN SENSOR DATA TIMESTAMPS ####################
 # Set the query timestamps to be all the timestamps where UWB range or height data is available
@@ -99,7 +99,10 @@ for i in range(0, len(query_timestamps)):
     height_idx = np.where(height["timestamp"] == query_timestamps[i])[0]
     if len(height_idx) > 0:
         height_data = height.iloc[height_idx]
-        ekf.correct({"height": float(height_data["range"].iloc[0])})
+        ekf.correct({
+            "height": float(height_data["range"].iloc[0]),
+            "robot": height_data["robot"].iloc[0]
+        })
         
     # Store the EKF state and covariance at this query timestamp
     for robot in data.keys():
