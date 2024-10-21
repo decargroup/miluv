@@ -6,9 +6,10 @@ from pymlg import SE3
 import examples.ekfutils.common as common
 import miluv.utils as utils
 
+np.random.seed(0)
+
 # EKF parameters
 state_dimension = 6
-np.random.seed(0)
 
 # Covariance matrices
 P0 = np.diag([0.01, 0.01, 0.01, 0.1, 0.1, 0.1]) # Initial state covariance
@@ -25,7 +26,7 @@ R_range = 0.3**2 # Range measurement noise covariance
 R_height = 0.5**2 # Height measurement noise covariance
 
 class EKF:
-    def __init__(self, state: SE3, anchors: dict[int, np.ndarray], tag_moment_arms: dict[str, np.ndarray]):
+    def __init__(self, state: SE3, anchors: dict[int: np.ndarray], tag_moment_arms: dict[str: dict[int: np.ndarray]]):
         # Add noise to the initial state using P0 to reflect uncertainty in the initial state
         self.x = state @ SE3.Exp(np.random.multivariate_normal(np.zeros(state_dimension), P0))
         
