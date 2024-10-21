@@ -134,7 +134,11 @@ class EKF:
         vector = (self.anchors[anchor_id] - Pi @ x[robot] @ r_tilde).reshape(3, 1)
         
         jac = np.zeros((1, full_state_dimension))
-        jac[0, x_idx[robot]["start"] : x_idx[robot]["end"]] = -1 * vector.T / np.linalg.norm(vector) @ Pi @ x[robot] @ SE3.odot(r_tilde)
+        
+        start_idx = x_idx[robot]["start"]
+        end_idx = x_idx[robot]["end"]
+        jac[0, start_idx : end_idx] = -1 * vector.T / np.linalg.norm(vector) @ Pi @ x[robot] @ SE3.odot(r_tilde)
+            
         return jac
     
     def _range_measurement_between_tags(self, x: dict[str: SE3], to_id: int, from_id: int) -> float:
@@ -158,8 +162,15 @@ class EKF:
         vector = (Pi @ (x[robot_to] @ r_tilde_to - x[robot_from] @ r_tilde_from)).reshape(3, 1)
         
         jac = np.zeros((1, full_state_dimension))
-        jac[0, x_idx[robot_to]["start"] : x_idx[robot_to]["end"]] = vector.T / np.linalg.norm(vector) @ Pi @ x[robot_to] @ SE3.odot(r_tilde_to)
-        jac[0, x_idx[robot_from]["start"] : x_idx[robot_from]["end"]] = -1 * vector.T / np.linalg.norm(vector) @ Pi @ x[robot_from] @ SE3.odot(r_tilde_from)
+        
+        start_idx = x_idx[robot_to]["start"]
+        end_idx = x_idx[robot_from]["end"]
+        jac[0, start_idx : end_idx] = vector.T / np.linalg.norm(vector) @ Pi @ x[robot_to] @ SE3.odot(r_tilde_to)
+        
+        start_idx = x_idx[robot_from]["start"]
+        end_idx = x_idx[robot_from]["end"]
+        jac[0, start_idx : end_idx] = -1 * vector.T / np.linalg.norm(vector) @ Pi @ x[robot_from] @ SE3.odot(r_tilde_from)
+            
         return jac        
     
     @staticmethod
