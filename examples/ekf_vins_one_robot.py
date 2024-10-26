@@ -32,7 +32,7 @@ vins_at_query_timestamps = utils.zero_order_hold(query_timestamps, vins)
 
 #################### LOAD GROUND TRUTH DATA ####################
 gt_se3 = liegroups.get_se3_poses(
-    data["mocap_pos"](query_timestamps), data["mocap_quat"](query_timestamps)
+    data["mocap_quat"](query_timestamps), data["mocap_pos"](query_timestamps)
 )
 
 # Use ground truth data to convert VINS data from the absolute (mocap) frame to the robot's body frame

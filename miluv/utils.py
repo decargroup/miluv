@@ -88,7 +88,7 @@ def zero_order_hold(query_timestamps, data: pd.DataFrame) -> pd.DataFrame:
 
     return new_data
 
-def get_mocap_splines(mocap: pd.DataFrame) -> 'tuple[callable, callable]':
+def get_mocap_splines(mocap: pd.DataFrame) -> tuple[callable, callable]:
     """
     Get spline interpolations for mocap data.
     

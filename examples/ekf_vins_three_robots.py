@@ -45,7 +45,7 @@ vins_at_query_timestamps = {
 
 #################### LOAD GROUND TRUTH DATA ####################
 gt_se3 = {
-    robot: liegroups.get_se3_poses(data[robot]["mocap_pos"](query_timestamps), data[robot]["mocap_quat"](query_timestamps)) 
+    robot: liegroups.get_se3_poses(data[robot]["mocap_quat"](query_timestamps), data[robot]["mocap_pos"](query_timestamps)) 
     for robot in data.keys()
 }
 
