@@ -2,12 +2,11 @@
 from miluv.data import DataLoader
 import utils.liegroups as liegroups
 import miluv.utils as utils
-import examples.ekfutils.vins_three_robots as vins_three_robots
+import examples.ekfutils.vins_three_robots_models as model
 import examples.ekfutils.common as common
 
 import numpy as np
 import pandas as pd
-from pymlg import SE3
 
 #################### EXPERIMENT DETAILS ####################
 exp_name = "1c"
@@ -63,7 +62,7 @@ ekf_history = {
 }
 
 # Initialize the EKF with the first ground truth pose, the anchor postions, and UWB tag moment arms
-ekf = vins_three_robots.EKF(
+ekf = model.EKF(
     {robot: gt_se3[robot][0] for robot in data.keys()}, 
     miluv.anchors, 
     miluv.tag_moment_arms
@@ -109,7 +108,7 @@ for i in range(0, len(query_timestamps)):
         ekf_history[robot].add(query_timestamps[i], ekf.x[robot], ekf.get_covariance(robot))
 
 #################### POSTPROCESS ####################
-analysis = vins_three_robots.EvaluateEKF(gt_se3, ekf_history, exp_name)
+analysis = model.EvaluateEKF(gt_se3, ekf_history, exp_name)
 
 analysis.plot_error()
 analysis.plot_poses()

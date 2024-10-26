@@ -5,7 +5,7 @@ import pandas as pd
 from miluv.data import DataLoader
 import utils.liegroups as liegroups
 import miluv.utils as utils
-import examples.ekfutils.vins_one_robot as vins_one_robot
+import examples.ekfutils.vins_one_robot_models as model
 import examples.ekfutils.common as common
 
 #################### EXPERIMENT DETAILS ####################
@@ -43,7 +43,7 @@ vins_body_frame = common.convert_vins_velocity_to_body_frame(vins_at_query_times
 ekf_history = common.MatrixStateHistory(state_dim=4, covariance_dim=6)
 
 # Initialize the EKF with the first ground truth pose, the anchor postions, and UWB tag moment arms
-ekf = vins_one_robot.EKF(gt_se3[0], miluv.anchors, miluv.tag_moment_arms)
+ekf = model.EKF(gt_se3[0], miluv.anchors, miluv.tag_moment_arms)
 
 # Iterate through the query timestamps
 for i in range(0, len(query_timestamps)):
@@ -78,7 +78,7 @@ for i in range(0, len(query_timestamps)):
     ekf_history.add(query_timestamps[i], ekf.x, ekf.P)
 
 #################### POSTPROCESS ####################
-analysis = vins_one_robot.EvaluateEKF(gt_se3, ekf_history, exp_name)
+analysis = model.EvaluateEKF(gt_se3, ekf_history, exp_name)
 
 analysis.plot_error()
 analysis.plot_poses()
