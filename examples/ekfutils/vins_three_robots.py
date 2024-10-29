@@ -24,13 +24,14 @@ x_idx = {
 # Covariance matrices
 P0 = np.diag([0.01, 0.01, 0.01, 0.1, 0.1, 0.1]) # Initial state covariance
 
-imu_noise_params = utils.get_imu_noise_params("ifo001", "px4")
-Q = np.diag([
-    imu_noise_params["gyro"][0]**2, 
-    imu_noise_params["gyro"][1]**2,
-    imu_noise_params["gyro"][2]**2,
-    0.1 , 0.1, 0.1
-]) # Process noise covariance
+imu_noise_params = {robot: utils.get_imu_noise_params(robot, "px4") for robot in robot_names}
+Q = {robot: np.diag([
+    imu_noise_params[robot]["gyro"][0]**2,
+    imu_noise_params[robot]["gyro"][1]**2,
+    imu_noise_params[robot]["gyro"][2]**2,
+    0.1, 0.1, 0.1
+]) for robot in robot_names
+} # Process noise covariance
 
 R_range = 0.3**2 # Range measurement noise covariance
 R_height = 0.5**2 # Height measurement noise covariance
@@ -114,7 +115,7 @@ class EKF:
     @staticmethod
     def _process_covariance(x: dict[str: SE3], u: dict[str: np.ndarray], dt: float) -> np.ndarray:
         def subcov(robot: str) -> np.ndarray:
-            return SE3.left_jacobian(-dt * u[robot]) @ Q @ SE3.left_jacobian(-dt * u[robot]).T
+            return SE3.left_jacobian(-dt * u[robot]) @ Q[robot] @ SE3.left_jacobian(-dt * u[robot]).T
         return dt * sp.linalg.block_diag(*[subcov(robot) for robot in robot_names])
     
     def _range_measurement_w_anchor(self, x: dict[str: SE3], anchor_id: int, tag_id: int) -> float:
@@ -164,7 +165,7 @@ class EKF:
         jac = np.zeros((1, full_state_dimension))
         
         start_idx = x_idx[robot_to]["start"]
-        end_idx = x_idx[robot_from]["end"]
+        end_idx = x_idx[robot_to]["end"]
         jac[0, start_idx : end_idx] = vector.T / np.linalg.norm(vector) @ Pi @ x[robot_to] @ SE3.odot(r_tilde_to)
         
         start_idx = x_idx[robot_from]["start"]
