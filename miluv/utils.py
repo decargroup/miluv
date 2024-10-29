@@ -164,6 +164,8 @@ def get_imu_noise_params(robot_name, sensor_name):
     dict
     - gyro: Gyroscope noise parameters.
     - accel: Accelerometer noise parameters.
+    - gyro_bias: Gyroscope bias noise parameters.
+    - accel_bias: Accelerometer bias noise parameters.
     """
     
     with open(f"config/imu/{robot_name}/{sensor_name}_output.log", "r") as file:
@@ -173,14 +175,25 @@ def get_imu_noise_params(robot_name, sensor_name):
         eval(imu_params["X Angle Random Walk"].split(" ")[0]),
         eval(imu_params["Y Angle Random Walk"].split(" ")[0]),
         eval(imu_params["Z Angle Random Walk"].split(" ")[0])
-    ])
+    ]) * np.pi / 180
     accel = np.array([
         eval(imu_params["X Velocity Random Walk"].split(" ")[0]),
         eval(imu_params["Y Velocity Random Walk"].split(" ")[0]),
         eval(imu_params["Z Velocity Random Walk"].split(" ")[0])
     ])
     
-    return {"gyro": gyro, "accel": accel}
+    gyro_bias = np.array([
+        eval(imu_params["X Rate Random Walk"].split(" ")[0]),
+        eval(imu_params["Y Rate Random Walk"].split(" ")[0]),
+        eval(imu_params["Z Rate Random Walk"].split(" ")[0])
+    ]) * np.pi / 180
+    accel_bias = np.array([
+        eval(imu_params["X Accel Random Walk"].split(" ")[0]),
+        eval(imu_params["Y Accel Random Walk"].split(" ")[0]),
+        eval(imu_params["Z Accel Random Walk"].split(" ")[0])
+    ])
+    
+    return {"gyro": gyro, "accel": accel, "gyro_bias": gyro_bias, "accel_bias": accel_bias}
     
 
 def load_vins(exp_name, robot_id, loop = True, postprocessed: bool = False) -> pd.DataFrame:
