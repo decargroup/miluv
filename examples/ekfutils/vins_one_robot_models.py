@@ -66,7 +66,7 @@ class EKF:
         K = self.P @ H.T / S
         
         self.x = self.x @ SE3.Exp(K @ z)
-        self.P = (np.eye(6) - K @ H) @ self.P
+        self.P = (np.eye(state_dimension) - K @ H) @ self.P
         
         # Ensure symmetric covariance matrix
         self.P = 0.5 * (self.P + self.P.T)
