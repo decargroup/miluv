@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import matplotlib.pyplot as plt
 from pymlg import SE23
@@ -101,15 +100,15 @@ class EKF:
         
     @staticmethod
     def _process_model(x: State, u: np.ndarray, dt: float) -> State:
-        x.pose = imu_models.G(dt) @ x.pose @ imu_models.U(x.bias, u, dt)
+        x.pose = imu_models.G_matrix(dt) @ x.pose @ imu_models.U_matrix(x.bias, u, dt)
         
         return x
     
     @staticmethod
     def _process_jacobian(x: State, u: np.ndarray, dt: float) -> np.ndarray:
         jac = np.zeros((full_state_dimension, full_state_dimension))
-        jac[:pose_dimension, :pose_dimension] = SE23.adjoint(imu_models.U_inverse(x.bias, u, dt))
-        jac[:pose_dimension, pose_dimension:] = -imu_models.L(x.bias, u, dt)
+        jac[:pose_dimension, :pose_dimension] = SE23.adjoint(imu_models.U_inverse_matrix(x.bias, u, dt))
+        jac[:pose_dimension, pose_dimension:] = -imu_models.L_matrix(x.bias, u, dt)
         
         jac[pose_dimension:, pose_dimension:] = np.eye(bias_dimension)
         
