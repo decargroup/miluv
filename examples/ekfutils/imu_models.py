@@ -26,8 +26,8 @@ def U_matrix(bias, u, dt: float):
     a = (u[3:] - bias[3:]).reshape((-1, 1))
     U = np.identity(5)
     U[:3, :3] = SO3.Exp(phi)
-    U[:3, 3] = dt * SO3.left_jacobian(phi) @ a
-    U[:3, 4] = dt**2 / 2 * N_matrix(phi) @ a
+    U[:3, 3] = (dt * SO3.left_jacobian(phi) @ a).ravel()
+    U[:3, 4] = (dt**2 / 2 * N_matrix(phi) @ a).ravel()
     U[3, 4] = dt
     return U
 
@@ -44,6 +44,21 @@ def U_inverse_matrix(bias, u, dt: float):
     U_inv[:3, 4] = np.ravel(R.T @ (c * a - b))
     U_inv[3, 4] = np.ravel(-c)
     return U_inv
+
+def U_adjoint_matrix(U):
+    R = U[:3, :3]
+    c = U[3, 4]
+    a = U[:3, 3].reshape((-1, 1))
+    b = U[:3, 4].reshape((-1, 1))
+    Ad = np.zeros((9, 9))
+    Ad[:3, :3] = R
+    Ad[3:6, :3] = SO3.wedge(a) @ R
+    Ad[3:6, 3:6] = R
+
+    Ad[6:9, :3] = -SO3.wedge(c * a - b) @ R
+    Ad[6:9, 3:6] = -c * R
+    Ad[6:9, 6:9] = R
+    return Ad
     
 def L_matrix(bias, u, dt: float) -> np.ndarray:
     a = (u[3:] - bias[3:]).reshape((-1, 1))
@@ -51,8 +66,8 @@ def L_matrix(bias, u, dt: float) -> np.ndarray:
     J_att_inv_times_N = SO3.left_jacobian_inv(omdt) @ N_matrix(omdt)
     xi = np.zeros((9,))
     xi[:3] = omdt
-    xi[3:6] = dt * a
-    xi[6:9] = (dt**2 / 2) * J_att_inv_times_N @ a
+    xi[3:6] = (dt * a).ravel()
+    xi[6:9] = ((dt**2 / 2) * J_att_inv_times_N @ a).ravel()
     J = SE23.left_jacobian(-xi)
     
     Om = SO3.wedge(omdt)

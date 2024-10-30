@@ -70,8 +70,8 @@ for i in range(0, len(query_timestamps)):
         ekf.correct({"height": float(height_data["range"].iloc[0])})
         
     # Store the EKF state and covariance at this query timestamp
-    ekf_history["pose"].add(query_timestamps[i], ekf.get_pose(), ekf.get_pose_covariance())
-    ekf_history["bias"].add(query_timestamps[i], ekf.get_bias(), ekf.get_bias_covariance())
+    ekf_history["pose"].add(query_timestamps[i], ekf.pose, ekf.pose_covariance)
+    ekf_history["bias"].add(query_timestamps[i], ekf.bias, ekf.bias_covariance)
 
 #################### POSTPROCESS ####################
 analysis = model.EvaluateEKF(gt_se23, ekf_history, exp_name)

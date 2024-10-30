@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from pymlg import SE23
@@ -51,7 +52,7 @@ class EKF:
     def __init__(self, state: SE23, anchors: dict[int: np.ndarray], tag_moment_arms: dict[str: dict[int: np.ndarray]]):
         # Add noise to the initial state using P0 to reflect uncertainty in the initial state
         self.x = State(
-            pose=state @ SE23.Exp(np.random.multivariate_normal(np.zeros(pose_dimension), P0)),
+            pose=state @ SE23.Exp(np.random.multivariate_normal(np.zeros(pose_dimension), P0[:pose_dimension, :pose_dimension])),
             bias=np.zeros(bias_dimension),
         )
         
@@ -60,6 +61,8 @@ class EKF:
         self.tag_moment_arms = tag_moment_arms["ifo001"]
 
     def predict(self, u: np.ndarray, dt: float) -> None:
+        if dt == 0:
+            return
         A = self._process_jacobian(self.x, u, dt)
         Qd = self._process_covariance(self.x, u, dt)
         
@@ -107,7 +110,7 @@ class EKF:
     @staticmethod
     def _process_jacobian(x: State, u: np.ndarray, dt: float) -> np.ndarray:
         jac = np.zeros((full_state_dimension, full_state_dimension))
-        jac[:pose_dimension, :pose_dimension] = SE23.adjoint(imu_models.U_inverse_matrix(x.bias, u, dt))
+        jac[:pose_dimension, :pose_dimension] = imu_models.U_adjoint_matrix(imu_models.U_inverse_matrix(x.bias, u, dt))
         jac[:pose_dimension, pose_dimension:] = -imu_models.L_matrix(x.bias, u, dt)
         
         jac[pose_dimension:, pose_dimension:] = np.eye(bias_dimension)
@@ -117,13 +120,13 @@ class EKF:
     @staticmethod
     def _process_covariance(x: State, u: np.ndarray, dt: float) -> np.ndarray:
         noise_jac = np.zeros((full_state_dimension, Q.shape[0]))
-        noise_jac[:pose_dimension, :pose_dimension] = imu_models.L(x.bias, u, dt)
-        noise_jac[pose_dimension:, pose_dimension:] = dt * np.eye(bias_dimension)
+        noise_jac[:pose_dimension, :bias_dimension] = imu_models.L_matrix(x.bias, u, dt)
+        noise_jac[pose_dimension:, bias_dimension:] = dt * np.eye(bias_dimension)
         
         return (noise_jac @ Q @noise_jac.T) / dt
     
     def _range_measurement(self, x: State, anchor_id: int, tag_id: int) -> float:
-        Pi = np.hstack([np.eye(3), np.zeros((3, 3))])
+        Pi = np.hstack([np.eye(3), np.zeros((3, 2))])
         r_tilde = np.vstack((self.tag_moment_arms[tag_id], 0, 1)).reshape(5, 1)
         
         return np.linalg.norm(self.anchors[anchor_id] - Pi @ x.pose @ r_tilde)
@@ -132,7 +135,7 @@ class EKF:
         Pi = np.hstack([np.eye(3), np.zeros((3, 2))])
         r_tilde = np.vstack((self.tag_moment_arms[tag_id], 0, 1)).reshape(5, 1)
         
-        vector = (self.anchors[anchor_id] - Pi @ x @ r_tilde).reshape(3, 1)
+        vector = (self.anchors[anchor_id] - Pi @ x.pose @ r_tilde).reshape(3, 1)
         
         jac = np.zeros((1, full_state_dimension))
         jac[:, :pose_dimension] = -1 * vector.T / np.linalg.norm(vector) @ Pi @ x.pose @ SE23.odot(r_tilde)
@@ -144,64 +147,83 @@ class EKF:
     
     @staticmethod
     def _height_jacobian(x: State) -> np.ndarray:
-        a = np.array([0, 0, 0, 1, 0]).reshape(5, 1)
+        a = np.array([0, 0, 1, 0, 0]).reshape(5, 1)
         b = np.array([0, 0, 0, 0, 1])
         
         jac = np.zeros((1, full_state_dimension))
         jac[:, :pose_dimension] = a.T @ x.pose @ SE23.odot(b)
         return jac
+    
+    @property
+    def pose(self) -> SE23:
+        return self.x.pose
+    
+    @property
+    def pose_covariance(self) -> np.ndarray:
+        return self.P[:pose_dimension, :pose_dimension]
+    
+    @property
+    def bias(self) -> np.ndarray:
+        return self.x.bias
+    
+    @property
+    def bias_covariance(self) -> np.ndarray:
+        return self.P[pose_dimension:, pose_dimension:]
 
 class EvaluateEKF:
-    def __init__(self, gt_se3: list[SE3], ekf_history: common.MatrixStateHistory, exp_name: str):
-        self.timestamps, self.states, self.covariances = ekf_history.get()
-        self.gt_se3 = gt_se3
+    def __init__(self, gt_se23: list[SE23], ekf_history: dict, exp_name: str):
+        self.timestamps, self.states, self.covariances = ekf_history["pose"].get()
+        self.gt_se23 = gt_se23
         self.exp_name = exp_name
         
-        self.error = np.zeros((len(self.gt_se3), 6))
-        for i in range(0, len(self.gt_se3)):
-            self.error[i, :] = SE3.Log(SE3.inverse(self.gt_se3[i]) @ self.states[i]).ravel()
+        self.error = np.zeros((len(self.gt_se23), pose_dimension))
+        for i in range(0, len(self.gt_se23)):
+            self.error[i, :] = SE23.Log(SE23.inverse(self.gt_se23[i]) @ self.states[i]).ravel()
             
         self.error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
+                             r"$\delta_{v_x}$", r"$\delta_{v_y}$", r"$\delta_{v_z}$", 
                              r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
 
     def plot_poses(self) -> None:
-        fig, axs = plt.subplots(3, 2, figsize=(10, 10))
+        fig, axs = plt.subplots(3, 3, figsize=(10, 10))
         fig.suptitle("Ground Truth vs. EKF Poses")
         
-        gt = np.array([SE3.Log(pose).ravel() for pose in self.gt_se3])
-        est = np.array([SE3.Log(pose).ravel() for pose in self.states])
-        for i in range(0, 6):
-            axs[i % 3, int(i > 2)].plot(self.timestamps, gt[:, i], label="GT")
-            axs[i % 3, int(i > 2)].plot(self.timestamps, est[:, i], label="Est")
-            axs[i % 3, int(i > 2)].set_ylabel(self.error_titles[i])
+        gt = np.array([SE23.Log(pose).ravel() for pose in self.gt_se23])
+        est = np.array([SE23.Log(pose).ravel() for pose in self.states])
+        for i in range(0, pose_dimension):
+            axs[i % 3, i // 3].plot(self.timestamps, gt[:, i], label="GT")
+            axs[i % 3, i // 3].plot(self.timestamps, est[:, i], label="Est")
+            axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
+        axs[2, 2].set_xlabel("Time [s]")
         axs[0, 0].legend()
         
-        if not os.path.exists('results/plots/ekf_vins_one_robot'):
-            os.makedirs('results/plots/ekf_vins_one_robot')
-        plt.savefig(f"results/plots/ekf_vins_one_robot/{self.exp_name}_poses.pdf")
+        if not os.path.exists('results/plots/ekf_imu_one_robot'):
+            os.makedirs('results/plots/ekf_imu_one_robot')
+        plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_poses.pdf")
         plt.close()
 
     def plot_error(self) -> None:
-        fig, axs = plt.subplots(3, 2, figsize=(10, 10))
+        fig, axs = plt.subplots(3, 3, figsize=(10, 10))
         fig.suptitle("Three-Sigma Error Plots")
         
-        for i in range(0, 6):
-            axs[i % 3, int(i > 2)].plot(self.timestamps, self.error[:, i])
-            axs[i % 3, int(i > 2)].fill_between(
+        for i in range(0, pose_dimension):
+            axs[i % 3, i // 3].plot(self.timestamps, self.error[:, i])
+            axs[i % 3, i // 3].fill_between(
                 self.timestamps,
                 -1 * 3*np.sqrt(self.covariances[:, i, i]), 
                 3*np.sqrt(self.covariances[:, i, i]), 
                 alpha=0.5
             )
-            axs[i % 3, int(i > 2)].set_ylabel(self.error_titles[i])
+            axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
+        axs[2, 2].set_xlabel("Time [s]")
         
-        if not os.path.exists('results/plots/ekf_vins_one_robot'):
-            os.makedirs('results/plots/ekf_vins_one_robot')
-        plt.savefig(f"results/plots/ekf_vins_one_robot/{self.exp_name}_error.pdf")
+        if not os.path.exists('results/plots/ekf_imu_one_robot'):
+            os.makedirs('results/plots/ekf_imu_one_robot')
+        plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_error.pdf")
         plt.close()
 
     def save_results(self) -> None:
@@ -209,14 +231,14 @@ class EvaluateEKF:
         
         myCsvRow = f"{self.exp_name},{pos_rmse},{att_rmse}\n"
         
-        if not os.path.exists('results/ekf_vins_one_robot.csv'):
-            with open('results/ekf_vins_one_robot.csv','w') as file:
+        if not os.path.exists('results/ekf_imu_one_robot.csv'):
+            with open('results/ekf_imu_one_robot.csv','w') as file:
                 file.write("exp_name,pos_rmse,att_rmse\n")
         
-        with open('results/ekf_vins_one_robot.csv','a') as file:
+        with open('results/ekf_imu_one_robot.csv','a') as file:
             file.write(myCsvRow)
                 
     def get_rmse(self) -> tuple[float, float]:
-        pos_rmse = np.sqrt(np.mean(self.error[:, 3:] ** 2))
+        pos_rmse = np.sqrt(np.mean(self.error[:, 6:] ** 2))
         att_rmse = np.sqrt(np.mean(self.error[:, :3] ** 2))
         return pos_rmse, att_rmse

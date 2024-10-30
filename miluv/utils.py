@@ -130,7 +130,7 @@ def get_mocap_splines(mocap: pd.DataFrame) -> tuple[callable, callable]:
     pos_splines = csaps(time, pos.T, smooth=0.9999)
     quat_splines = csaps(time, quat.T, smooth=0.9999)
 
-    return pos_splines, quat_splines
+    return pos_splines.spline, quat_splines.spline
 
 def get_timeshift(exp_name):
     """
