@@ -121,7 +121,7 @@ class EKF:
     def _process_covariance(x: State, u: np.ndarray, dt: float) -> np.ndarray:
         noise_jac = np.zeros((full_state_dimension, Q.shape[0]))
         noise_jac[:pose_dimension, :bias_dimension] = imu_models.L_matrix(x.bias, u, dt)
-        noise_jac[pose_dimension:, bias_dimension:] = dt * np.eye(bias_dimension)
+        noise_jac[pose_dimension:, bias_dimension:] = np.eye(bias_dimension)
         
         return (noise_jac @ Q @noise_jac.T) / dt
     
@@ -173,6 +173,8 @@ class EKF:
 class EvaluateEKF:
     def __init__(self, gt_se23: list[SE23], ekf_history: dict, exp_name: str):
         self.timestamps, self.states, self.covariances = ekf_history["pose"].get()
+        self.timestamps_bias, self.bias, self.covariances_bias = ekf_history["bias"].get()
+        
         self.gt_se23 = gt_se23
         self.exp_name = exp_name
         
@@ -224,6 +226,31 @@ class EvaluateEKF:
         if not os.path.exists('results/plots/ekf_imu_one_robot'):
             os.makedirs('results/plots/ekf_imu_one_robot')
         plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_error.pdf")
+        plt.close()
+        
+    def plot_biases(self) -> None:
+        fig, axs = plt.subplots(3, 2, figsize=(10, 10))
+        fig.suptitle("EKF Biases")
+        
+        bias_titles = [r"$\beta_{\omega_x}$", r"$\beta_{\omega_y}$", r"$\beta_{\omega_z}$",
+                       r"$\beta_{a_x}$", r"$\beta_{a_y}$", r"$\beta_{a_z}$"]
+        
+        est = np.array(self.bias)
+        for i in range(0, bias_dimension):
+            axs[i % 3, i // 3].plot(self.timestamps_bias, est[:, i])
+            axs[i % 3, i // 3].fill_between(
+                self.timestamps_bias,
+                -1 * 3*np.sqrt(self.covariances_bias[:, i, i]), 
+                3*np.sqrt(self.covariances_bias[:, i, i]), 
+                alpha=0.5
+            )
+            axs[i % 3, i // 3].set_ylabel(bias_titles[i])
+        axs[2, 0].set_xlabel("Time [s]")
+        axs[2, 1].set_xlabel("Time [s]")
+        
+        if not os.path.exists('results/plots/ekf_imu_one_robot'):
+            os.makedirs('results/plots/ekf_imu_one_robot')
+        plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_biases.pdf")
         plt.close()
 
     def save_results(self) -> None:

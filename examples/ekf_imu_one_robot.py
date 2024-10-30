@@ -78,6 +78,7 @@ analysis = model.EvaluateEKF(gt_se23, ekf_history, exp_name)
 
 analysis.plot_error()
 analysis.plot_poses()
+analysis.plot_biases()
 analysis.save_results()
 
 # %%
