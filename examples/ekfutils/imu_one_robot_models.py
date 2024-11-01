@@ -103,15 +103,15 @@ class EKF:
         
     @staticmethod
     def _process_model(x: State, u: np.ndarray, dt: float) -> State:
-        x.pose = imu_models.G_matrix(dt) @ x.pose @ imu_models.U_matrix(x.bias, u, dt)
+        x.pose = imu_models.G_mat(dt) @ x.pose @ imu_models.U_mat(x.bias, u, dt)
         
         return x
     
     @staticmethod
     def _process_jacobian(x: State, u: np.ndarray, dt: float) -> np.ndarray:
         jac = np.zeros((full_state_dimension, full_state_dimension))
-        jac[:pose_dimension, :pose_dimension] = imu_models.U_adjoint_matrix(imu_models.U_inverse_matrix(x.bias, u, dt))
-        jac[:pose_dimension, pose_dimension:] = -imu_models.L_matrix(x.bias, u, dt)
+        jac[:pose_dimension, :pose_dimension] = imu_models.U_adjoint_mat(imu_models.U_inv_mat(x.bias, u, dt))
+        jac[:pose_dimension, pose_dimension:] = -imu_models.L_mat(x.bias, u, dt)
         
         jac[pose_dimension:, pose_dimension:] = np.eye(bias_dimension)
         
@@ -120,7 +120,7 @@ class EKF:
     @staticmethod
     def _process_covariance(x: State, u: np.ndarray, dt: float) -> np.ndarray:
         noise_jac = np.zeros((full_state_dimension, Q.shape[0]))
-        noise_jac[:pose_dimension, :bias_dimension] = imu_models.L_matrix(x.bias, u, dt)
+        noise_jac[:pose_dimension, :bias_dimension] = imu_models.L_mat(x.bias, u, dt)
         noise_jac[pose_dimension:, bias_dimension:] = np.eye(bias_dimension)
         
         return (noise_jac @ Q @noise_jac.T) / dt
