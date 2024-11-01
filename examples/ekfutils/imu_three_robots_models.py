@@ -102,10 +102,10 @@ class EKF:
             R = R_range
             actual_measurement = y["range"]
         elif "height" in y:
-            H = self._height_jacobian(self.x)
+            H = self._height_jacobian(self.x, y["robot"])
             R = R_height
             actual_measurement = y["height"]
-            predicted_measurement = self._height_measurement(self.x)
+            predicted_measurement = self._height_measurement(self.x, y["robot"])
         else:
             return
         
@@ -144,7 +144,7 @@ class EKF:
     def _process_jacobian(x: dict[str: State], u: dict[str: np.ndarray], dt: float) -> np.ndarray:
         # TODO: replace all these subfunctions with the one from the single robot model
         def subjac(robot: str) -> np.ndarray:
-            jac = np.zeros(single_robot_state_dimension, single_robot_state_dimension)
+            jac = np.zeros((single_robot_state_dimension, single_robot_state_dimension))
             jac[:pose_dimension, :pose_dimension] = imu_models.U_adjoint_mat(imu_models.U_inv_mat(x[robot].bias, u[robot], dt))
             jac[:pose_dimension, pose_dimension:] = -imu_models.L_mat(x[robot].bias, u[robot], dt)
             jac[pose_dimension:, pose_dimension:] = np.eye(bias_dimension)
@@ -178,7 +178,7 @@ class EKF:
         Pi = np.hstack([np.eye(3), np.zeros((3, 2))])
         r_tilde = np.vstack((self.tag_moment_arms[robot][tag_id], 0, 1)).reshape(5, 1)
         
-        vector = (self.anchors[anchor_id] - Pi @ x[robot] @ r_tilde).reshape(3, 1)
+        vector = (self.anchors[anchor_id] - Pi @ x[robot].pose @ r_tilde).reshape(3, 1)
         
         jac = np.zeros((1, full_state_dimension))
         
@@ -204,7 +204,7 @@ class EKF:
         
         Pi = np.hstack([np.eye(3), np.zeros((3, 2))])
         r_tilde_to = np.vstack((self.tag_moment_arms[robot_to][to_id], 0, 1)).reshape(5, 1)
-        r_tilde_from = np.vstack((self.tag_moment_arms[robot_from][from_id], 1)).reshape(5, 1)
+        r_tilde_from = np.vstack((self.tag_moment_arms[robot_from][from_id], 0, 1)).reshape(5, 1)
         
         vector = (Pi @ (x[robot_to].pose @ r_tilde_to - x[robot_from].pose @ r_tilde_from)).reshape(3, 1)
         
@@ -254,101 +254,116 @@ class EKF:
         ] for robot in robot_names}
 
 class EvaluateEKF:
-    def __init__(self, gt_se23: list[SE23], ekf_history: dict, exp_name: str):
-        self.timestamps, self.states, self.covariances = ekf_history["pose"].get()
-        self.timestamps_bias, self.bias, self.covariances_bias = ekf_history["bias"].get()
+    def __init__(self, gt_se23: dict[str: SE23], ekf_history: dict[str: dict], exp_name: str):
+        self.timestamps = {}
+        self.states = {}
+        self.covariances = {}
+        self.timestamps_bias = {}
+        self.bias = {}
+        self.covariances_bias = {}
+        self.gt_se23 = {}
+        self.error = {}
         
-        self.gt_se23 = gt_se23
-        self.exp_name = exp_name
-        
-        self.error = np.zeros((len(self.gt_se23), pose_dimension))
-        for i in range(0, len(self.gt_se23)):
-            self.error[i, :] = SE23.Log(SE23.inverse(self.gt_se23[i]) @ self.states[i]).ravel()
+        for robot in robot_names:
+            self.timestamps[robot], self.states[robot], self.covariances[robot] = ekf_history[robot]["pose"].get()
+            self.timestamps_bias[robot], self.bias[robot], self.covariances_bias[robot] = ekf_history[robot]["bias"].get()
+            self.gt_se23[robot] = gt_se23[robot]
             
+            self.error[robot] = np.zeros((len(self.gt_se23[robot]), pose_dimension))
+            for i in range(0, len(self.gt_se23[robot])):
+                self.error[robot][i, :] = SE23.Log(SE23.inverse(self.gt_se23[robot][i]) @ self.states[robot][i]).ravel()
+
+        self.exp_name = exp_name
         self.error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
                              r"$\delta_{v_x}$", r"$\delta_{v_y}$", r"$\delta_{v_z}$", 
                              r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
 
     def plot_poses(self) -> None:
-        fig, axs = plt.subplots(3, 3, figsize=(10, 10))
-        fig.suptitle("Ground Truth vs. EKF Poses")
-        
-        gt = np.array([SE23.Log(pose).ravel() for pose in self.gt_se23])
-        est = np.array([SE23.Log(pose).ravel() for pose in self.states])
-        for i in range(0, pose_dimension):
-            axs[i % 3, i // 3].plot(self.timestamps, gt[:, i], label="GT")
-            axs[i % 3, i // 3].plot(self.timestamps, est[:, i], label="Est")
-            axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
-        axs[2, 0].set_xlabel("Time [s]")
-        axs[2, 1].set_xlabel("Time [s]")
-        axs[2, 2].set_xlabel("Time [s]")
-        axs[0, 0].legend()
-        
-        if not os.path.exists('results/plots/ekf_imu_one_robot'):
-            os.makedirs('results/plots/ekf_imu_one_robot')
-        plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_poses.pdf")
-        plt.close()
+        for robot in robot_names:
+            fig, axs = plt.subplots(3, 3, figsize=(10, 10))
+            fig.suptitle("Ground Truth vs. EKF Poses " + robot)
+            
+            gt = np.array([SE23.Log(pose).ravel() for pose in self.gt_se23[robot]])
+            est = np.array([SE23.Log(pose).ravel() for pose in self.states[robot]])
+            for i in range(0, pose_dimension):
+                axs[i % 3, i // 3].plot(self.timestamps[robot], gt[:, i], label="GT")
+                axs[i % 3, i // 3].plot(self.timestamps[robot], est[:, i], label="Est")
+                axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
+            axs[2, 0].set_xlabel("Time [s]")
+            axs[2, 1].set_xlabel("Time [s]")
+            axs[2, 2].set_xlabel("Time [s]")
+            axs[0, 0].legend()
+            
+            if not os.path.exists('results/plots/ekf_imu_three_robots'):
+                os.makedirs('results/plots/ekf_imu_three_robots')
+            plt.savefig(f"results/plots/ekf_imu_three_robots/{self.exp_name}_poses_{robot}.pdf")
+            plt.close()
 
     def plot_error(self) -> None:
-        fig, axs = plt.subplots(3, 3, figsize=(10, 10))
-        fig.suptitle("Three-Sigma Error Plots")
-        
-        for i in range(0, pose_dimension):
-            axs[i % 3, i // 3].plot(self.timestamps, self.error[:, i])
-            axs[i % 3, i // 3].fill_between(
-                self.timestamps,
-                -1 * 3*np.sqrt(self.covariances[:, i, i]), 
-                3*np.sqrt(self.covariances[:, i, i]), 
-                alpha=0.5
-            )
-            axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
-        axs[2, 0].set_xlabel("Time [s]")
-        axs[2, 1].set_xlabel("Time [s]")
-        axs[2, 2].set_xlabel("Time [s]")
-        
-        if not os.path.exists('results/plots/ekf_imu_one_robot'):
-            os.makedirs('results/plots/ekf_imu_one_robot')
-        plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_error.pdf")
-        plt.close()
+        for robot in robot_names:
+            fig, axs = plt.subplots(3, 3, figsize=(10, 10))
+            fig.suptitle("Three-Sigma Error Plots " + robot)
+            
+            for i in range(0, pose_dimension):
+                axs[i % 3, i // 3].plot(self.timestamps[robot], self.error[robot][:, i])
+                axs[i % 3, i // 3].fill_between(
+                    self.timestamps[robot],
+                    -1 * 3*np.sqrt(self.covariances[robot][:, i, i]), 
+                    3*np.sqrt(self.covariances[robot][:, i, i]), 
+                    alpha=0.5
+                )
+                axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
+            axs[2, 0].set_xlabel("Time [s]")
+            axs[2, 1].set_xlabel("Time [s]")
+            axs[2, 2].set_xlabel("Time [s]")
+            
+            if not os.path.exists('results/plots/ekf_imu_three_robots'):
+                os.makedirs('results/plots/ekf_imu_three_robots')
+            plt.savefig(f"results/plots/ekf_imu_three_robots/{self.exp_name}_error_{robot}.pdf")
+            plt.close()
         
     def plot_biases(self) -> None:
-        fig, axs = plt.subplots(3, 2, figsize=(10, 10))
-        fig.suptitle("EKF Biases")
-        
-        bias_titles = [r"$\beta_{\omega_x}$", r"$\beta_{\omega_y}$", r"$\beta_{\omega_z}$",
-                       r"$\beta_{a_x}$", r"$\beta_{a_y}$", r"$\beta_{a_z}$"]
-        
-        est = np.array(self.bias)
-        for i in range(0, bias_dimension):
-            axs[i % 3, i // 3].plot(self.timestamps_bias, est[:, i])
-            axs[i % 3, i // 3].fill_between(
-                self.timestamps_bias,
-                -1 * 3*np.sqrt(self.covariances_bias[:, i, i]), 
-                3*np.sqrt(self.covariances_bias[:, i, i]), 
-                alpha=0.5
-            )
-            axs[i % 3, i // 3].set_ylabel(bias_titles[i])
-        axs[2, 0].set_xlabel("Time [s]")
-        axs[2, 1].set_xlabel("Time [s]")
-        
-        if not os.path.exists('results/plots/ekf_imu_one_robot'):
-            os.makedirs('results/plots/ekf_imu_one_robot')
-        plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_biases.pdf")
-        plt.close()
+        for robot in robot_names:
+            fig, axs = plt.subplots(3, 2, figsize=(10, 10))
+            fig.suptitle("EKF Biases " + robot)
+            
+            bias_titles = [r"$\beta_{\omega_x}$", r"$\beta_{\omega_y}$", r"$\beta_{\omega_z}$",
+                        r"$\beta_{a_x}$", r"$\beta_{a_y}$", r"$\beta_{a_z}$"]
+            
+            est = np.array(self.bias[robot])
+            for i in range(0, bias_dimension):
+                axs[i % 3, i // 3].plot(self.timestamps_bias[robot], est[:, i])
+                axs[i % 3, i // 3].fill_between(
+                    self.timestamps_bias[robot],
+                    -1 * 3*np.sqrt(self.covariances_bias[robot][:, i, i]), 
+                    3*np.sqrt(self.covariances_bias[robot][:, i, i]), 
+                    alpha=0.5
+                )
+                axs[i % 3, i // 3].set_ylabel(bias_titles[i])
+            axs[2, 0].set_xlabel("Time [s]")
+            axs[2, 1].set_xlabel("Time [s]")
+            
+            if not os.path.exists('results/plots/ekf_imu_three_robots'):
+                os.makedirs('results/plots/ekf_imu_three_robots')
+            plt.savefig(f"results/plots/ekf_imu_three_robots/{self.exp_name}_biases_{robot}.pdf")
+            plt.close()
 
     def save_results(self) -> None:
-        pos_rmse, att_rmse = self.get_rmse()
+        pos_rmse = {}
+        att_rmse = {}
+        for robot in robot_names:
+            pos_rmse[robot], att_rmse[robot] = self.get_rmse(robot)
         
-        myCsvRow = f"{self.exp_name},{pos_rmse},{att_rmse}\n"
+        myCsvRow = f"{self.exp_name}," + ",".join([f"{pos_rmse[robot]},{att_rmse[robot]}" for robot in robot_names]) + "\n"
         
-        if not os.path.exists('results/ekf_imu_one_robot.csv'):
-            with open('results/ekf_imu_one_robot.csv','w') as file:
-                file.write("exp_name,pos_rmse,att_rmse\n")
+        if not os.path.exists('results/ekf_imu_three_robots.csv'):
+            with open('results/ekf_imu_three_robots.csv','w') as file:
+                file.write("exp_name," + ",".join([f"{robot}_pos_rmse,{robot}_att_rmse" for robot in robot_names]) + "\n")
         
-        with open('results/ekf_imu_one_robot.csv','a') as file:
+        with open('results/ekf_imu_three_robots.csv','a') as file:
             file.write(myCsvRow)
                 
-    def get_rmse(self) -> tuple[float, float]:
-        pos_rmse = np.sqrt(np.mean(self.error[:, 6:] ** 2))
-        att_rmse = np.sqrt(np.mean(self.error[:, :3] ** 2))
+    def get_rmse(self, robot: str) -> tuple[float, float]:
+        pos_rmse = np.sqrt(np.mean(self.error[robot][:, 6:] ** 2))
+        att_rmse = np.sqrt(np.mean(self.error[robot][:, :3] ** 2))
         return pos_rmse, att_rmse
