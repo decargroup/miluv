@@ -18,7 +18,10 @@ full_state_dimension = num_robots * single_robot_state_dimension
 
 # This dictionary maps robot names to the start and end indices of their state in the full state vector
 x_idx = {
-    robot: {"start": 6 * i, "end": 6 * (i + 1)} for i, robot in enumerate(robot_names)
+    robot: {
+        "start": single_robot_state_dimension * i, 
+        "end": single_robot_state_dimension * (i + 1)
+    } for i, robot in enumerate(robot_names)
 }
 
 # Covariance matrices
@@ -199,7 +202,7 @@ class EvaluateEKF:
             self.timestamps[robot], self.states[robot], self.covariances[robot] = ekf_history[robot].get()
             self.gt_se3[robot] = gt_se3[robot]
             
-            self.error[robot] = np.zeros((len(self.gt_se3[robot]), 6))
+            self.error[robot] = np.zeros((len(self.gt_se3[robot]), single_robot_state_dimension))
             for i in range(0, len(self.gt_se3[robot])):
                 self.error[robot][i, :] = SE3.Log(SE3.inverse(self.gt_se3[robot][i]) @ self.states[robot][i]).ravel()
 
@@ -214,7 +217,7 @@ class EvaluateEKF:
             
             gt = np.array([SE3.Log(pose).ravel() for pose in self.gt_se3[robot]])
             est = np.array([SE3.Log(pose).ravel() for pose in self.states[robot]])
-            for i in range(0, 6):
+            for i in range(0, single_robot_state_dimension):
                 axs[i % 3, int(i > 2)].plot(self.timestamps[robot], gt[:, i], label="GT")
                 axs[i % 3, int(i > 2)].plot(self.timestamps[robot], est[:, i], label="Est")
                 axs[i % 3, int(i > 2)].set_ylabel(self.error_titles[i])
@@ -232,7 +235,7 @@ class EvaluateEKF:
             fig, axs = plt.subplots(3, 2, figsize=(10, 10))
             fig.suptitle("Three-Sigma Error Plots for " + robot)
             
-            for i in range(0, 6):
+            for i in range(0, single_robot_state_dimension):
                 axs[i % 3, int(i > 2)].plot(self.timestamps[robot], self.error[robot][:, i])
                 axs[i % 3, int(i > 2)].fill_between(
                     self.timestamps[robot],

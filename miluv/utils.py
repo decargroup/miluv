@@ -88,7 +88,7 @@ def zero_order_hold(query_timestamps, data: pd.DataFrame) -> pd.DataFrame:
 
     return new_data
 
-def get_mocap_splines(mocap: pd.DataFrame) -> 'tuple[callable, callable]':
+def get_mocap_splines(mocap: pd.DataFrame) -> tuple[callable, callable]:
     """
     Get spline interpolations for mocap data.
     
@@ -130,7 +130,7 @@ def get_mocap_splines(mocap: pd.DataFrame) -> 'tuple[callable, callable]':
     pos_splines = csaps(time, pos.T, smooth=0.9999)
     quat_splines = csaps(time, quat.T, smooth=0.9999)
 
-    return pos_splines, quat_splines
+    return pos_splines.spline, quat_splines.spline
 
 def get_timeshift(exp_name):
     """
@@ -164,6 +164,8 @@ def get_imu_noise_params(robot_name, sensor_name):
     dict
     - gyro: Gyroscope noise parameters.
     - accel: Accelerometer noise parameters.
+    - gyro_bias: Gyroscope bias noise parameters.
+    - accel_bias: Accelerometer bias noise parameters.
     """
     
     with open(f"config/imu/{robot_name}/{sensor_name}_output.log", "r") as file:
@@ -173,14 +175,25 @@ def get_imu_noise_params(robot_name, sensor_name):
         eval(imu_params["X Angle Random Walk"].split(" ")[0]),
         eval(imu_params["Y Angle Random Walk"].split(" ")[0]),
         eval(imu_params["Z Angle Random Walk"].split(" ")[0])
-    ])
+    ]) * np.pi / 180
     accel = np.array([
         eval(imu_params["X Velocity Random Walk"].split(" ")[0]),
         eval(imu_params["Y Velocity Random Walk"].split(" ")[0]),
         eval(imu_params["Z Velocity Random Walk"].split(" ")[0])
     ])
     
-    return {"gyro": gyro, "accel": accel}
+    gyro_bias = np.array([
+        eval(imu_params["X Rate Random Walk"].split(" ")[0]),
+        eval(imu_params["Y Rate Random Walk"].split(" ")[0]),
+        eval(imu_params["Z Rate Random Walk"].split(" ")[0])
+    ]) * np.pi / 180
+    accel_bias = np.array([
+        eval(imu_params["X Accel Random Walk"].split(" ")[0]),
+        eval(imu_params["Y Accel Random Walk"].split(" ")[0]),
+        eval(imu_params["Z Accel Random Walk"].split(" ")[0])
+    ])
+    
+    return {"gyro": gyro, "accel": accel, "gyro_bias": gyro_bias, "accel_bias": accel_bias}
     
 
 def load_vins(exp_name, robot_id, loop = True, postprocessed: bool = False) -> pd.DataFrame:

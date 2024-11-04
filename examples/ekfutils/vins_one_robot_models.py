@@ -66,7 +66,7 @@ class EKF:
         K = self.P @ H.T / S
         
         self.x = self.x @ SE3.Exp(K @ z)
-        self.P = (np.eye(6) - K @ H) @ self.P
+        self.P = (np.eye(state_dimension) - K @ H) @ self.P
         
         # Ensure symmetric covariance matrix
         self.P = 0.5 * (self.P + self.P.T)
@@ -113,7 +113,7 @@ class EvaluateEKF:
         self.gt_se3 = gt_se3
         self.exp_name = exp_name
         
-        self.error = np.zeros((len(self.gt_se3), 6))
+        self.error = np.zeros((len(self.gt_se3), state_dimension))
         for i in range(0, len(self.gt_se3)):
             self.error[i, :] = SE3.Log(SE3.inverse(self.gt_se3[i]) @ self.states[i]).ravel()
             
@@ -126,7 +126,7 @@ class EvaluateEKF:
         
         gt = np.array([SE3.Log(pose).ravel() for pose in self.gt_se3])
         est = np.array([SE3.Log(pose).ravel() for pose in self.states])
-        for i in range(0, 6):
+        for i in range(0, state_dimension):
             axs[i % 3, int(i > 2)].plot(self.timestamps, gt[:, i], label="GT")
             axs[i % 3, int(i > 2)].plot(self.timestamps, est[:, i], label="Est")
             axs[i % 3, int(i > 2)].set_ylabel(self.error_titles[i])
@@ -143,7 +143,7 @@ class EvaluateEKF:
         fig, axs = plt.subplots(3, 2, figsize=(10, 10))
         fig.suptitle("Three-Sigma Error Plots")
         
-        for i in range(0, 6):
+        for i in range(0, state_dimension):
             axs[i % 3, int(i > 2)].plot(self.timestamps, self.error[:, i])
             axs[i % 3, int(i > 2)].fill_between(
                 self.timestamps,

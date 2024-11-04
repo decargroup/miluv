@@ -4,8 +4,7 @@ import pandas as pd
 
 from miluv.data import DataLoader
 import utils.liegroups as liegroups
-import miluv.utils as utils
-import examples.ekfutils.vins_one_robot_models as model
+import examples.ekfutils.imu_one_robot_models as model
 import examples.ekfutils.common as common
 
 #################### EXPERIMENT DETAILS ####################
@@ -14,44 +13,40 @@ exp_name = "13"
 #################### LOAD SENSOR DATA ####################
 miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False)
 data = miluv.data["ifo001"]
-vins = utils.load_vins(exp_name, "ifo001", loop = False, postprocessed = True)
 
 #################### ALIGN SENSOR DATA TIMESTAMPS ####################
 # Set the query timestamps to be all the timestamps where UWB range or height data is available
-# and within the time range of the VINS data
 query_timestamps = np.append(
     data["uwb_range"]["timestamp"].to_numpy(), data["height"]["timestamp"].to_numpy()
 )
-query_timestamps = query_timestamps[query_timestamps > vins["timestamp"].iloc[0]]
-query_timestamps = query_timestamps[query_timestamps < vins["timestamp"].iloc[-1]]
 query_timestamps = np.sort(np.unique(query_timestamps))
 
 imu_at_query_timestamps = miluv.query_by_timestamps(query_timestamps, robots="ifo001", sensors="imu_px4")["ifo001"]
+accel: pd.DataFrame = imu_at_query_timestamps["imu_px4"][["timestamp", "linear_acceleration.x", "linear_acceleration.y", "linear_acceleration.z"]]
 gyro: pd.DataFrame = imu_at_query_timestamps["imu_px4"][["timestamp", "angular_velocity.x", "angular_velocity.y", "angular_velocity.z"]]
-vins_at_query_timestamps = utils.zero_order_hold(query_timestamps, vins)
 
 #################### LOAD GROUND TRUTH DATA ####################
-gt_se3 = liegroups.get_se3_poses(
-    data["mocap_quat"](query_timestamps), data["mocap_pos"](query_timestamps)
+gt_se23 = liegroups.get_se23_poses(
+    data["mocap_quat"](query_timestamps), data["mocap_pos"].derivative(nu=1)(query_timestamps), data["mocap_pos"](query_timestamps)
 )
-
-# Use ground truth data to convert VINS data from the absolute (mocap) frame to the robot's body frame
-vins_body_frame = common.convert_vins_velocity_to_body_frame(vins_at_query_timestamps, gt_se3)
 
 #################### EKF ####################
 # Initialize a variable to store the EKF state and covariance at each query timestamp for postprocessing
-ekf_history = common.MatrixStateHistory(state_dim=4, covariance_dim=6)
+ekf_history = {
+    "pose": common.MatrixStateHistory(state_dim=5, covariance_dim=9),
+    "bias": common.VectorStateHistory(state_dim=6)
+}
 
 # Initialize the EKF with the first ground truth pose, the anchor postions, and UWB tag moment arms
-ekf = model.EKF(gt_se3[0], miluv.anchors, miluv.tag_moment_arms)
+ekf = model.EKF(gt_se23[0], miluv.anchors, miluv.tag_moment_arms)
 
 # Iterate through the query timestamps
 for i in range(0, len(query_timestamps)):
     # Get the gyro and vins data at this query timestamp for the EKF input
     input = np.array([
         gyro.iloc[i]["angular_velocity.x"], gyro.iloc[i]["angular_velocity.y"], 
-        gyro.iloc[i]["angular_velocity.z"], vins_body_frame.iloc[i]["twist.linear.x"],
-        vins_body_frame.iloc[i]["twist.linear.y"], vins_body_frame.iloc[i]["twist.linear.z"],
+        gyro.iloc[i]["angular_velocity.z"], accel.iloc[i]["linear_acceleration.x"], 
+        accel.iloc[i]["linear_acceleration.y"], accel.iloc[i]["linear_acceleration.z"]
     ])
     
     # Do an EKF prediction using the gyro and vins data
@@ -75,13 +70,15 @@ for i in range(0, len(query_timestamps)):
         ekf.correct({"height": float(height_data["range"].iloc[0])})
         
     # Store the EKF state and covariance at this query timestamp
-    ekf_history.add(query_timestamps[i], ekf.x, ekf.P)
+    ekf_history["pose"].add(query_timestamps[i], ekf.pose, ekf.pose_covariance)
+    ekf_history["bias"].add(query_timestamps[i], ekf.bias, ekf.bias_covariance)
 
 #################### POSTPROCESS ####################
-analysis = model.EvaluateEKF(gt_se3, ekf_history, exp_name)
+analysis = model.EvaluateEKF(gt_se23, ekf_history, exp_name)
 
 analysis.plot_error()
 analysis.plot_poses()
+analysis.plot_biases()
 analysis.save_results()
 
 # %%
