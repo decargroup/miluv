@@ -52,6 +52,8 @@ class EKF:
         self.tag_moment_arms = tag_moment_arms
 
     def predict(self, u: dict[str: np.ndarray], dt: float) -> None:
+        if dt == 0:
+            return
         A = self._process_jacobian(self.x, u, dt)
         Qd = self._process_covariance(self.x, u, dt)
         
