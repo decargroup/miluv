@@ -9,7 +9,7 @@ nav_order: 1
 
 ## Overview
 
-![The setup for the one-robot VINS EKF](/assets/vins/one_robot.png)
+![The setup for the one-robot VINS EKF](https://decargroup.github.io/miluv/assets/vins/one_robot.png)
 
 This example shows he we can use MILUV to test out an Extended Kalman Filter (EKF) for a single robot using Visual-Inertial Navigation System (VINS) data. In this example, we will use the following data:
 
@@ -290,4 +290,4 @@ analysis.plot_poses()
 analysis.save_results()
 ```
 
-![VINS EKF Pose Plot for Experiment #13](/assets/vins/13_poses.png) | ![VINS EKF Error Plot for Experiment #13](/assets/vins/13_error.png)
+![VINS EKF Pose Plot for Experiment #13](https://decargroup.github.io/miluv/assets/vins/13_poses.png) | ![VINS EKF Error Plot for Experiment #13](https://decargroup.github.io/miluv/assets/vins/13_error.png)
