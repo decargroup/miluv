@@ -1,6 +1,6 @@
 ---
-title: One robot
-parent: EKF - $SE(3)$
+title: $SE(3)$ VINS - 1 robot
+parent: Extended Kalman Filter
 usemathjax: true
 nav_order: 1
 ---
@@ -9,7 +9,7 @@ nav_order: 1
 
 ## Overview
 
-![The setup for the one-robot VINS EKF](https://decargroup.github.io/miluv/assets/vins/one_robot.png)
+![The setup for the one-robot VINS EKF](https://decargroup.github.io/miluv/assets/one_robot.png)
 
 This example shows he we can use MILUV to test out an Extended Kalman Filter (EKF) for a single robot using Visual-Inertial Navigation System (VINS) data. In this example, we will use the following data:
 

@@ -1,5 +1,5 @@
 ---
-title: EKF - $SE(3)$
+title: Extended Kalman Filter
 parent: Examples
 nav_order: 4
 ---
