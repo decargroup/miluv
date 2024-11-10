@@ -61,8 +61,10 @@ def U_adjoint_mat(U: np.ndarray) -> np.ndarray:
     return Ad
     
 def L_mat(bias: np.ndarray, u: np.ndarray, dt: float) -> np.ndarray:
+    om = u[:3] - bias[:3]
+    
     a = (u[3:] - bias[3:]).reshape((-1, 1))
-    omdt = (u[:3] - bias[:3]) * dt
+    omdt = om * dt
     J_att_inv_times_N = SO3.left_jacobian_inv(omdt) @ N_mat(omdt)
     xi = np.zeros((9,))
     xi[:3] = omdt
@@ -70,7 +72,7 @@ def L_mat(bias: np.ndarray, u: np.ndarray, dt: float) -> np.ndarray:
     xi[6:9] = ((dt**2 / 2) * J_att_inv_times_N @ a).ravel()
     J = SE23.left_jacobian(-xi)
     
-    Om = SO3.wedge(omdt)
+    Om = SO3.wedge(om)
     OmOm = Om @ Om
     Up = dt * np.eye(9, 6)
     W = OmOm @ SO3.wedge(a) + Om @ SO3.wedge(Om @ a) + SO3.wedge(OmOm @ a)
