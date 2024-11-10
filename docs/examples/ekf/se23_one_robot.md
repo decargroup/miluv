@@ -286,6 +286,9 @@ analysis.plot_biases()
 analysis.save_results()
 ```
 
-![IMU EKF Error Plot for Experiment #13](https://decargroup.github.io/miluv/assets/imu/13_error.png)
+<p align="center">
+<img src="https://decargroup.github.io/miluv/assets/imu/13_error.png" alt="drawing" width="400" class="center"/>
+</p>
+
 ![IMU EKF Pose Plot for Experiment #13](https://decargroup.github.io/miluv/assets/imu/13_poses.png) | ![IMU EKF Bias Plot for Experiment #13](https://decargroup.github.io/miluv/assets/imu/13_biases.png)
 
