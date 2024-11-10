@@ -36,6 +36,12 @@ import numpy as np
 import pandas as pd
 ```
 
+We then import the `DataLoader` class from the `miluv` package, which provides an easy way to load the MILUV dataset. This is the core of the MILUV devkit, and it provides an interface to load the sensor data and ground truth data for the experiments.
+
+```py
+from miluv.data import DataLoader
+```
+
 We also import the `liegroups` and `utils` libraries from the `miluv` package, which provide utilities for Lie groups that accompany and other helper functions. 
 
 ```py
@@ -55,14 +61,12 @@ import examples.ekfutils.common as common
 We start by defining the experiment we want to run the EKF on. In this case, we will use experiment 13.
 
 ```py
-#################### EXPERIMENT DETAILS ####################
 exp_name = "13"
 ```
 
 We then, in one line, load all the sensor data we want for our EKF. For this example, we only care about ifo001's data.
 
 ```py
-#################### LOAD SENSOR DATA ####################
 miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False)
 data = miluv.data["ifo001"]
 ```
@@ -193,27 +197,27 @@ for i in range(0, len(query_timestamps)):
 
 The correction takes a similar approach. We do correction using both the UWB range data between the anchors and the tags on the robot, and the height data from the robot's downward-facing laser rangefinder. Starting with the UWB range data, the measurement model is given by
 
-$$ y = \lVert \mathbf{r}_a^{\alpha_i \tau_j} \rVert, $$
+$$ y = \lVert \mathbf{r}_a^{\alpha_i \tau_1} \rVert, $$
 
 which can be written as
 
-$$ y = \lVert \mathbf{r}_a^{\alpha_i a} - (\mathbf{C}_{a1} \mathbf{r}_1^{\tau_j 1} + \mathbf{r}_a^{1a}) \rVert. $$
+$$ y = \lVert \mathbf{r}_a^{\alpha_i a} - (\mathbf{C}_{a1} \mathbf{r}_1^{\tau_1 1} + \mathbf{r}_a^{1a}) \rVert. $$
 
 It can be shown that this can be written as a function of the state using
 
-$$ y = \lVert \mathbf{r}_a^{\alpha_i a} - \boldsymbol{\Pi} \mathbf{T}_{a1} \mathbf{\tilde{r}}_{1}^{\tau_j 1} \rVert $$
+$$ y = \lVert \mathbf{r}_a^{\alpha_i a} - \boldsymbol{\Pi} \mathbf{T}_{a1} \mathbf{\tilde{r}}_{1}^{\tau_1 1} \rVert $$
 
 where 
 
-$$ \boldsymbol{\Pi} = \begin{bmatrix} \mathbf{1}_3 & \mathbf{0}_{3 \times 1} \end{bmatrix} \in \mathbb{R}^{3 \times 4}, \qquad \mathbf{\tilde{r}}_{1}^{\tau_j 1} = \begin{bmatrix} \mathbf{r}_1^{\tau_j 1} \\ 1 \end{bmatrix} \in \mathbb{R}^4. $$
+$$ \boldsymbol{\Pi} = \begin{bmatrix} \mathbf{1}_3 & \mathbf{0}_{3 \times 1} \end{bmatrix} \in \mathbb{R}^{3 \times 4}, \qquad \mathbf{\tilde{r}}_{1}^{\tau_1 1} = \begin{bmatrix} \mathbf{r}_1^{\tau_1 1} \\ 1 \end{bmatrix} \in \mathbb{R}^4. $$
 
 Deriving the Jacobian is a bit involved, but it can be shown that by defining a vector
 
-$ \boldsymbol{\nu} = \mathbf{r}_a^{\alpha_i a} - \boldsymbol{\Pi} \bar{\mathbf{T}} _ {a1} \mathbf{\tilde{r}} _ {1} ^ {\tau_j 1}, $
+$$ \boldsymbol{\nu} = \mathbf{r}_a^{\alpha_i a} - \boldsymbol{\Pi} \bar{\mathbf{T}} _ {a1} \mathbf{\tilde{r}} _ {1} ^ {\tau_1 1}, $$
 
 the Jacobian of the measurement model with respect to the state is given by
 
-$$ \delta y = - \frac{\boldsymbol{\nu}^\intercal}{\lVert \boldsymbol{\nu} \rVert} \boldsymbol{\Pi} \bar{\mathbf{T}}_{a1} (\mathbf{\tilde{r}}_{1}^{\tau_j 1})^\odot \delta \boldsymbol{\xi}, $$
+$$ \delta y = - \frac{\boldsymbol{\nu}^\intercal}{\lVert \boldsymbol{\nu} \rVert} \boldsymbol{\Pi} \bar{\mathbf{T}}_{a1} (\mathbf{\tilde{r}}_{1}^{\tau_1 1})^\odot \delta \boldsymbol{\xi}, $$
 
 where $(\cdot)^\odot : \mathbb{R}^4 \rightarrow \mathbb{R}^{4 \times 6}$ is the *odot* operator in $SE(3)$.
 
