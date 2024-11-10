@@ -26,7 +26,7 @@ We follow the same notation convention mentioned in the paper and assume the sam
 
 ## Importing Libraries and MILUV Utilities
 
-We start by importing the necessary libraries and utilities for this example as in the VINS example, with the only change being the EKF model we are using.
+We start by importing the necessary libraries and utilities for this example as in the VINS example, with the only change being the EKF model we are using and the fact that we do not need to import `miluv.utils` separately as we do not need to process VINS data.
 
 ```py
 import numpy as np
@@ -34,7 +34,6 @@ import pandas as pd
 
 from miluv.data import DataLoader
 import utils.liegroups as liegroups
-import miluv.utils as utils
 import examples.ekfutils.imu_one_robot_models as model
 import examples.ekfutils.common as common
 ```
