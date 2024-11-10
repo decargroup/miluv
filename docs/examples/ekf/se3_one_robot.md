@@ -23,7 +23,7 @@ The state we are trying to estimate is the robot's 3D pose in the absolute frame
 
 $$ \mathbf{T}_{a1} = \begin{bmatrix} \mathbf{C}_{a1} & \mathbf{r}^{1a}_a \\ \mathbf{0} & 1 \end{bmatrix} \in SE(3). $$
 
-We follow the same notation convention as mentioned in the paper, and the reference frame $\{ \mathcal{F}_1 \}$ is the body-fixed reference frame of robot ifo001.
+We follow the same notation convention as mentioned in the paper, and the reference frame $\{ F_1 \}$ is the body-fixed reference frame of robot ifo001.
 
 As shown in the figure above, the robot has two UWB tags, $f_1$ and $s_1$, for which we define $\tau_1 \in \\{ f_1, s_1 \\}$. The robot also has 6 anchors in the environment, which are assumed to be stationary and their positions $ \mathbf{r}^{\alpha_i a}_a \in \mathbb{R}^3 $ are known in the absolute frame as provided in `config/uwb/anchors.yaml`. Similarly, the moment arm of the tags on the robot, $ \mathbf{r}^{\tau_1 1}_1 \in \mathbb{R}^3 $, is also known and provided in `config/uwb/tags.yaml`.
 
@@ -137,15 +137,15 @@ for i in range(0, len(query_timestamps)):
 
 The prediction step is done using the gyroscope and VINS data. The continuous-time process model for the orientation is given by
 
-$$ \dot{\mathbf{ C }}_{a1} = \mathbf{C}_{a1} (\mathbf{\omega}^{1a} _ a)^{\wedge}, $$
+$$ \dot{\mathbf{ C }}_{a1} = \mathbf{C}_{a1} (\boldsymbol{\omega}^{1a} _ 1)^{\wedge}, $$
 
-where $\mathbf{\omega}^{1a} _ a$ is the angular velocity measured by the gyroscope, and $(\cdot)^{\wedge}$ is the skew-symmetric matrix operator in that maps an element of $\mathbb{R}^3$ to the Lie algebra of $SO(3)$. Meanwhile, the continuous-time process model for the position is given by
+where $\boldsymbol{\omega}^{1a} _ 1$ is the angular velocity measured by the gyroscope, and $(\cdot)^{\wedge}$ is the skew-symmetric matrix operator in that maps an element of $\mathbb{R}^3$ to the Lie algebra of $SO(3)$. Meanwhile, the continuous-time process model for the position is given by
 
 $$ \dot{\mathbf{r}}^{1a}_a = \mathbf{C}_{a1} \mathbf{v}^{1a}_1, $$
 
 where $\mathbf{v}^{1a}_1$ is the linear velocity measured by VINS after being transformed to the robot's body frame. By defining the input vector as 
 
-$$ \mathbf{u} = \begin{bmatrix} \mathbf{\omega}^{1a}_a \\ \mathbf{v}^{1a}_1 \end{bmatrix}, $$
+$$ \mathbf{u} = \begin{bmatrix} \boldsymbol{\omega}^{1a}_1 \\ \mathbf{v}^{1a}_1 \end{bmatrix}, $$
 
 the continuous-time process model for the state $\mathbf{T}_{a1}$ can be written compactly as
 
@@ -192,6 +192,8 @@ for i in range(0, len(query_timestamps)):
     dt = (query_timestamps[i] - query_timestamps[i - 1]) if i > 0 else 0
     ekf.predict(input, dt)
 ```
+
+Although it is not shown in the script, we set the process model covariances using the `get_imu_noise_params()` function in the *miluv.utils* module, which reads the robot-specific IMU noise parameters from the `config/imu` folder that were extracted using the [allan_variance_ros](https://github.com/ori-drs/allan_variance_ros) package.
 
 ### Correction
 
@@ -249,7 +251,7 @@ $$ y = \mathbf{a}^\intercal \mathbf{T}_{a1} \mathbf{b}, $$
 
 where 
 
-$$ \mathbf{a} = \begin{bmatrix} 0 \\ 0 \\ 1 \\ 0 \end{bmatrix}, \qquad \mathbf{b} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}. $$
+$$ \mathbf{a} = \begin{bmatrix} 0 \\ 0 \\ 1 \\ 0 \end{bmatrix}, \qquad \mathbf{b} = \begin{bmatrix} 0 \\ 0 \\ 0 \\ 1 \end{bmatrix}. $$
 
 The Jacobian of the measurement model with respect to the state can be derived to be
 
