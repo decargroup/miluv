@@ -5,6 +5,8 @@ usemathjax: true
 nav_order: 4
 ---
 
+# $SE_2(3)$ EKF with IMU - Three Robots
+
 ![The setup for the three-robot IMU EKF](https://decargroup.github.io/miluv/assets/three_robots.png)
 
 This example shows how we can use MILUV to test out an Extended Kalman Filter (EKF) for three robots using Inertial Measurement Units (IMUs). This extends the [one-robot IMU example](https://decargroup.github.io/miluv/examples/ekf/se23_one_robot.html) to three robots, in the same manner we extended the [one-robot VINS example](https://decargroup.github.io/miluv/examples/ekf/se3_one_robot.html) to [three robots](https://decargroup.github.io/miluv/examples/ekf/se3_three_robot.html). We will keep this example brief as it is not much different than what we have seen before. The data we use is the same as the one-robot example, but now we also use the inter-robot UWB range data to estimate the poses and IMU biases of all the robots. 

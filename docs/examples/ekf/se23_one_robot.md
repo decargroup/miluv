@@ -5,6 +5,8 @@ usemathjax: true
 nav_order: 3
 ---
 
+# $SE_2(3)$ EKF with IMU - One Robot
+
 ![The setup for the one-robot IMU EKF](https://decargroup.github.io/miluv/assets/one_robot.png)
 
 This example shows how we can use MILUV to test out an Extended Kalman Filter (EKF) for a single robot using an Inertial Measurement Unit (IMU). The derivations here are a little bit more involved than the [VINS EKF example](https://decargroup.github.io/miluv/examples/ekf/se3_one_robot.html), but we'll show that the EKF implementation is still straightforward using the MILUV devkit. Nonetheless, we suggest looking at the VINS example first before proceeding with this one. In this example, we will use the following data:

@@ -4,7 +4,7 @@ parent: Examples
 nav_order: 4
 ---
 
-# Extended Kalman Filter (EKF) Examples - Overview
+# Extended Kalman Filter (EKF) Examples
 
 The following examples demonstrate the usage of the MILUV dataset with the Extended Kalman Filter (EKF) for state estimation. We show EKF examples that use IMU for state propagation and UWB for state correction in single- and multi-robot scenarios. We also show EKF examples that use Visual-Inertial Navigation System (VINS) output for state propagation in a loosely-coupled manner, alongside UWB for state correction in single- and multi-robot scenarios.
 
