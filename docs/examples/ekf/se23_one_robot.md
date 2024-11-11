@@ -9,7 +9,7 @@ nav_order: 3
 
 ![The setup for the one-robot IMU EKF](https://decargroup.github.io/miluv/assets/one_robot.png)
 
-This example shows how we can use MILUV to test out an Extended Kalman Filter (EKF) for a single robot using an Inertial Measurement Unit (IMU). The derivations here are a little bit more involved than the [VINS EKF example](https://decargroup.github.io/miluv/examples/ekf/se3_one_robot.html), but we'll show that the EKF implementation is still straightforward using the MILUV devkit. Nonetheless, we suggest looking at the VINS example first before proceeding with this one. In this example, we will use the following data:
+This example shows how we can use MILUV to test out an Extended Kalman Filter (EKF) for a single robot using an Inertial Measurement Unit (IMU). The derivations here are a little bit more involved than the [VINS EKF example](https://decargroup.github.io/miluv/docs/examples/ekf/se3_one_robot.html), but we'll show that the EKF implementation is still straightforward using the MILUV devkit. Nonetheless, we suggest looking at the VINS example first before proceeding with this one. In this example, we will use the following data:
 
 - Gyroscope and accelerometer data from the robot's PX4 IMU. 
 - UWB range data between the 2 tags on the robot and the 6 anchors in the environment.
@@ -24,7 +24,7 @@ In this example, we also estimate the gyroscope and accelerometer biases, which 
 
 $$ \boldsymbol{\beta} = \begin{bmatrix} \boldsymbol{\beta}^\text{gyr} \\ \boldsymbol{\beta}^\text{acc} \end{bmatrix} \in \mathbb{R}^6. $$
 
-We follow the same notation convention mentioned in the paper and assume the same assumptions introduced in the [VINS EKF example](https://decargroup.github.io/miluv/examples/ekf/se3_one_robot.html).
+We follow the same notation convention mentioned in the paper and assume the same assumptions introduced in the [VINS EKF example](https://decargroup.github.io/miluv/docs/examples/ekf/se3_one_robot.html).
 
 ## Importing Libraries and MILUV Utilities
 
@@ -222,7 +222,7 @@ Also as before, we set the process model covariances using the `get_imu_noise_pa
 
 ### Correction
 
-The correction models for the UWB range and height data are almost identical to the [VINS EKF example](https://decargroup.github.io/miluv/examples/ekf/se3_one_robot.html), so we will skip through this section. The only difference for the UWB range is that $\boldsymbol{\Pi}$ and $\mathbf{\tilde{r}}_{1}^{\tau_1 1}$ are defined as
+The correction models for the UWB range and height data are almost identical to the [VINS EKF example](https://decargroup.github.io/miluv/docs/examples/ekf/se3_one_robot.html), so we will skip through this section. The only difference for the UWB range is that $\boldsymbol{\Pi}$ and $\mathbf{\tilde{r}}_{1}^{\tau_1 1}$ are defined as
 
 $$ \boldsymbol{\Pi} = \begin{bmatrix} \mathbf{1}_3 & \mathbf{0}_{3 \times 2} \end{bmatrix} \in \mathbb{R}^{3 \times 5}, \qquad \mathbf{\tilde{r}}_{1}^{\tau_1 1} = \begin{bmatrix} \mathbf{r}_1^{\tau_1 1} \\ 0 \\ 1 \end{bmatrix} \in \mathbb{R}^5, $$
 

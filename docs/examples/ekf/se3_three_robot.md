@@ -11,7 +11,7 @@ nav_order: 2
 
 ![The setup for the three-robot VINS EKF](https://decargroup.github.io/miluv/assets/three_robots.png)
 
-This example shows he we can use MILUV to test out an Extended Kalman Filter (EKF) for three robots using Visual-Inertial Navigation System (VINS) data. This example builds off the [one-robot VINS EKF example](https://decargroup.github.io/miluv/examples/ekf/se3_one_robot.html) and extends it to three robots. The setup is similar to the one-robot example, but now we have three robots: ifo001, ifo002, and ifo003. We have the same sensors as the one-robot example, but now we have inter-robot UWB range data.
+This example shows he we can use MILUV to test out an Extended Kalman Filter (EKF) for three robots using Visual-Inertial Navigation System (VINS) data. This example builds off the [one-robot VINS EKF example](https://decargroup.github.io/miluv/docs/examples/ekf/se3_one_robot.html) and extends it to three robots. The setup is similar to the one-robot example, but now we have three robots: ifo001, ifo002, and ifo003. We have the same sensors as the one-robot example, but now we have inter-robot UWB range data.
 
 The state we are trying to estimate is each robot's 3D pose in the absolute frame, which is represented by
 
