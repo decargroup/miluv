@@ -1,11 +1,12 @@
 import numpy as np
 from csaps import csaps
+from csaps import ISmoothingSpline
 import pandas as pd
 from scipy.spatial.transform import Rotation
 import scipy as sp
 import yaml
 
-from pymlg import SE3
+from pymlg import SO3
 
 def get_anchors() -> dict[str, dict[int, np.ndarray]]:
     """
@@ -88,7 +89,7 @@ def zero_order_hold(query_timestamps, data: pd.DataFrame) -> pd.DataFrame:
 
     return new_data
 
-def get_mocap_splines(mocap: pd.DataFrame) -> tuple[callable, callable]:
+def get_mocap_splines(mocap: pd.DataFrame) -> list[ISmoothingSpline, ISmoothingSpline]:
     """
     Get spline interpolations for mocap data.
     
@@ -118,6 +119,22 @@ def get_mocap_splines(mocap: pd.DataFrame) -> tuple[callable, callable]:
     pos = pos[~gaps]
     quat = quat[~gaps]
 
+    # Remove mocap outliers
+    outliers = np.zeros(len(time), dtype=bool)
+    last_good_R = Rotation.from_quat(quat[0]).as_matrix()
+    for i in range(1, len(quat)):
+        R_now = Rotation.from_quat(quat[i]).as_matrix()
+        
+        if (Rotation.from_matrix(last_good_R.T @ R_now).magnitude() > 1):
+            outliers[i-1] = True
+            outliers[i] = True
+        else:
+            last_good_R = R_now
+            
+    time = time[~outliers]
+    pos = pos[~outliers]
+    quat = quat[~outliers]
+
     # Normalize quaternion
     quat /= np.linalg.norm(quat, axis=1)[:, None]
 
@@ -127,11 +144,121 @@ def get_mocap_splines(mocap: pd.DataFrame) -> tuple[callable, callable]:
             quat[i] *= -1
 
     # Fit splines
-    pos_splines = csaps(time, pos.T, smooth=0.9999)
-    quat_splines = csaps(time, quat.T, smooth=0.9999)
+    pos_splines = csaps(time, pos.T, smooth=0.9999).spline
+    quat_splines = csaps(time, quat.T, smooth=0.9999).spline
 
-    return pos_splines.spline, quat_splines.spline
+    return pos_splines, quat_splines
 
+def add_imu_bias(
+    imu_data: pd.DataFrame,
+    pos_spline: ISmoothingSpline, 
+    quat_spline: ISmoothingSpline
+) -> None:
+    """
+    Get IMU biases.
+    
+    Args:
+    - imu_data: IMU data with the following columns:
+        - timestamp
+        - angular_velocity.x
+        - angular_velocity.y
+        - angular_velocity.z
+        - linear_acceleration.x
+        - linear_acceleration.y
+        - linear_acceleration.z
+    - pos_spline: Spline interpolation for position.
+    - quat_spline: Spline interpolation for orientation.
+    
+    Returns:
+    tuple
+    - gyro_bias: Gyroscope bias at the query timestamps.
+    - accel_bias: Accelerometer bias at the query timestamps.
+    """
+    time = imu_data["timestamp"].values
+    gyro = np.array([
+        imu_data["angular_velocity.x"],
+        imu_data["angular_velocity.y"],
+        imu_data["angular_velocity.z"],
+    ])
+    accel = np.array([
+        imu_data["linear_acceleration.x"],
+        imu_data["linear_acceleration.y"],
+        imu_data["linear_acceleration.z"],
+    ])
+    
+    gt_gyro = get_angular_velocity_splines(time, quat_spline)(time)
+    gt_accel = get_accelerometer_splines(time, pos_spline, quat_spline)(time)
+    
+    gyro_bias = np.array([
+        csaps(time, gyro[0, :] - gt_gyro[0, :], time, smooth=1e-4), 
+        csaps(time, gyro[1, :] - gt_gyro[1, :], time, smooth=1e-4),
+        csaps(time, gyro[2, :] - gt_gyro[2, :], time, smooth=1e-4)
+    ])
+    
+    accel_bias = np.array([
+        csaps(time, accel[0, :] - gt_accel[0, :], time, smooth=1e-3), 
+        csaps(time, accel[1, :] - gt_accel[1, :], time, smooth=1e-3),
+        csaps(time, accel[2, :] - gt_accel[2, :], time, smooth=1e-3)
+    ])
+    
+    imu_data["gyro_bias.x"] = gyro_bias[0, :]
+    imu_data["gyro_bias.y"] = gyro_bias[1, :]
+    imu_data["gyro_bias.z"] = gyro_bias[2, :]
+    
+    imu_data["accel_bias.x"] = accel_bias[0, :]
+    imu_data["accel_bias.y"] = accel_bias[1, :]
+    imu_data["accel_bias.z"] = accel_bias[2, :]    
+
+def get_angular_velocity_splines(time: np.ndarray, quat_splines: ISmoothingSpline) -> ISmoothingSpline:
+    """
+    Get spline interpolations for angular velocity in the robot's own body frame.
+    
+    Args:
+    - time: Timestamps.
+    - quat_splines: Spline interpolations for orientation.
+    
+    Returns:
+    - gyro_splines: Spline interpolations for angular velocity.
+    """
+    q = quat_splines(time)
+    q: np.ndarray = q / np.linalg.norm(q, axis=0)
+    N = q.shape[1]
+    q_dot = np.atleast_2d(quat_splines.derivative(nu=1)(time)).T
+    eta = q[3]
+    eps = q[:3]
+
+    S = np.zeros((N, 3, 4))
+    for i in range(N):
+        e = eps[:, i].reshape((-1, 1))
+        S[i, :, :] = np.hstack((2 * (eta[i] * np.eye(3) - SO3.wedge(e)), -2 * e))
+                
+    omega = (S @ np.expand_dims(q_dot, 2)).squeeze()
+    return csaps(time, omega.T, smooth=0.9).spline
+
+def get_accelerometer_splines(time: np.ndarray, pos_splines: ISmoothingSpline, quat_splines: ISmoothingSpline) -> ISmoothingSpline:
+    """
+    Get spline interpolations for accelerometer.
+    
+    Args:
+    - time: Timestamps.
+    - pos_splines: Spline interpolations for position.
+    - quat_splines: Spline interpolations for orientation.
+    
+    Returns:
+    - accel_splines: Spline interpolations for accelerometer.
+    """
+    gravity = np.array([0, 0, -9.80665])
+    
+    q = quat_splines(time)
+    acceleration = np.atleast_2d(pos_splines.derivative(nu=2)(time)).T
+    
+    accelerometer = np.zeros((len(time), 3))
+    for i in range(len(time)):
+        R = Rotation.from_quat(q[:, i]).as_matrix()
+        accelerometer[i] = R.T @ (acceleration[i] - gravity)
+        
+    return csaps(time, accelerometer.T, smooth=0.99).spline
+        
 def get_timeshift(exp_name):
     """
     Get timeshift.

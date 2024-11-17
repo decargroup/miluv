@@ -42,13 +42,25 @@ class DataLoader:
         
         self.data = {id: {} for id in robot_ids}
         for id in robot_ids:
+            mocap_df = self.read_csv("mocap", id)
+            self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
+                = utils.get_mocap_splines(mocap_df)
+                
             if imu == "both" or imu == "px4":
                 self.data[id].update({"imu_px4": []})
                 self.data[id]["imu_px4"] = self.read_csv("imu_px4", id)
-
+                
+                utils.add_imu_bias(
+                    self.data[id]["imu_px4"], self.data[id]["mocap_pos"], self.data[id]["mocap_quat"]
+                )
+                
             if imu == "both" or imu == "cam":
                 self.data[id].update({"imu_cam": []})
                 self.data[id]["imu_cam"] = self.read_csv("imu_cam", id)
+                
+                utils.add_imu_bias(
+                    self.data[id]["imu_cam"], self.data[id]["mocap_pos"], self.data[id]["mocap_quat"]
+                )
 
             if uwb:
                 self.data[id].update({"uwb_range": []})
@@ -72,11 +84,6 @@ class DataLoader:
             if barometer:
                 self.data[id].update({"barometer": []})
                 self.data[id]["barometer"] = self.read_csv("barometer", id)
-
-            # self.data[id].update({"mocap": []})
-            mocap_df = self.read_csv("mocap", id)
-            self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
-                = utils.get_mocap_splines(mocap_df)
 
         # TODO: Load timestamp-to-image mapping?
         # if cam == "both" or cam == "bottom":
