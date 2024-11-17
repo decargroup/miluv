@@ -190,15 +190,15 @@ def add_imu_bias(
     gt_accel = get_accelerometer_splines(time, pos_spline, quat_spline)(time)
     
     gyro_bias = np.array([
-        csaps(time, gyro[0, :] - gt_gyro[0, :], time, smooth=1e-4), 
-        csaps(time, gyro[1, :] - gt_gyro[1, :], time, smooth=1e-4),
-        csaps(time, gyro[2, :] - gt_gyro[2, :], time, smooth=1e-4)
+        csaps(time, gt_gyro[0, :] - gyro[0, :], time, smooth=1e-4), 
+        csaps(time, gt_gyro[1, :] - gyro[1, :], time, smooth=1e-4),
+        csaps(time, gt_gyro[2, :] - gyro[2, :], time, smooth=1e-4)
     ])
     
     accel_bias = np.array([
-        csaps(time, accel[0, :] - gt_accel[0, :], time, smooth=1e-3), 
-        csaps(time, accel[1, :] - gt_accel[1, :], time, smooth=1e-3),
-        csaps(time, accel[2, :] - gt_accel[2, :], time, smooth=1e-3)
+        csaps(time, gt_accel[0, :] - accel[0, :], time, smooth=1e-3), 
+        csaps(time, gt_accel[1, :] - accel[1, :], time, smooth=1e-3),
+        csaps(time, gt_accel[2, :] - accel[2, :], time, smooth=1e-3)
     ])
     
     imu_data["gyro_bias.x"] = gyro_bias[0, :]
