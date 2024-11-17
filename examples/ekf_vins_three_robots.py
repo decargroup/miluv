@@ -12,7 +12,7 @@ import pandas as pd
 exp_name = "1c"
 
 #################### LOAD SENSOR DATA ####################
-miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False)
+miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False, remove_imu_bias = True)
 data = miluv.data
 vins = {robot: utils.load_vins(exp_name, robot, loop = False, postprocessed = True) for robot in data.keys()}
 
