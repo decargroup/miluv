@@ -43,6 +43,13 @@ gt_se23 = {
     )
     for robot in data.keys()
 }
+gt_bias = {
+    robot: imu_at_query_timestamps[robot]["imu_px4"][[
+        "gyro_bias.x", "gyro_bias.y", "gyro_bias.z", 
+        "accel_bias.x", "accel_bias.y", "accel_bias.z"
+    ]].to_numpy()
+    for robot in data.keys()
+}
 
 #################### EKF ####################
 # Initialize a variable to store the EKF state and covariance at each query timestamp for postprocessing
@@ -102,11 +109,11 @@ for i in range(0, len(query_timestamps)):
         ekf_history[robot]["bias"].add(query_timestamps[i], ekf.bias[robot], ekf.bias_covariance[robot])
 
 #################### POSTPROCESS ####################
-analysis = model.EvaluateEKF(gt_se23, ekf_history, exp_name)
+analysis = model.EvaluateEKF(gt_se23, gt_bias, ekf_history, exp_name)
 
 analysis.plot_error()
 analysis.plot_poses()
-analysis.plot_biases()
+analysis.plot_bias_error()
 analysis.save_results()
 
 # %%

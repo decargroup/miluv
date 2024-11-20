@@ -118,11 +118,10 @@ class EvaluateEKF:
         self.error = np.zeros((len(self.gt_se3), state_dimension))
         for i in range(0, len(self.gt_se3)):
             self.error[i, :] = SE3.Log(SE3.inverse(self.gt_se3[i]) @ self.states[i]).ravel()
-            
-        self.error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
-                             r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
 
     def plot_poses(self) -> None:
+        pose_titles = [r"$\phi_x$", r"$\phi_y$", r"$\phi_z$", r"$x$", r"$y$", r"$z$"]
+        
         fig, axs = plt.subplots(3, 2, figsize=(10, 10))
         fig.suptitle("Ground Truth vs. EKF Poses")
         
@@ -131,7 +130,7 @@ class EvaluateEKF:
         for i in range(0, state_dimension):
             axs[i % 3, int(i > 2)].plot(self.timestamps, gt[:, i], label="GT")
             axs[i % 3, int(i > 2)].plot(self.timestamps, est[:, i], label="Est")
-            axs[i % 3, int(i > 2)].set_ylabel(self.error_titles[i])
+            axs[i % 3, int(i > 2)].set_ylabel(pose_titles[i])
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
         axs[0, 0].legend()
@@ -142,6 +141,9 @@ class EvaluateEKF:
         plt.close()
 
     def plot_error(self) -> None:
+        error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
+                        r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
+        
         fig, axs = plt.subplots(3, 2, figsize=(10, 10))
         fig.suptitle("Three-Sigma Error Plots")
         
@@ -153,7 +155,7 @@ class EvaluateEKF:
                 3*np.sqrt(self.covariances[:, i, i]), 
                 alpha=0.5
             )
-            axs[i % 3, int(i > 2)].set_ylabel(self.error_titles[i])
+            axs[i % 3, int(i > 2)].set_ylabel(error_titles[i])
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
         

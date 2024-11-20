@@ -254,7 +254,13 @@ class EKF:
         ] for robot in robot_names}
 
 class EvaluateEKF:
-    def __init__(self, gt_se23: dict[str: SE23], ekf_history: dict[str: dict], exp_name: str):
+    def __init__(
+        self, 
+        gt_se23: dict[str: SE23], 
+        gt_bias: dict[str: np.ndarray],
+        ekf_history: dict[str: dict], 
+        exp_name: str
+    ):
         self.timestamps = {}
         self.states = {}
         self.covariances = {}
@@ -262,23 +268,26 @@ class EvaluateEKF:
         self.bias = {}
         self.covariances_bias = {}
         self.gt_se23 = {}
-        self.error = {}
+        self.gt_bias = {}
+        self.pose_error = {}
         
         for robot in robot_names:
             self.timestamps[robot], self.states[robot], self.covariances[robot] = ekf_history[robot]["pose"].get()
             self.timestamps_bias[robot], self.bias[robot], self.covariances_bias[robot] = ekf_history[robot]["bias"].get()
             self.gt_se23[robot] = gt_se23[robot]
+            self.gt_bias[robot] = gt_bias[robot]
             
-            self.error[robot] = np.zeros((len(self.gt_se23[robot]), pose_dimension))
+            self.pose_error[robot] = np.zeros((len(self.gt_se23[robot]), pose_dimension))
             for i in range(0, len(self.gt_se23[robot])):
-                self.error[robot][i, :] = SE23.Log(SE23.inverse(self.gt_se23[robot][i]) @ self.states[robot][i]).ravel()
+                self.pose_error[robot][i, :] = SE23.Log(SE23.inverse(self.gt_se23[robot][i]) @ self.states[robot][i]).ravel()
 
         self.exp_name = exp_name
-        self.error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
-                             r"$\delta_{v_x}$", r"$\delta_{v_y}$", r"$\delta_{v_z}$", 
-                             r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
 
     def plot_poses(self) -> None:
+        pose_titles = [r"$\phi_x$", r"$\phi_y$", r"$\phi_z$",
+                       r"$v_x$", r"$v_y$", r"$v_z$",
+                       r"$x$", r"$y$", r"$z$"]
+        
         for robot in robot_names:
             fig, axs = plt.subplots(3, 3, figsize=(10, 10))
             fig.suptitle("Ground Truth vs. EKF Poses " + robot)
@@ -288,7 +297,7 @@ class EvaluateEKF:
             for i in range(0, pose_dimension):
                 axs[i % 3, i // 3].plot(self.timestamps[robot], gt[:, i], label="GT")
                 axs[i % 3, i // 3].plot(self.timestamps[robot], est[:, i], label="Est")
-                axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
+                axs[i % 3, i // 3].set_ylabel(pose_titles[i])
             axs[2, 0].set_xlabel("Time [s]")
             axs[2, 1].set_xlabel("Time [s]")
             axs[2, 2].set_xlabel("Time [s]")
@@ -300,19 +309,23 @@ class EvaluateEKF:
             plt.close()
 
     def plot_error(self) -> None:
+        error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
+                        r"$\delta_{v_x}$", r"$\delta_{v_y}$", r"$\delta_{v_z}$", 
+                        r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
+        
         for robot in robot_names:
             fig, axs = plt.subplots(3, 3, figsize=(10, 10))
             fig.suptitle("Three-Sigma Error Plots " + robot)
             
             for i in range(0, pose_dimension):
-                axs[i % 3, i // 3].plot(self.timestamps[robot], self.error[robot][:, i])
+                axs[i % 3, i // 3].plot(self.timestamps[robot], self.pose_error[robot][:, i])
                 axs[i % 3, i // 3].fill_between(
                     self.timestamps[robot],
                     -1 * 3*np.sqrt(self.covariances[robot][:, i, i]), 
                     3*np.sqrt(self.covariances[robot][:, i, i]), 
                     alpha=0.5
                 )
-                axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
+                axs[i % 3, i // 3].set_ylabel(error_titles[i])
             axs[2, 0].set_xlabel("Time [s]")
             axs[2, 1].set_xlabel("Time [s]")
             axs[2, 2].set_xlabel("Time [s]")
@@ -321,31 +334,30 @@ class EvaluateEKF:
                 os.makedirs('results/plots/ekf_imu_three_robots')
             plt.savefig(f"results/plots/ekf_imu_three_robots/{self.exp_name}_error_{robot}.pdf")
             plt.close()
+            
+    def plot_bias_error(self) -> None:
+        bias_error_titles = [r"$\delta_{\beta_{\omega_x}}$", r"$\delta_{\beta_{\omega_y}}$", r"$\delta_{\beta_{\omega_z}}",
+                             r"$\delta_{\beta_{a_x}}$", r"$\delta_{\beta_{a_y}}$", r"$\delta_{\beta_{a_z}}"]
         
-    def plot_biases(self) -> None:
         for robot in robot_names:
             fig, axs = plt.subplots(3, 2, figsize=(10, 10))
-            fig.suptitle("EKF Biases " + robot)
+            fig.suptitle("Three-Sigma Bias Error Plots " + robot)
             
-            bias_titles = [r"$\beta_{\omega_x}$", r"$\beta_{\omega_y}$", r"$\beta_{\omega_z}$",
-                        r"$\beta_{a_x}$", r"$\beta_{a_y}$", r"$\beta_{a_z}$"]
-            
-            est = np.array(self.bias[robot])
             for i in range(0, bias_dimension):
-                axs[i % 3, i // 3].plot(self.timestamps_bias[robot], est[:, i])
+                axs[i % 3, i // 3].plot(self.timestamps_bias[robot], self.bias[robot][:, i] - self.gt_bias[robot][:, i])
                 axs[i % 3, i // 3].fill_between(
                     self.timestamps_bias[robot],
                     -1 * 3*np.sqrt(self.covariances_bias[robot][:, i, i]), 
                     3*np.sqrt(self.covariances_bias[robot][:, i, i]), 
                     alpha=0.5
                 )
-                axs[i % 3, i // 3].set_ylabel(bias_titles[i])
+                axs[i % 3, i // 3].set_ylabel(bias_error_titles[i])
             axs[2, 0].set_xlabel("Time [s]")
             axs[2, 1].set_xlabel("Time [s]")
             
             if not os.path.exists('results/plots/ekf_imu_three_robots'):
                 os.makedirs('results/plots/ekf_imu_three_robots')
-            plt.savefig(f"results/plots/ekf_imu_three_robots/{self.exp_name}_biases_{robot}.pdf")
+            plt.savefig(f"results/plots/ekf_imu_three_robots/{self.exp_name}_bias_error_{robot}.pdf")
             plt.close()
 
     def save_results(self) -> None:
@@ -364,6 +376,6 @@ class EvaluateEKF:
             file.write(myCsvRow)
                 
     def get_rmse(self, robot: str) -> tuple[float, float]:
-        pos_rmse = np.sqrt(np.mean(self.error[robot][:, 6:] ** 2))
-        att_rmse = np.sqrt(np.mean(self.error[robot][:, :3] ** 2))
+        pos_rmse = np.sqrt(np.mean(self.pose_error[robot][:, 6:] ** 2))
+        att_rmse = np.sqrt(np.mean(self.pose_error[robot][:, :3] ** 2))
         return pos_rmse, att_rmse

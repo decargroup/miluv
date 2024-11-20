@@ -209,11 +209,11 @@ class EvaluateEKF:
                 self.error[robot][i, :] = SE3.Log(SE3.inverse(self.gt_se3[robot][i]) @ self.states[robot][i]).ravel()
 
         self.exp_name = exp_name
-        self.error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
-                             r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
 
     def plot_poses(self) -> None:
         for robot in robot_names:
+            pose_titles = [r"$\phi_x$", r"$\phi_y$", r"$\phi_z$", r"$x$", r"$y$", r"$z$"]
+            
             fig, axs = plt.subplots(3, 2, figsize=(10, 10))
             fig.suptitle("Ground Truth vs. EKF Poses for " + robot)
             
@@ -222,7 +222,7 @@ class EvaluateEKF:
             for i in range(0, single_robot_state_dimension):
                 axs[i % 3, int(i > 2)].plot(self.timestamps[robot], gt[:, i], label="GT")
                 axs[i % 3, int(i > 2)].plot(self.timestamps[robot], est[:, i], label="Est")
-                axs[i % 3, int(i > 2)].set_ylabel(self.error_titles[i])
+                axs[i % 3, int(i > 2)].set_ylabel(pose_titles[i])
             axs[2, 0].set_xlabel("Time [s]")
             axs[2, 1].set_xlabel("Time [s]")
             axs[0, 0].legend()
@@ -234,6 +234,9 @@ class EvaluateEKF:
 
     def plot_error(self) -> None:
         for robot in robot_names:
+            error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$",
+                            r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
+            
             fig, axs = plt.subplots(3, 2, figsize=(10, 10))
             fig.suptitle("Three-Sigma Error Plots for " + robot)
             
@@ -245,7 +248,7 @@ class EvaluateEKF:
                     3*np.sqrt(self.covariances[robot][:, i, i]), 
                     alpha=0.5
                 )
-                axs[i % 3, int(i > 2)].set_ylabel(self.error_titles[i])
+                axs[i % 3, int(i > 2)].set_ylabel(error_titles[i])
             axs[2, 0].set_xlabel("Time [s]")
             axs[2, 1].set_xlabel("Time [s]")
             
