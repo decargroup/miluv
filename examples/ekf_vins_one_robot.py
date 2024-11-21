@@ -12,7 +12,7 @@ import examples.ekfutils.common as common
 exp_name = "13"
 
 #################### LOAD SENSOR DATA ####################
-miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False)
+miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False, remove_imu_bias = True)
 data = miluv.data["ifo001"]
 vins = utils.load_vins(exp_name, "ifo001", loop = False, postprocessed = True)
 

@@ -29,6 +29,10 @@ gyro: pd.DataFrame = imu_at_query_timestamps["imu_px4"][["timestamp", "angular_v
 gt_se23 = liegroups.get_se23_poses(
     data["mocap_quat"](query_timestamps), data["mocap_pos"].derivative(nu=1)(query_timestamps), data["mocap_pos"](query_timestamps)
 )
+gt_bias = imu_at_query_timestamps["imu_px4"][[
+    "gyro_bias.x", "gyro_bias.y", "gyro_bias.z", 
+    "accel_bias.x", "accel_bias.y", "accel_bias.z"
+]].to_numpy()
 
 #################### EKF ####################
 # Initialize a variable to store the EKF state and covariance at each query timestamp for postprocessing
@@ -37,7 +41,7 @@ ekf_history = {
     "bias": common.VectorStateHistory(state_dim=6)
 }
 
-# Initialize the EKF with the first ground truth pose, the anchor postions, and UWB tag moment arms
+# Initialize the EKF with the first ground truth pose, the anchor positions, and UWB tag moment arms
 ekf = model.EKF(gt_se23[0], miluv.anchors, miluv.tag_moment_arms)
 
 # Iterate through the query timestamps
@@ -74,11 +78,11 @@ for i in range(0, len(query_timestamps)):
     ekf_history["bias"].add(query_timestamps[i], ekf.bias, ekf.bias_covariance)
 
 #################### POSTPROCESS ####################
-analysis = model.EvaluateEKF(gt_se23, ekf_history, exp_name)
+analysis = model.EvaluateEKF(gt_se23, gt_bias, ekf_history, exp_name)
 
 analysis.plot_error()
 analysis.plot_poses()
-analysis.plot_biases()
+analysis.plot_bias_error()
 analysis.save_results()
 
 # %%

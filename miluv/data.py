@@ -24,6 +24,7 @@ class DataLoader:
         mag: bool = True,
         cir: bool = False,
         barometer: bool = False,
+        remove_imu_bias: bool = False,
     ):
 
         # TODO: Add checks for valid exp dir and name
@@ -42,13 +43,57 @@ class DataLoader:
         
         self.data = {id: {} for id in robot_ids}
         for id in robot_ids:
+            mocap_df = self.read_csv("mocap", id)
+            self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
+                = utils.get_mocap_splines(mocap_df)
+                
             if imu == "both" or imu == "px4":
                 self.data[id].update({"imu_px4": []})
                 self.data[id]["imu_px4"] = self.read_csv("imu_px4", id)
-
+                
+                utils.add_imu_bias(
+                    self.data[id]["imu_px4"], self.data[id]["mocap_pos"], self.data[id]["mocap_quat"]
+                )
+                
+                if remove_imu_bias:
+                    self.data[id]["imu_px4"]["angular_velocity.x"] += self.data[id]["imu_px4"]["gyro_bias.x"]
+                    self.data[id]["imu_px4"]["angular_velocity.y"] += self.data[id]["imu_px4"]["gyro_bias.y"]
+                    self.data[id]["imu_px4"]["angular_velocity.z"] += self.data[id]["imu_px4"]["gyro_bias.z"]
+                    
+                    self.data[id]["imu_px4"]["linear_acceleration.x"] += self.data[id]["imu_px4"]["accel_bias.x"]
+                    self.data[id]["imu_px4"]["linear_acceleration.y"] += self.data[id]["imu_px4"]["accel_bias.y"]
+                    self.data[id]["imu_px4"]["linear_acceleration.z"] += self.data[id]["imu_px4"]["accel_bias.z"]
+                    
+                    self.data[id]["imu_px4"].drop(
+                        columns=[
+                            "gyro_bias.x", "gyro_bias.y", "gyro_bias.z", 
+                            "accel_bias.x", "accel_bias.y", "accel_bias.z"
+                        ], inplace=True
+                    )
+                
             if imu == "both" or imu == "cam":
                 self.data[id].update({"imu_cam": []})
                 self.data[id]["imu_cam"] = self.read_csv("imu_cam", id)
+                
+                utils.add_imu_bias(
+                    self.data[id]["imu_cam"], self.data[id]["mocap_pos"], self.data[id]["mocap_quat"]
+                )
+                
+                if remove_imu_bias:
+                    self.data[id]["imu_cam"]["angular_velocity.x"] += self.data[id]["imu_cam"]["gyro_bias.x"]
+                    self.data[id]["imu_cam"]["angular_velocity.y"] += self.data[id]["imu_cam"]["gyro_bias.y"]
+                    self.data[id]["imu_cam"]["angular_velocity.z"] += self.data[id]["imu_cam"]["gyro_bias.z"]
+                    
+                    self.data[id]["imu_cam"]["linear_acceleration.x"] += self.data[id]["imu_cam"]["accel_bias.x"]
+                    self.data[id]["imu_cam"]["linear_acceleration.y"] += self.data[id]["imu_cam"]["accel_bias.y"]
+                    self.data[id]["imu_cam"]["linear_acceleration.z"] += self.data[id]["imu_cam"]["accel_bias.z"]
+                    
+                    self.data[id]["imu_px4"].drop(
+                        columns=[
+                            "gyro_bias.x", "gyro_bias.y", "gyro_bias.z", 
+                            "accel_bias.x", "accel_bias.y", "accel_bias.z"
+                        ], inplace=True
+                    )
 
             if uwb:
                 self.data[id].update({"uwb_range": []})
@@ -72,11 +117,6 @@ class DataLoader:
             if barometer:
                 self.data[id].update({"barometer": []})
                 self.data[id]["barometer"] = self.read_csv("barometer", id)
-
-            # self.data[id].update({"mocap": []})
-            mocap_df = self.read_csv("mocap", id)
-            self.data[id]["mocap_pos"], self.data[id]["mocap_quat"] \
-                = utils.get_mocap_splines(mocap_df)
 
         # TODO: Load timestamp-to-image mapping?
         # if cam == "both" or cam == "bottom":

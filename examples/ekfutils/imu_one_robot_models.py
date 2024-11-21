@@ -171,22 +171,23 @@ class EKF:
         return self.P[pose_dimension:, pose_dimension:]
 
 class EvaluateEKF:
-    def __init__(self, gt_se23: list[SE23], ekf_history: dict, exp_name: str):
+    def __init__(self, gt_se23: list[SE23], gt_bias: np.ndarray, ekf_history: dict, exp_name: str):
         self.timestamps, self.states, self.covariances = ekf_history["pose"].get()
         self.timestamps_bias, self.bias, self.covariances_bias = ekf_history["bias"].get()
         
         self.gt_se23 = gt_se23
+        self.gt_bias = gt_bias
         self.exp_name = exp_name
         
-        self.error = np.zeros((len(self.gt_se23), pose_dimension))
+        self.pose_error = np.zeros((len(self.gt_se23), pose_dimension))
         for i in range(0, len(self.gt_se23)):
-            self.error[i, :] = SE23.Log(SE23.inverse(self.gt_se23[i]) @ self.states[i]).ravel()
-            
-        self.error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
-                             r"$\delta_{v_x}$", r"$\delta_{v_y}$", r"$\delta_{v_z}$", 
-                             r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
+            self.pose_error[i, :] = SE23.Log(SE23.inverse(self.gt_se23[i]) @ self.states[i]).ravel()
 
     def plot_poses(self) -> None:
+        pose_titles = [r"$\phi_x$", r"$\phi_y$", r"$\phi_z$",
+                       r"$v_x$", r"$v_y$", r"$v_z$",
+                       r"$x$", r"$y$", r"$z$"]
+        
         fig, axs = plt.subplots(3, 3, figsize=(10, 10))
         fig.suptitle("Ground Truth vs. EKF Poses")
         
@@ -195,7 +196,7 @@ class EvaluateEKF:
         for i in range(0, pose_dimension):
             axs[i % 3, i // 3].plot(self.timestamps, gt[:, i], label="GT")
             axs[i % 3, i // 3].plot(self.timestamps, est[:, i], label="Est")
-            axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
+            axs[i % 3, i // 3].set_ylabel(pose_titles[i])
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
         axs[2, 2].set_xlabel("Time [s]")
@@ -207,18 +208,22 @@ class EvaluateEKF:
         plt.close()
 
     def plot_error(self) -> None:
+        error_titles = [r"$\delta_{\phi_x}$", r"$\delta_{\phi_y}$", r"$\delta_{\phi_z}$", 
+                        r"$\delta_{v_x}$", r"$\delta_{v_y}$", r"$\delta_{v_z}$", 
+                        r"$\delta_{x}$", r"$\delta_{y}$", r"$\delta_{z}$"]
+        
         fig, axs = plt.subplots(3, 3, figsize=(10, 10))
         fig.suptitle("Three-Sigma Error Plots")
         
         for i in range(0, pose_dimension):
-            axs[i % 3, i // 3].plot(self.timestamps, self.error[:, i])
+            axs[i % 3, i // 3].plot(self.timestamps, self.pose_error[:, i])
             axs[i % 3, i // 3].fill_between(
                 self.timestamps,
                 -1 * 3*np.sqrt(self.covariances[:, i, i]), 
                 3*np.sqrt(self.covariances[:, i, i]), 
                 alpha=0.5
             )
-            axs[i % 3, i // 3].set_ylabel(self.error_titles[i])
+            axs[i % 3, i // 3].set_ylabel(error_titles[i])
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
         axs[2, 2].set_xlabel("Time [s]")
@@ -228,30 +233,30 @@ class EvaluateEKF:
         plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_error.pdf")
         plt.close()
         
-    def plot_biases(self) -> None:
+    def plot_bias_error(self) -> None:
+        bias_error_titles = [r"$\delta_{\beta_{\omega_x}}$", r"$\delta_{\beta_{\omega_y}}$", r"$\delta_{\beta_{\omega_z}}$", 
+                             r"$\delta_{\beta_{a_x}}$", r"$\delta_{\beta_{a_y}}$", r"$\delta_{\beta_{a_z}}$"]
+        
         fig, axs = plt.subplots(3, 2, figsize=(10, 10))
-        fig.suptitle("EKF Biases")
+        fig.suptitle("Three-Sigma Bias Error Plots")
         
-        bias_titles = [r"$\beta_{\omega_x}$", r"$\beta_{\omega_y}$", r"$\beta_{\omega_z}$",
-                       r"$\beta_{a_x}$", r"$\beta_{a_y}$", r"$\beta_{a_z}$"]
-        
-        est = np.array(self.bias)
         for i in range(0, bias_dimension):
-            axs[i % 3, i // 3].plot(self.timestamps_bias, est[:, i])
+            axs[i % 3, i // 3].plot(self.timestamps_bias, self.bias[:, i] - self.gt_bias[:, i])
             axs[i % 3, i // 3].fill_between(
                 self.timestamps_bias,
                 -1 * 3*np.sqrt(self.covariances_bias[:, i, i]), 
                 3*np.sqrt(self.covariances_bias[:, i, i]), 
                 alpha=0.5
             )
-            axs[i % 3, i // 3].set_ylabel(bias_titles[i])
+            axs[i % 3, i // 3].set_ylabel(bias_error_titles[i])
         axs[2, 0].set_xlabel("Time [s]")
         axs[2, 1].set_xlabel("Time [s]")
         
         if not os.path.exists('results/plots/ekf_imu_one_robot'):
             os.makedirs('results/plots/ekf_imu_one_robot')
-        plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_biases.pdf")
+        plt.savefig(f"results/plots/ekf_imu_one_robot/{self.exp_name}_bias_error.pdf")
         plt.close()
+        
 
     def save_results(self) -> None:
         pos_rmse, att_rmse = self.get_rmse()
@@ -266,6 +271,6 @@ class EvaluateEKF:
             file.write(myCsvRow)
                 
     def get_rmse(self) -> tuple[float, float]:
-        pos_rmse = np.sqrt(np.mean(self.error[:, 6:] ** 2))
-        att_rmse = np.sqrt(np.mean(self.error[:, :3] ** 2))
+        pos_rmse = np.sqrt(np.mean(self.pose_error[:, 6:] ** 2))
+        att_rmse = np.sqrt(np.mean(self.pose_error[:, :3] ** 2))
         return pos_rmse, att_rmse
