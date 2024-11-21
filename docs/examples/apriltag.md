@@ -1,7 +1,7 @@
 ---
 title: AprilTag Detection
 parent: Examples
-nav_order: 2
+nav_order: 5
 ---
 
 # AprilTag Detection

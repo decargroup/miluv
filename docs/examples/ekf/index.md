@@ -1,7 +1,7 @@
 ---
 title: Extended Kalman Filter
 parent: Examples
-nav_order: 4
+nav_order: 3
 ---
 
 # Extended Kalman Filter (EKF) Examples

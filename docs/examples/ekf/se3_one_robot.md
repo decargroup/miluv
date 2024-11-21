@@ -13,7 +13,7 @@ nav_order: 1
 
 This example shows he we can use MILUV to test out an Extended Kalman Filter (EKF) for a single robot using Visual-Inertial Navigation System (VINS) data. In this example, we will use the following data:
 
-- Gyroscope data from the robot's PX4 IMU, where we ignore the gyro bias for this example. 
+- Gyroscope data from the robot's PX4 IMU, where we remove the gyro bias for this example. 
 - VINS data, which uses the robot's camera and IMU to estimate the robot's velocity.
 - UWB range data between the 2 tags on the robot and the 6 anchors in the environment.
 - Height data from the robot's downward-facing laser rangefinder.
@@ -64,10 +64,10 @@ We start by defining the experiment we want to run the EKF on. In this case, we 
 exp_name = "13"
 ```
 
-We then, in one line, load all the sensor data we want for our EKF. For this example, we only care about ifo001's data.
+We then, in one line, load all the sensor data we want for our EKF. For this example, we only care about ifo001's data, and we remove the IMU bias to simplify the EKF implementation.
 
 ```py
-miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False)
+miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False, remove_imu_bias = True)
 data = miluv.data["ifo001"]
 ```
 
@@ -296,4 +296,4 @@ analysis.plot_poses()
 analysis.save_results()
 ```
 
-![VINS EKF Pose Plot for Experiment #13](https://decargroup.github.io/miluv/assets/vins/13_poses.png) | ![VINS EKF Error Plot for Experiment #13](https://decargroup.github.io/miluv/assets/vins/13_error.png)
+![VINS EKF Pose Plot for Experiment #13](https://decargroup.github.io/miluv/assets/ekf_vins/13_poses.png) | ![VINS EKF Error Plot for Experiment #13](https://decargroup.github.io/miluv/assets/ekf_vins/13_error.png)

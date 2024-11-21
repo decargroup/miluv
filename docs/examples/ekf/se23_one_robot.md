@@ -76,6 +76,15 @@ gt_se23 = liegroups.get_se23_poses(
 )
 ```
 
+Additionally, we extract the IMU biases at these timestamps to evaluate the EKF's bias estimates. These ground truth biases are provided as part of the dataset, and are computed by comparing the smoothed IMU data with the ground truth pose data.
+
+```py
+gt_bias = imu_at_query_timestamps["imu_px4"][[
+    "gyro_bias.x", "gyro_bias.y", "gyro_bias.z", 
+    "accel_bias.x", "accel_bias.y", "accel_bias.z"
+]].to_numpy()
+```
+
 ## Extended Kalman Filter
 
 We now implement the EKF for the one-robot IMU example. In here, we will go through some of the implementation details of the EKF, but as before, the EKF implementation is in the *models* module and the main script only calls these EKF methods to avoid cluttering the main script. 
@@ -89,7 +98,7 @@ ekf_history = {
 }
 ```
 
-We then initialize the EKF with the first ground truth pose, the anchor postions, and UWB tag moment arms. Inside the constructor of the EKF, we add noise to have some initial uncertainty in the state, and set the initial bias estimate to zero.
+We then initialize the EKF with the first ground truth pose, the anchor positions, and UWB tag moment arms. Inside the constructor of the EKF, we add noise to have some initial uncertainty in the state, and set the initial bias estimate to zero.
 
 ```py
 ekf = model.EKF(gt_se23[0], miluv.anchors, miluv.tag_moment_arms)
@@ -275,7 +284,7 @@ for i in range(0, len(query_timestamps)):
 We can now evaluate the EKF using the ground truth data and plot the results. We first evaluate the EKF using the ground truth data and the EKF history, using the example-specific evaluation functions in the *models* module. 
 
 ```py
-analysis = model.EvaluateEKF(gt_se23, ekf_history, exp_name)
+analysis = model.EvaluateEKF(gt_se23, gt_bias, ekf_history, exp_name)
 ```
 
 Lastly, we call the following functions to plot the results and save the results to disk, and we are done!
@@ -283,13 +292,9 @@ Lastly, we call the following functions to plot the results and save the results
 ```py
 analysis.plot_error()
 analysis.plot_poses()
-analysis.plot_biases()
+analysis.plot_bias_error()
 analysis.save_results()
 ```
 
-<p align="center">
-<img src="https://decargroup.github.io/miluv/assets/imu/13_error.png" alt="drawing" width="400" class="center"/>
-</p>
-
-![IMU EKF Pose Plot for Experiment #13](https://decargroup.github.io/miluv/assets/imu/13_poses.png) | ![IMU EKF Bias Plot for Experiment #13](https://decargroup.github.io/miluv/assets/imu/13_biases.png)
+![IMU EKF Pose Plot for Experiment #13](https://decargroup.github.io/miluv/assets/ekf_imu/13_poses.png) | ![IMU EKF Error Plot for Experiment #13](https://decargroup.github.io/miluv/assets/ekf_imu/13_error.png)
 

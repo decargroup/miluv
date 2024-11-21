@@ -45,7 +45,7 @@ exp_name = "1c"
 We then, in one line, load all the sensor data we want for our EKF. We keep only the data for this example and get rid of the other functions in the `DataLoader` class.
 
 ```py
-miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False)
+miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False, remove_imu_bias = True)
 data = miluv.data
 ```
 
@@ -250,10 +250,10 @@ analysis.plot_poses()
 analysis.save_results()
 ```
 
-![VINS EKF Pose Plot for Experiment #1c ifo001](https://decargroup.github.io/miluv/assets/vins/1c_poses_ifo001.png) | ![VINS EKF Error Plot for Experiment #1c ifo001](https://decargroup.github.io/miluv/assets/vins/1c_error_ifo001.png)
+![VINS EKF Pose Plot for Experiment #1c ifo001](https://decargroup.github.io/miluv/assets/ekf_vins/1c_poses_ifo001.png) | ![VINS EKF Error Plot for Experiment #1c ifo001](https://decargroup.github.io/miluv/assets/ekf_vins/1c_error_ifo001.png)
 
-![VINS EKF Pose Plot for Experiment #1c ifo002](https://decargroup.github.io/miluv/assets/vins/1c_poses_ifo002.png) | ![VINS EKF Error Plot for Experiment #1c ifo002](https://decargroup.github.io/miluv/assets/vins/1c_error_ifo002.png)
+![VINS EKF Pose Plot for Experiment #1c ifo002](https://decargroup.github.io/miluv/assets/ekf_vins/1c_poses_ifo002.png) | ![VINS EKF Error Plot for Experiment #1c ifo002](https://decargroup.github.io/miluv/assets/ekf_vins/1c_error_ifo002.png)
 
-![VINS EKF Pose Plot for Experiment #1c ifo003](https://decargroup.github.io/miluv/assets/vins/1c_poses_ifo003.png) | ![VINS EKF Error Plot for Experiment #1c ifo003](https://decargroup.github.io/miluv/assets/vins/1c_error_ifo003.png)
+![VINS EKF Pose Plot for Experiment #1c ifo003](https://decargroup.github.io/miluv/assets/ekf_vins/1c_poses_ifo003.png) | ![VINS EKF Error Plot for Experiment #1c ifo003](https://decargroup.github.io/miluv/assets/ekf_vins/1c_error_ifo003.png)
 
 

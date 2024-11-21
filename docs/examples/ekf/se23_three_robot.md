@@ -63,13 +63,20 @@ accel: pd.DataFrame = {
 }
 ```
 
-Lastly, we extract the ground truth poses for all three robots at these timestamps, again taking advantage of the MILUV-provided spline interpolation to get the poses at the query timestamps and get the first derivative of the position to get the velocity.
+Lastly, we extract the ground truth poses and biases for all three robots at these timestamps, again taking advantage of the MILUV-provided spline interpolation to get the poses at the query timestamps and get the first derivative of the position to get the velocity.
 
 ```py
 gt_se23 = {
     robot: liegroups.get_se23_poses(
         data[robot]["mocap_quat"](query_timestamps), data[robot]["mocap_pos"].derivative(nu=1)(query_timestamps), data[robot]["mocap_pos"](query_timestamps)
     )
+    for robot in data.keys()
+}
+gt_bias = {
+    robot: imu_at_query_timestamps[robot]["imu_px4"][[
+        "gyro_bias.x", "gyro_bias.y", "gyro_bias.z", 
+        "accel_bias.x", "accel_bias.y", "accel_bias.z"
+    ]].to_numpy()
     for robot in data.keys()
 }
 ```
@@ -187,7 +194,7 @@ for i in range(0, len(query_timestamps)):
 We can now evaluate the EKF using the ground truth data and plot the results. We first evaluate the EKF using the ground truth data and the EKF history, using the example-specific evaluation functions in the *models* module. 
 
 ```py
-analysis = model.EvaluateEKF(gt_se23, ekf_history, exp_name)
+analysis = model.EvaluateEKF(gt_se23, gt_bias, ekf_history, exp_name)
 ```
 
 Lastly, we call the following functions to plot the results and save the results to disk, and we are done!
@@ -195,24 +202,12 @@ Lastly, we call the following functions to plot the results and save the results
 ```py
 analysis.plot_error()
 analysis.plot_poses()
-analysis.plot_biases()
+analysis.plot_bias_error()
 analysis.save_results()
 ```
 
-<p align="center">
-<img src="https://decargroup.github.io/miluv/assets/imu/1c_error_ifo001.png" alt="drawing" width="400" class="center"/>
-</p>
+![IMU EKF Pose Plot for Experiment #1c ifo001](https://decargroup.github.io/miluv/assets/ekf_imu/1c_poses_ifo001.png) | ![IMU EKF Error Plot for Experiment #1c ifo001](https://decargroup.github.io/miluv/assets/ekf_imu/1c_error_ifo001.png)
 
-![IMU EKF Pose Plot for Experiment #1c ifo001](https://decargroup.github.io/miluv/assets/imu/1c_poses_ifo001.png) | ![IMU EKF Bias Plot for Experiment #1c ifo001](https://decargroup.github.io/miluv/assets/imu/1c_biases_ifo001.png)
+![IMU EKF Pose Plot for Experiment #1c ifo002](https://decargroup.github.io/miluv/assets/ekf_imu/1c_poses_ifo002.png) | ![IMU EKF Error Plot for Experiment #1c ifo002](https://decargroup.github.io/miluv/assets/ekf_imu/1c_error_ifo002.png)
 
-<p align="center">
-<img src="https://decargroup.github.io/miluv/assets/imu/1c_error_ifo002.png" alt="drawing" width="400" class="center"/>
-</p>
-
-![IMU EKF Pose Plot for Experiment #1c ifo002](https://decargroup.github.io/miluv/assets/imu/1c_poses_ifo002.png) | ![IMU EKF Bias Plot for Experiment #1c ifo002](https://decargroup.github.io/miluv/assets/imu/1c_biases_ifo002.png)
-
-<p align="center">
-<img src="https://decargroup.github.io/miluv/assets/imu/1c_error_ifo003.png" alt="drawing" width="400" class="center"/>
-</p>
-
-![IMU EKF Pose Plot for Experiment #1c ifo003](https://decargroup.github.io/miluv/assets/imu/1c_poses_ifo003.png) | ![IMU EKF Bias Plot for Experiment #1c ifo003](https://decargroup.github.io/miluv/assets/imu/1c_biases_ifo003.png)
+![IMU EKF Pose Plot for Experiment #1c ifo003](https://decargroup.github.io/miluv/assets/ekf_imu/1c_poses_ifo003.png) | ![IMU EKF Error Plot for Experiment #1c ifo003](https://decargroup.github.io/miluv/assets/ekf_imu/1c_error_ifo003.png)
