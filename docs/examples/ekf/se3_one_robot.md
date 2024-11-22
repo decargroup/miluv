@@ -42,10 +42,9 @@ We then import the `DataLoader` class from the `miluv` package, which provides a
 from miluv.data import DataLoader
 ```
 
-We also import the `liegroups` and `utils` libraries from the `miluv` package, which provide utilities for Lie groups that accompany and other helper functions. 
+We also import the `utils` module from the `miluv` package, which provide utilities for Lie groups that accompany and other helper functions. 
 
 ```py
-import utils.liegroups as liegroups
 import miluv.utils as utils
 ```
 
@@ -96,10 +95,10 @@ gyro: pd.DataFrame = imu_at_query_timestamps["imu_px4"][["timestamp", "angular_v
 vins_at_query_timestamps = utils.zero_order_hold(query_timestamps, vins)
 ```
 
-To be able to evaluate our EKF, we extract the ground truth pose data at these timestamps. The `DataLoader` class provides interpolated splines for the ground truth pose data, which we can use to get the ground truth poses at the query timestamps. We use a helper function from the `liegroups` module to convert the mocap pose data to a list of $SE(3)$ poses.
+To be able to evaluate our EKF, we extract the ground truth pose data at these timestamps. The `DataLoader` class provides interpolated splines for the ground truth pose data, which we can use to get the ground truth poses at the query timestamps. We use a helper function from the `utils` module to convert the mocap pose data to a list of $SE(3)$ poses.
 
 ```py
-gt_se3 = liegroups.get_se3_poses(
+gt_se3 = utils.get_se3_poses(
     data["mocap_quat"](query_timestamps), data["mocap_pos"](query_timestamps)
 )
 ```

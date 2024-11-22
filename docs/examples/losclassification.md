@@ -13,7 +13,7 @@ $ python examples/ex_los_nlos_classification.py
 in the repository's root directory.
 
 The output from this example is show below.
-![](https://github.com/ndahdah/miluv_wiki/blob/main/doc/_static/lazy_classifier_results.png)
+![](https://decargroup.github.io/miluv/assets/lazy_classifier_results.png)
 
 ## More details
 This example demonstrates how to use CIR data and how to set up MILUV data for machine learning purposes as shown below,

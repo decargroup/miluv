@@ -13,7 +13,7 @@ $ python examples/ex_detect_apriltags.py
 in the repository's root directory.
 
 Note that users can safely ignore the following: "warning: count < 8 :(". Once the first image appears on-screen, the user may press any key other than 'escape' to advance the processed image stream forward in time or press 'escape' to end the image stream. A sample image from this example is show below.
-![](https://github.com/ndahdah/miluv_wiki/blob/main/doc/_static/apriltag_det.png)
+![](https://decargroup.github.io/miluv/assets/apriltag_det.png)
 
 ## More details
 This example demonstrates how to load images from the MILUV dataset, as shown below,

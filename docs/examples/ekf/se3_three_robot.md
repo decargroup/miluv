@@ -28,7 +28,6 @@ import numpy as np
 import pandas as pd
 
 from miluv.data import DataLoader
-import utils.liegroups as liegroups
 import miluv.utils as utils
 import examples.ekfutils.vins_one_robot_models as model
 import examples.ekfutils.common as common
@@ -94,7 +93,7 @@ Then, the ground truth data,
 
 ```py
 gt_se3 = {
-    robot: liegroups.get_se3_poses(data[robot]["mocap_quat"](query_timestamps), data[robot]["mocap_pos"](query_timestamps)) 
+    robot: utils.get_se3_poses(data[robot]["mocap_quat"](query_timestamps), data[robot]["mocap_pos"](query_timestamps)) 
     for robot in data.keys()
 }
 ```

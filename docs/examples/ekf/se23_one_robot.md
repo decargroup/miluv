@@ -28,14 +28,14 @@ We follow the same notation convention mentioned in the paper and assume the sam
 
 ## Importing Libraries and MILUV Utilities
 
-We start by importing the necessary libraries and utilities for this example as in the VINS example, with the only change being the EKF model we are using and the fact that we do not need to import `miluv.utils` separately as we do not need to process VINS data.
+We start by importing the necessary libraries and utilities for this example as in the VINS example, with the only change being the EKF model we are using.
 
 ```py
 import numpy as np
 import pandas as pd
 
 from miluv.data import DataLoader
-import utils.liegroups as liegroups
+import miluv.utils as utils
 import examples.ekfutils.imu_one_robot_models as model
 import examples.ekfutils.common as common
 ```
@@ -68,10 +68,10 @@ accel: pd.DataFrame = imu_at_query_timestamps["imu_px4"][["timestamp", "linear_a
 gyro: pd.DataFrame = imu_at_query_timestamps["imu_px4"][["timestamp", "angular_velocity.x", "angular_velocity.y", "angular_velocity.z"]]
 ```
 
-To be able to evaluate our EKF, we extract the ground truth pose data at these timestamps. The `DataLoader` class provides interpolated splines for the ground truth pose data, and the reason for that is that we can query the ground truth data at any timestamp and call the `derivative` method to get higher-order derivatives of the pose data. For example, here we use the first derivative of the pose data to get the linear velocity data, which is necessary to evaluate our $SE_2(3)$ EKF. We use a helper function from the `liegroups` module to convert the mocap pose data and its derivatives to a list of $SE_2(3)$ poses.
+To be able to evaluate our EKF, we extract the ground truth pose data at these timestamps. The `DataLoader` class provides interpolated splines for the ground truth pose data, and the reason for that is that we can query the ground truth data at any timestamp and call the `derivative` method to get higher-order derivatives of the pose data. For example, here we use the first derivative of the pose data to get the linear velocity data, which is necessary to evaluate our $SE_2(3)$ EKF. We use a helper function from the `utils` module to convert the mocap pose data and its derivatives to a list of $SE_2(3)$ poses.
 
 ```py
-gt_se23 = liegroups.get_se23_poses(
+gt_se23 = utils.get_se23_poses(
     data["mocap_quat"](query_timestamps), data["mocap_pos"].derivative(nu=1)(query_timestamps), data["mocap_pos"](query_timestamps)
 )
 ```

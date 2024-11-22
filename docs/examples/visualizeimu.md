@@ -74,7 +74,7 @@ axs[2].plot(time, gt_gyro[2, :], label="Ground Truth")
 ```
 
 <p align="center">
-<img src="https://decargroup.github.io/miluv/assets/imu/gyro.png" alt="gyro" width="400" class="center"/>
+<img src="https://decargroup.github.io/miluv/assets/imu/gyro.png" alt="gyro" width="600" class="center"/>
 </p>
 
 We then plot the measurement error and the compute ground truth bias for the gyroscope measurements.
@@ -92,7 +92,7 @@ axs[2].plot(time, imu_px4["gyro_bias.z"], label="IMU Bias")
 ```
 
 <p align="center">
-<img src="https://decargroup.github.io/miluv/assets/imu/gyro_bias.png" alt="gyro_bias" width="400" class="center"/>
+<img src="https://decargroup.github.io/miluv/assets/imu/gyro_bias.png" alt="gyro_bias" width="600" class="center"/>
 </p>
 
 Similarly, we plot the accelerometer measurements, the ground truth, the measurement error, and the computed ground truth bias as follows.
@@ -110,7 +110,7 @@ axs[2].plot(time, gt_accelerometer[2, :], label="Ground Truth")
 ```
 
 <p align="center">
-<img src="https://decargroup.github.io/miluv/assets/imu/accel.png" alt="accel" width="400" class="center"/>
+<img src="https://decargroup.github.io/miluv/assets/imu/accel.png" alt="accel" width="600" class="center"/>
 </p>
 
 ```py
@@ -126,5 +126,5 @@ axs[2].plot(time, imu_px4["accel_bias.z"], label="IMU Bias")
 ```
 
 <p align="center">
-<img src="https://decargroup.github.io/miluv/assets/imu/accel_bias.png" alt="accel_bias" width="400" class="center"/>
+<img src="https://decargroup.github.io/miluv/assets/imu/accel_bias.png" alt="accel_bias" width="600" class="center"/>
 </p>
