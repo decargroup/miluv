@@ -1,6 +1,6 @@
-## <img src="doc/_static/decar_logo.png" alt="DECAR Logo" width="14"/> DECAR &mdash; MILUV devkit
+## <img src="https://github.com/decargroup/miluv/blob/gh-pages/assets/decar_logo.png?raw=true" alt="DECAR Logo" width="14"/> DECAR &mdash; MILUV devkit
 Welcome to the MILUV devkit page. This Python devkit provides useful functions and examples to accompany the MILUV dataset. To begin using this devkit, clone or download and extract the repository.
-![](/docs/_static/banner_image.jpg)
+![](https://github.com/decargroup/miluv/blob/gh-pages/assets/banner_image.jpg?raw=true)
 
 ## Table of Contents
 - [Changelog](#changelog)
