@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from miluv.data import DataLoader
-import utils.liegroups as liegroups
+import miluv.utils as utils
 import examples.ekfutils.imu_three_robots_models as model
 import examples.ekfutils.common as common
 
@@ -38,7 +38,7 @@ accel: pd.DataFrame = {
 
 #################### LOAD GROUND TRUTH DATA ####################
 gt_se23 = {
-    robot: liegroups.get_se23_poses(
+    robot: utils.get_se23_poses(
         data[robot]["mocap_quat"](query_timestamps), data[robot]["mocap_pos"].derivative(nu=1)(query_timestamps), data[robot]["mocap_pos"](query_timestamps)
     )
     for robot in data.keys()
