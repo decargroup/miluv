@@ -1,6 +1,5 @@
 # %%
 from miluv.data import DataLoader
-import utils.liegroups as liegroups
 import miluv.utils as utils
 import examples.ekfutils.vins_three_robots_models as model
 import examples.ekfutils.common as common
@@ -45,7 +44,7 @@ vins_at_query_timestamps = {
 
 #################### LOAD GROUND TRUTH DATA ####################
 gt_se3 = {
-    robot: liegroups.get_se3_poses(data[robot]["mocap_quat"](query_timestamps), data[robot]["mocap_pos"](query_timestamps)) 
+    robot: utils.get_se3_poses(data[robot]["mocap_quat"](query_timestamps), data[robot]["mocap_pos"](query_timestamps)) 
     for robot in data.keys()
 }
 

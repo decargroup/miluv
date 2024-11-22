@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 
 from miluv.data import DataLoader
-import utils.liegroups as liegroups
 import miluv.utils as utils
 import examples.ekfutils.vins_one_robot_models as model
 import examples.ekfutils.common as common
@@ -31,7 +30,7 @@ gyro: pd.DataFrame = imu_at_query_timestamps["imu_px4"][["timestamp", "angular_v
 vins_at_query_timestamps = utils.zero_order_hold(query_timestamps, vins)
 
 #################### LOAD GROUND TRUTH DATA ####################
-gt_se3 = liegroups.get_se3_poses(
+gt_se3 = utils.get_se3_poses(
     data["mocap_quat"](query_timestamps), data["mocap_pos"](query_timestamps)
 )
 

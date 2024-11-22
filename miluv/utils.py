@@ -6,7 +6,7 @@ from scipy.spatial.transform import Rotation
 import scipy as sp
 import yaml
 
-from pymlg import SO3
+from pymlg import SO3, SE3, SE23
 
 def get_anchors() -> dict[str, dict[int, np.ndarray]]:
     """
@@ -88,6 +88,44 @@ def zero_order_hold(query_timestamps, data: pd.DataFrame) -> pd.DataFrame:
         new_data[col] = data.iloc[idx_to_keep][col].values
 
     return new_data
+
+def get_se3_poses(quat: np.ndarray, pos: np.ndarray) -> list[SE3]:
+    """
+    Get SE3 poses from position and quaternion data.
+    
+    Args:
+    - quat: Quaternion data.
+    - pos: Position data.
+    
+    Returns:
+    - SE3 poses.
+    """
+    
+    poses = []
+    for i in range(pos.shape[1]):
+        R = SO3.from_quat(quat[:, i], "xyzw")
+        poses.append(SE3.from_components(R, pos[:, i]))
+    return poses
+
+def get_se23_poses(quat: np.ndarray, vel: np.ndarray, pos: np.ndarray) -> list[SE23]:
+    """
+    Get SE23 poses from position, velocity, and quaternion data.
+    
+    Args:
+    - quat: Quaternion data.
+    - vel: Velocity data.
+    - pos: Position data.
+    
+    Returns:
+    - SE23 poses.
+    """
+    
+    poses = []
+    for i in range(pos.shape[1]):
+        R = SO3.from_quat(quat[:, i], "xyzw")
+        poses.append(SE23.from_components(R, vel[:, i], pos[:, i]))
+    return poses
+
 
 def get_mocap_splines(mocap: pd.DataFrame) -> list[ISmoothingSpline, ISmoothingSpline]:
     """

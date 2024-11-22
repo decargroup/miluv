@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from miluv.data import DataLoader
-import utils.liegroups as liegroups
+import miluv.utils as utils
 import examples.ekfutils.imu_one_robot_models as model
 import examples.ekfutils.common as common
 
@@ -26,7 +26,7 @@ accel: pd.DataFrame = imu_at_query_timestamps["imu_px4"][["timestamp", "linear_a
 gyro: pd.DataFrame = imu_at_query_timestamps["imu_px4"][["timestamp", "angular_velocity.x", "angular_velocity.y", "angular_velocity.z"]]
 
 #################### LOAD GROUND TRUTH DATA ####################
-gt_se23 = liegroups.get_se23_poses(
+gt_se23 = utils.get_se23_poses(
     data["mocap_quat"](query_timestamps), data["mocap_pos"].derivative(nu=1)(query_timestamps), data["mocap_pos"](query_timestamps)
 )
 gt_bias = imu_at_query_timestamps["imu_px4"][[
