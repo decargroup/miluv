@@ -51,42 +51,42 @@ def read_vsk(
 
 # Configuration 0
 data_0_part1 = read_vsk(
-    "data/setup/apriltags_0_part1_v1.vsk",
+    "config/setup/apriltags_0_part1_v1.vsk",
     parameter_prefix="apriltags_00_apriltags_00"
 )
 data_0_part2 = read_vsk(
-    "data/setup/apriltags_0_part2_v1.vsk", 
+    "config/setup/apriltags_0_part2_v1.vsk", 
     parameter_prefix="apriltags_00_1_apriltags_00_1"
 )
 data_0 = pd.concat([data_0_part1, data_0_part2]).sort_index()
 
 # Configuration 0b
 data_0b = read_vsk(
-    "data/setup/apriltags_0_v2.vsk",
+    "config/setup/apriltags_0_v2.vsk",
     marker_prefix="april_tags_",
     parameter_prefix="april_tags_0_v2_april_tags_0_v2"
 )
 
 # Configuration 1
 data_1_part1 = read_vsk(
-    "data/setup/apriltags_1_part1.vsk",
+    "config/setup/apriltags_1_part1.vsk",
     marker_prefix="april_tags_",
     parameter_prefix="april_tags_0_v2_april_tags_0_v2"
 )
 data_1_part2 = read_vsk(
-    "data/setup/apriltags_1_part2.vsk",
+    "config/setup/apriltags_1_part2.vsk",
     parameter_prefix="apriltags_1_apriltags_1"
 )
 data_1 = pd.concat([data_1_part1, data_1_part2]).sort_index()
 
 # Configuration 2
 data_2_part1 = read_vsk(
-    "data/setup/apriltags_2_part1.vsk",
+    "config/setup/apriltags_2_part1.vsk",
     marker_prefix="april_tags_",
     parameter_prefix="april_tags_0_v2_april_tags_0_v2"
 )
 data_2_part2 = read_vsk(
-    "data/setup/apriltags_2_part2.vsk",
+    "config/setup/apriltags_2_part2.vsk",
     parameter_prefix="apriltags_3_apriltags_3"
 )
 data_2 = pd.concat([data_2_part1, data_2_part2]).sort_index()
