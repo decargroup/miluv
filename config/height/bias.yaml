@@ -1,0 +1,13 @@
+# The height measurements have a bias, since the height is measured from the ground, and the ground
+# is not at the same level as the origin of the motion capture system. This bias between the ground
+# and the origin of the motion capture system is measured and stored in this file in meters.
+# The bias is subtracted from the height measurements. 
+
+ifo001:
+  "-0.0924"
+
+ifo002:
+  "-0.0088"
+
+ifo003:
+  "-0.1207"

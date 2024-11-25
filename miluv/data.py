@@ -109,6 +109,7 @@ class DataLoader:
             if height:
                 self.data[id].update({"height": []})
                 self.data[id]["height"] = self.read_csv("height", id)
+                self.data[id]["height"]["range"] -= utils.get_height_bias(id)
 
             if mag:
                 self.data[id].update({"mag": []})
