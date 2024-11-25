@@ -315,7 +315,7 @@ def get_timeshift(exp_name):
 
     return timeshift_s + timeshift_ns / 1e9
 
-def get_imu_noise_params(robot_name, sensor_name):
+def get_imu_noise_params(robot_name, sensor_name) -> dict:
     """
     Get IMU noise parameters that were generated using allan_variance_ros, available at
     https://github.com/ori-drs/allan_variance_ros. The noise parameters are stored in 
@@ -360,6 +360,25 @@ def get_imu_noise_params(robot_name, sensor_name):
     
     return {"gyro": gyro, "accel": accel, "gyro_bias": gyro_bias, "accel_bias": accel_bias}
     
+def get_height_bias(robot_name) -> float:
+    """
+    The height measurements have a bias, since the height is measured from the ground, and the ground
+    is not at the same level as the origin of the motion capture system. This bias between the ground
+    and the origin of the motion capture system is returned in this function in meters.
+    The bias is subtracted from the height measurements to get an unbiased height measurement.
+    
+    Args:
+    - robot_name: Robot name, e.g., "ifo001".
+    
+    Returns:
+    float
+    - Height bias in meters.
+    """
+    
+    with open(f"config/height/bias.yaml", "r") as file:
+        height_data = yaml.safe_load(file)
+    
+    return eval(height_data[robot_name])
 
 def load_vins(exp_name, robot_id, loop = True, postprocessed: bool = False) -> pd.DataFrame:
     """
