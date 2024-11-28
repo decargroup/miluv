@@ -16,21 +16,23 @@ Welcome to the MILUV devkit page. This Python devkit provides useful functions a
 
 ## Devkit setup and installation
 The devkit requires Python 3.8 or greater. To install the devkit and its dependencies, run
-
-    $ pip3 install .
+```
+pip3 install .
+``` 
 inside the devkit's root directory (~/path/to/project/MILUV). 
 
 Alternatively, run
-
-    $ pip3 install -e .
-
+```
+pip3 install -e .
+```
 inside the devkit's root directory, which installs the package in-place, allowing you make changes to the code without having to reinstall every time. 
 
 For a list of all dependencies, refer to ``requirements.txt`` in the repository's root directory.
 
 To ensure installation was completed without any errors, test the code by running
-    
-    $ pytest
+```
+pytest
+```    
 in the root directory.
 
 ## Getting started with MILUV
