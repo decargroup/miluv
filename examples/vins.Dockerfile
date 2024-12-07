@@ -37,6 +37,8 @@ RUN apt-get update && apt-get install -y \
     ros-melodic-geometry-msgs \
     ros-melodic-sensor-msgs \
     ros-melodic-image-transport \
+    ros-melodic-compressed-image-transport \
+    ros-melodic-rviz \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python 3.10 and dependencies
@@ -71,13 +73,6 @@ RUN python3 -m pip install --upgrade pip setuptools wheel
 RUN python3 -m pip install numpy pandas csaps scipy matplotlib
 
 # Install Ceres Solver and additional dependencies
-RUN apt-get update && apt-get install -y \
-    lsb-release \
-    libgoogle-glog-dev \
-    libatlas-base-dev \
-    libsuitesparse-dev \
-    libeigen3-dev \
-    && rm -rf /var/lib/apt/lists/*
 RUN sudo ln -s /usr/share/pyshared/lsb_release.py /usr/local/lib/python3.10/site-packages/lsb_release.py
 RUN apt-get update && apt-get install -y \
     libceres-dev \
@@ -89,6 +84,9 @@ RUN mkdir -p /workspace/src
 WORKDIR /workspace/src
 RUN git clone https://github.com/decargroup/miluv.git
 RUN git clone https://github.com/HKUST-Aerial-Robotics/VINS-Fusion.git
+
+# Make symlink to build uwb_ros with UWB messages
+RUN ln -s miluv/uwb_ros .
 
 # Install MILUV 
 WORKDIR /workspace/src/miluv
@@ -104,5 +102,10 @@ RUN echo "source /workspace/devel/setup.bash" >> ~/.bashrc
 # Expose the necessary ports
 EXPOSE 11311
 
+# Install x11-apps for testing GUI applications
+RUN apt update
+RUN apt install -y x11-apps
+
 # Set entrypoint to bash so you can run commands interactively
+WORKDIR /workspace/src/miluv
 CMD ["/bin/bash"]
