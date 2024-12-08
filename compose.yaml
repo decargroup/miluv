@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  miluv:
+    image: miluv
+    privileged: true
+    network_mode: host
+    environment:
+      DISPLAY: $DISPLAY
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    volumes:
+      - ./data:/workspace/miluv/data:rw
+      - ./results:/workspace/miluv/results:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    stdin_open: true
+    tty: true
