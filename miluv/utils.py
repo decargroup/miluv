@@ -400,9 +400,9 @@ def load_vins(exp_name, robot_id, loop = True, postprocessed: bool = False) -> p
         suffix = ""
 
     if loop:
-        file = f"data/vins_results/{exp_name}/{robot_id}_vio_loop{suffix}.csv"
+        file = f"data/vins/{exp_name}/{robot_id}_vio_loop{suffix}.csv"
     else:
-        file = f"data/vins_results/{exp_name}/{robot_id}_vio{suffix}.csv"
+        file = f"data/vins/{exp_name}/{robot_id}_vio{suffix}.csv"
 
     data = pd.read_csv(
         file,
@@ -452,10 +452,10 @@ def save_vins(data: pd.DataFrame,
         suffix = ""
     
     if loop:
-        data.to_csv(f"data/vins_results/{exp_name}/{robot_id}_vio_loop{suffix}.csv",
+        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio_loop{suffix}.csv",
                     index=False)
     else:
-        data.to_csv(f"data/vins_results/{exp_name}/{robot_id}_vio{suffix}.csv",
+        data.to_csv(f"data/vins/{exp_name}/{robot_id}_vio{suffix}.csv",
                     index=False)
 
 
