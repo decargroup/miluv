@@ -102,10 +102,6 @@ RUN echo "source /workspace/devel/setup.bash" >> ~/.bashrc
 # Expose the necessary ports
 EXPOSE 11311
 
-# Install x11-apps for testing GUI applications
-RUN apt update
-RUN apt install -y x11-apps
-
 # Set entrypoint to bash so you can run commands interactively
 WORKDIR /workspace/src/miluv
 CMD ["/bin/bash"]

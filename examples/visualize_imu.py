@@ -1,6 +1,9 @@
 from miluv.data import DataLoader
 import miluv.utils as utils
 
+import matplotlib
+matplotlib.use('Qt5Agg')
+
 import matplotlib.pyplot as plt
 
 plt.rcParams['axes.grid'] = True
