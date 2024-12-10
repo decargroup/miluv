@@ -1,5 +1,5 @@
 ---
-title: VINS
+title: Visual-Inertial Navigation
 parent: Examples
 nav_order: 3
 ---
