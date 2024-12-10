@@ -1,14 +1,14 @@
 ---
 title: AprilTag Detection
 parent: Examples
-nav_order: 5
+nav_order: 6
 ---
 
 # AprilTag Detection
 ## Overview
 The MILUV devkit provides an example of AprilTag detection for users to run and modify. To run this example, run
 ```
-$ python examples/ex_detect_apriltags.py
+python examples/ex_detect_apriltags.py
 ```
 in the repository's root directory.
 

@@ -7,7 +7,9 @@ usemathjax: true
 # Experimental Setup
 ## Uvify IFO-S
 Each Uvify IFO-S quadcopter is equipped with an IMU, a front facing Intel RealSense d435i camera, an integrated downward facing camera, and two UWB transceivers, depicted below. The onboard flight computer is an NVIDIA Jetson Nano running PX4 autopiloting software.
-![](https://decargroup.github.io/miluv/assets/ifo.jpg)
+<p align="center">
+<img src="https://decargroup.github.io/miluv/assets/ifo.jpg" alt="gyro" width="400" class="center"/>
+</p>
 
 ## Flight Arena
 The UAVs operated within an approximate 4m x 4m x 3m subsection of an enclosed flight arena. The arena comprises 12 motion capture cameras and six anchors with UWB transceivers. The experimental setup is illustrated below

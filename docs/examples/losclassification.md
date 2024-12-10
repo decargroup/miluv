@@ -1,14 +1,14 @@
 ---
 title: LOS/NLOS Classification
 parent: Examples
-nav_order: 4
+nav_order: 5
 ---
 
 # LOS/NLOS Classification
 ## Overview
 The MILUV devkit provides an example of LOS/NLOS for users to run and modify. To run this example, run
 ```
-$ python examples/ex_los_nlos_classification.py
+python examples/ex_los_nlos_classification.py
 ```
 in the repository's root directory.
 

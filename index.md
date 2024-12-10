@@ -11,7 +11,7 @@ layout: default
 
 # MILUV Dataset
 
-Introducing MILUV, the first multi-robot dataset with ultra-wide band (UWB) measurements. This dataset features
+Introducing MILUV, the first multi-robot dataset with ultra-wideband (UWB) measurements. This dataset features
 * Pose data
   * On-board inertial measurement unit (IMU) data
   * Camera IMU data from Intel RealSense d435i
