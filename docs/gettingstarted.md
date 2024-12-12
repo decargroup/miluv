@@ -71,10 +71,15 @@ and then build your ROS workspace as you normally would.
 Alternatively, you can run the devkit using Docker, which sets up the environment for you. To run the Docker container, we provide a Docker compose file that will mount the necessary directories and run the container. To run the container, run
 
 ```
-docker compose -it up
+docker compose up
 ```
 
-from the root directory of the repository, which will start the container and open a shell inside the container. 
+from the root directory of the repository, which will start the container. To open a shell inside the container, run in a separate terminal
+
+```
+docker exec -it miluv-miluv-1 bash
+``` 
+
 
 ## Troubleshooting
 
