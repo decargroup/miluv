@@ -72,6 +72,7 @@ def evaluate_vins(exp_name, robot_id, visualize):
     if visualize:
         # Compare vins and mocap data
         fig = plt.figure()
+        fig.suptitle("VINS vs. Mocap Position w Loop Closure")
         ax = plt.axes(projection ='3d')
         ax.plot3D(vins["pose.position.x"], vins["pose.position.y"], vins["pose.position.z"], label="vins")
         ax.plot3D(pos[0], pos[1], pos[2], label="mocap")
@@ -82,33 +83,71 @@ def evaluate_vins(exp_name, robot_id, visualize):
         ax.grid()   
 
         fig, axs = plt.subplots(3, 1)
-        fig.suptitle("VINS vs. Mocap Position")
+        fig.suptitle("VINS vs. Mocap Position w Loop Closure")
         axs[0].plot(vins["timestamp"], vins["pose.position.x"], label="vins")
         axs[0].plot(vins["timestamp"], pos[0], label="mocap")
         axs[0].set_ylabel("x [m]")
-        axs[0].legend()
         axs[1].plot(vins["timestamp"], vins["pose.position.y"], label="vins")
         axs[1].plot(vins["timestamp"], pos[1], label="mocap")
         axs[1].set_ylabel("y [m]")
-        axs[1].legend()
         axs[2].plot(vins["timestamp"], vins["pose.position.z"], label="vins")
         axs[2].plot(vins["timestamp"], pos[2], label="mocap")
         axs[2].set_ylabel("z [m]")
-        axs[2].legend()
         plt.legend()
         axs[0].grid()
         axs[1].grid()
         axs[2].grid()
 
         fig, axs = plt.subplots(3, 1)
-        fig.suptitle("VINS vs. Mocap Position Error")
+        fig.suptitle("VINS vs. Mocap Position Error w Loop Closure")
         axs[0].plot(vins["timestamp"], vins["pose.position.x"] - pos[0], label="x")
         axs[0].set_ylabel("x [m]")
         axs[1].plot(vins["timestamp"], vins["pose.position.y"] - pos[1], label="y")
         axs[1].set_ylabel("y [m]")
         axs[2].plot(vins["timestamp"], vins["pose.position.z"] - pos[2], label="z")
         axs[2].set_ylabel("z [m]")
+        axs[0].grid()
+        axs[1].grid()
+        axs[2].grid()
+        
+        # Do the same for vins without loop closure
+        pos_no_loop = mv.data[robot_id]["mocap_pos"](vins_no_loop["timestamp"])
+        
+        fig = plt.figure()
+        fig.suptitle("VINS vs. Mocap Position w/o Loop Closure")
+        ax = plt.axes(projection ='3d')
+        ax.plot3D(vins_no_loop["pose.position.x"], vins_no_loop["pose.position.y"], vins_no_loop["pose.position.z"], label="vins")
+        ax.plot3D(pos_no_loop[0], pos_no_loop[1], pos_no_loop[2], label="mocap")
+        ax.set_xlabel("x [m]")
+        ax.set_ylabel("y [m]")
+        ax.set_zlabel("z [m]")
+        ax.legend()
+        ax.grid()
+        
+        fig, axs = plt.subplots(3, 1)
+        fig.suptitle("VINS vs. Mocap Position w/o Loop Closure")
+        axs[0].plot(vins_no_loop["timestamp"], vins_no_loop["pose.position.x"], label="vins")
+        axs[0].plot(vins_no_loop["timestamp"], pos_no_loop[0], label="mocap")
+        axs[0].set_ylabel("x [m]")
+        axs[1].plot(vins_no_loop["timestamp"], vins_no_loop["pose.position.y"], label="vins")
+        axs[1].plot(vins_no_loop["timestamp"], pos_no_loop[1], label="mocap")
+        axs[1].set_ylabel("y [m]")
+        axs[2].plot(vins_no_loop["timestamp"], vins_no_loop["pose.position.z"], label="vins")
+        axs[2].plot(vins_no_loop["timestamp"], pos_no_loop[2], label="mocap")
+        axs[2].set_ylabel("z [m]")
         plt.legend()
+        axs[0].grid()
+        axs[1].grid()
+        axs[2].grid()
+
+        fig, axs = plt.subplots(3, 1)
+        fig.suptitle("VINS vs. Mocap Position Error w/o Loop Closure")
+        axs[0].plot(vins_no_loop["timestamp"], vins_no_loop["pose.position.x"] - pos_no_loop[0], label="x")
+        axs[0].set_ylabel("x [m]")
+        axs[1].plot(vins_no_loop["timestamp"], vins_no_loop["pose.position.y"] - pos_no_loop[1], label="y")
+        axs[1].set_ylabel("y [m]")
+        axs[2].plot(vins_no_loop["timestamp"], vins_no_loop["pose.position.z"] - pos_no_loop[2], label="z")
+        axs[2].set_ylabel("z [m]")
         axs[0].grid()
         axs[1].grid()
         axs[2].grid()
@@ -118,7 +157,7 @@ def evaluate_vins(exp_name, robot_id, visualize):
     return {"rmse_loop": rmse_loop, "rmse_no_loop": rmse_no_loop}
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) < 3:
         print("Not enough arguments. Usage: python evaluate_vins.py exp_name robot_id")
         sys.exit(1)
     exp_name = sys.argv[1]
