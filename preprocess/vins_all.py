@@ -1,7 +1,7 @@
 # %%
 import subprocess
 import pandas as pd
-from preprocess.evaluate_vins import evaluate_vins
+from paper.evaluate_vins import evaluate_vins
 
 def call_vins(exp_name, robot_id):
     print("Running VINS for experiment", exp_name, "robot", robot_id)
