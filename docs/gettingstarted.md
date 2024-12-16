@@ -6,7 +6,7 @@ usemathjax: true
 
 # Getting Started
 
-This page provides a guide on how to set up the MILUV devkit and dataset. The MILUV devkit is a Python package that provides tools to work with the MILUV dataset. Details on the dataset can be found [here](https://decargroup.github.io/miluv/docs/data). The devkit provides tools to load data from the dataset, visualize data, and run experiments on the dataset. The devkit is can be installed locally or can be run virtually using Docker, as outlined below.
+This page provides a guide on how to set up the MILUV devkit and dataset. The MILUV devkit is a Python package that provides tools to work with the MILUV dataset. Details on the dataset can be found [here](https://decargroup.github.io/miluv/docs/data). The devkit provides tools to load data from the dataset, visualize data, and run experiments on the dataset. The devkit can be installed locally or can be run virtually using Docker, as outlined below.
 
 ## Devkit installation 
 
