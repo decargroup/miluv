@@ -130,11 +130,6 @@ def generate_config(exp_info):
 
 def process_uwb(path):
     # The configuration files
-    # TODO: must dynamically load the appropriate config file based on # of robots + if has anchors
-    # config = join(path, "uwb_config.config")
-
-    # parser = ConfigParser(interpolation=ExtendedInterpolation())
-    # parser.read(config)
     exp_info = get_experiment_info(path)
     uwb_config = generate_config(exp_info)
 
@@ -230,8 +225,7 @@ def process_uwb(path):
 if __name__ == '__main__':
 
     if len(sys.argv) != 2:
-        print(
-            "Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
+        print("Not enough arguments. Usage: python cleanup_csv.py path_to_csvs")
         sys.exit(1)
     path = sys.argv[1]
     
