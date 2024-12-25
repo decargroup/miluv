@@ -129,7 +129,12 @@ class DataLoader:
         """Read a csv file for a given robot and topic."""
         path = os.path.join(self.exp_dir, self.exp_name, robot_id,
                             topic + ".csv")
-        return pd.read_csv(path)
+        df = pd.read_csv(path)
+        
+        df.drop_duplicates(subset="timestamp", inplace=True)
+        df.sort_values(by="timestamp", inplace=True)
+        
+        return df
 
     def query_by_timestamps(
         self, 
