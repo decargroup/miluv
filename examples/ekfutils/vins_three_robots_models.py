@@ -85,9 +85,6 @@ class EKF:
         z = np.array([actual_measurement - predicted_measurement])
         S = H @ self.P @ H.T + R
         
-        if common.is_outlier(z, S):
-            return
-        
         K = self.P @ H.T / S
         
         for robot in robot_names:
