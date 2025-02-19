@@ -48,8 +48,7 @@ from miluv.data import DataLoader
 import numpy as np
 
 mv_1c = DataLoader(
-        "3a",
-        barometer=False,
+        "default_3_random_0",
         height=False,
     )
 
@@ -64,8 +63,7 @@ from miluv.data import DataLoader
 import numpy as np
 
 mv_1c = DataLoader(
-        "3a",
-        barometer=False,
+        "default_3_random_0",
         height=False,
     )
 
