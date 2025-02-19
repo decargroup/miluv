@@ -63,9 +63,9 @@ from miluv.data import DataLoader
 import numpy as np
 
 mv_1c = DataLoader(
-        "default_3_random_0",
-        height=False,
-    )
+    "default_3_random_0",
+    height=False,
+)
 
 timestamps = np.arange(0, 10, 1)  # Time in s
 
@@ -76,7 +76,7 @@ data_at_timestamps = mv_1c.data_from_timestamps(
     timestamps,
     robots,
     sensors,
-    )
+)
 ```
 
 ## Wiki
