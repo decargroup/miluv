@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 plt.rcParams['axes.grid'] = True
 
 #################### EXPERIMENT DETAILS ####################
-exp_name = "1c"
+exp_name = "default_3_random_0"
 robot = "ifo001"
 
 #################### LOAD SENSOR DATA ####################

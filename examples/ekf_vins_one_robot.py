@@ -85,7 +85,7 @@ def run_ekf_vins_one_robot(exp_name: str):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        exp_name = "13"
+        exp_name = "default_1_random3_0"
     else:
         exp_name = sys.argv[1]
     
