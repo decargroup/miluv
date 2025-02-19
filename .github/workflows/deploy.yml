@@ -36,6 +36,7 @@ jobs:
       # Automatically uploads an artifact from the './_site' directory by default
       uses: actions/upload-pages-artifact@v3
       with:
+        name: github-pages
         path: ./_site
         
     # - name: Clean up gh-pages branch before deployment
