@@ -1,5 +1,5 @@
 # %%
-from miluv.data import Miluv
+from miluv.data import DataLoader
 
-mv = Miluv("default_3_random_0", baro=False)
+mv = DataLoader("default_3_random_0")
 # %%
