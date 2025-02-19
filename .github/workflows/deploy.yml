@@ -32,12 +32,17 @@ jobs:
       run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
       env:
         JEKYLL_ENV: production
-    - name: Upload artifact
-      # Automatically uploads an artifact from the './_site' directory by default
-      uses: actions/upload-pages-artifact@v3
+    - name: Upload artifact for deployment
+      uses: actions/upload-artifact@v3
       with:
-        path: ./_site # Ensure this is the correct directory being uploaded
-        name: jekyll-site # Give the artifact a specific name
+        name: jekyll-site
+        path: ./_site
+    # - name: Upload artifact
+    #   # Automatically uploads an artifact from the './_site' directory by default
+    #   uses: actions/upload-pages-artifact@v3
+    #   with:
+    #     path: ./_site # Ensure this is the correct directory being uploaded
+    #     name: jekyll-site # Give the artifact a specific name
         
     # - name: Clean up gh-pages branch before deployment
     #   uses: peaceiris/actions-gh-pages@v4
