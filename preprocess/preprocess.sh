@@ -1,21 +1,21 @@
+#!/bin/bash
+
+CSV_FILE="config/experiments.csv"
 
 task(){
-    python preprocess/read_bags.py $d True
-    python preprocess/process_uwb.py $d
-    python preprocess/cleanup_csv.py $d
+    python preprocess/read_bags.py data/$exp True
+    python preprocess/process_uwb.py data/$exp
+    python preprocess/cleanup_csv.py data/$exp
 }
 
 N=16
 (
-for d in data/*/ ; do
-    if [ ${#d} -gt 9 ]; then
-        continue
-    fi
-    rm -rf "$d/ifo001"
-    rm -rf "$d/ifo002"
-    rm -rf "$d/ifo003"
-    rm -rf "$d/timeshift.yaml"
+tail -n +2 "$CSV_FILE" | while IFS=, read -r exp _; do
+    rm -rf "data/$exp/ifo001"
+    rm -rf "data/$exp/ifo002"
+    rm -rf "data/$exp/ifo003"
+    rm -rf "data/$exp/timeshift.yaml"
     ((i=i%N)); ((i++==0)) && wait
-    task $d &
+    task $exp &
 done
 )

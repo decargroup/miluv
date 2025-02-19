@@ -15,7 +15,7 @@ def main():
     ]
 
     mv = DataLoader(
-        "12c",
+        "cirObstacles_3_random_0",
         barometer=False,
         cir=True
     )

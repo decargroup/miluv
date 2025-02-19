@@ -88,9 +88,6 @@ class EKF:
         z = np.array([actual_measurement - predicted_measurement])
         S = H @ self.P @ H.T + R
         
-        if common.is_outlier(z, S):
-            return
-        
         K = self.P @ H.T / S
         
         self.x.pose = self.x.pose @ SE23.Exp(K[:pose_dimension, :] @ z)

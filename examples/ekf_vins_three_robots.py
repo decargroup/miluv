@@ -115,7 +115,7 @@ def run_ekf_vins_three_robots(exp_name: str):
     
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        exp_name = "1c"
+        exp_name = "default_3_random_0"
     else:
         exp_name = sys.argv[1]
     
