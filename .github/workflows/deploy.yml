@@ -35,6 +35,9 @@ jobs:
     - name: Upload artifact
       # Automatically uploads an artifact from the './_site' directory by default
       uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./_site # Ensure this is the correct directory being uploaded
+        name: jekyll-site # Give the artifact a specific name
         
     # - name: Clean up gh-pages branch before deployment
     #   uses: peaceiris/actions-gh-pages@v4
@@ -55,3 +58,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+        with:
+          artifact_name: jekyll-site # Reference the artifact name here
