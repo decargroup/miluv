@@ -24,7 +24,7 @@ import cv2
 import apriltag
 
 mv = DataLoader(
-    "3a",
+    "default_3_random_0",
     cir=False,
     barometer=False,
 )

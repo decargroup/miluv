@@ -45,7 +45,7 @@ import examples.ekfutils.common as common
 We will use the same experiment as in the VINS example, and load only ifo001's data for this example. 
 
 ```py
-exp_name = "13"
+exp_name = "default_1_random3_0"
 
 miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False)
 data = miluv.data["ifo001"]

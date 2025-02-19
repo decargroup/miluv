@@ -35,10 +35,10 @@ import examples.ekfutils.common as common
 
 ## Loading the Data
 
-For this example, we will use experiment 1c, which is a three-robot experiment with VINS data.
+For this example, we will use experiment `default_3_random_0`, which is a three-robot experiment with VINS data.
 
 ```py
-exp_name = "1c"
+exp_name = "default_3_random_0"
 ```
 
 We then, in one line, load all the sensor data we want for our EKF. We keep only the data for this example and get rid of the other functions in the `DataLoader` class.

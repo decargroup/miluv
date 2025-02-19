@@ -30,7 +30,7 @@ import examples.ekfutils.common as common
 We will extract the same data we did for the three-robot VINS example, and merge the UWB range and height data for all the robots. 
 
 ```py
-exp_name = "1c"
+exp_name = "default_3_random_0"
 
 miluv = DataLoader(exp_name, imu = "px4", cam = None, mag = False)
 data = miluv.data

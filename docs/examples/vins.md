@@ -44,9 +44,9 @@ Once inside the container, you can run the VINS-Fusion example by running
 ```
 ./examples/run_vins.sh <exp_name> <robot>
 ```
-where `<exp_name>` is the name of the experiment you would like to run VINS-Fusion on, and `<robot>` is the robot ID you would like to run VINS-Fusion on. For example, to run VINS-Fusion on experiment `3` with robot ID `ifo001`, you would run
+where `<exp_name>` is the name of the experiment you would like to run VINS-Fusion on, and `<robot>` is the robot ID you would like to run VINS-Fusion on. For example, to run VINS-Fusion on experiment `default_3_random_0` with robot ID `ifo001`, you would run
 ```
-./examples/run_vins.sh 3 ifo001
+./examples/run_vins.sh default_3_random_0 ifo001
 ```
 Assuming everything has been set up correctly, you should see the RViz visualization showing the video feed, the robot's estimated trajectory, and a map of the keypoints detected by VINS-Fusion as shown at the top of this page. 
 

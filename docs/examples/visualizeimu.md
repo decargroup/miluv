@@ -21,10 +21,10 @@ import matplotlib.pyplot as plt
 plt.rcParams['axes.grid'] = True
 ```
 
-We set the experiment to be `1c` and the robot we want to visualize to be `ifo001`.
+We set the experiment to be `default_3_random_0` and the robot we want to visualize to be `ifo001`.
 
 ```py
-exp_name = "1c"
+exp_name = "default_3_random_0"
 robot = "ifo001"
 ```
 

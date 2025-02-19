@@ -32,7 +32,7 @@ tag_ids_nlos = [
 ]
 
 mv = DataLoader(
-    "3l",
+    "cirObstacles_3_random_0",
     barometer=False,
 )
 

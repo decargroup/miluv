@@ -57,10 +57,10 @@ import examples.ekfutils.common as common
 
 ## Loading the Data
 
-We start by defining the experiment we want to run the EKF on. In this case, we will use experiment 13.
+We start by defining the experiment we want to run the EKF on. In this case, we will use experiment `default_1_random3_0`.
 
 ```py
-exp_name = "13"
+exp_name = "default_1_random3_0"
 ```
 
 We then, in one line, load all the sensor data we want for our EKF. For this example, we only care about ifo001's data, and we remove the IMU bias to simplify the EKF implementation.
