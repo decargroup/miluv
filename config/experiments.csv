@@ -15,7 +15,7 @@ cir_3_random3_0,3,2,6,0,random3,true,false,true,false
 cir_3_random3_1,3,2,6,1,random3,true,false,true,true
 cir_3_random3_2,3,2,6,2,random3,true,false,true,true
 cirObstacles_3_random_0,3,2,6,0,random,true,true,true,false
-cirObstacles_3_random_0_v2,3,2,6,0,random3,true,true,true,false
+cirObstacles_3_random3_0,3,2,6,0,random3,true,true,true,false
 default_1_random3_0,1,2,6,0,random3,false,false,true,false
 default_1_random3_1,1,2,6,1,random3,false,false,true,true
 default_1_random3_2,1,2,6,2,random3,false,false,true,true
