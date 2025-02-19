@@ -47,14 +47,14 @@ Using the MILUV devkit, retrieving sensor data by timestamp from experiment ``1c
 from miluv.data import DataLoader
 import numpy as np
 
-mv_1c = DataLoader(
-        "default_3_random_0",
-        height=False,
-    )
+mv = DataLoader(
+    "default_3_random_0",
+    height=False,
+)
 
 timestamps = np.arange(0, 10, 1)  # Time in s
 
-data_at_timestamps = mv_1c.data_from_timestamps(timestamps)
+data_at_timestamps = mv.data_from_timestamps(timestamps)
 ```
 
 This example can be made elaborate by selecting specific robots and sensors to fetch from at the given timestamps.
@@ -62,7 +62,7 @@ This example can be made elaborate by selecting specific robots and sensors to f
 from miluv.data import DataLoader
 import numpy as np
 
-mv_1c = DataLoader(
+mv = DataLoader(
     "default_3_random_0",
     height=False,
 )
@@ -72,7 +72,7 @@ timestamps = np.arange(0, 10, 1)  # Time in s
 robots = ["ifo001", "ifo002"]  # We are leaving out ifo003
 sensors = ["imu_px4", "imu_cam"]  # Fetching just the imu data
 
-data_at_timestamps = mv_1c.data_from_timestamps(
+data_at_timestamps = mv.data_from_timestamps(
     timestamps,
     robots,
     sensors,
