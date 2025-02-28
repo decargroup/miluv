@@ -22,7 +22,7 @@ The primary constellation consists of anchors at varying heights, evenly spaced 
 
 # Summary of Experiments
 
-![](https://decargroup.github.io/miluv/assets/experiments.jpg)
+![](https://decargroup.github.io/miluv/assets/experiments.png)
 
 # Trajectories
 ![](https://decargroup.github.io/miluv/assets/trajectories.jpg)
