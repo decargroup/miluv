@@ -16,13 +16,13 @@ The UAVs operated within an approximate 4m x 4m x 3m subsection of an enclosed f
 ![](https://decargroup.github.io/miluv/assets/setup.png)
 
 The dataset includes experiments with three different anchor constellations, shown below
-![](https://decargroup.github.io/miluv/assets/anchor_constellation.jpg)
+![](https://decargroup.github.io/miluv/assets/anchor_constellation.png)
 
 The primary constellation consists of anchors at varying heights, evenly spaced around the UAVs' operating area. The second constellation consists of anchors at the same positions as the primary constellation, but with each transceiver at the same height. The third constellation consists of three clusters of two anchors at varied heights. The location of each anchor is determined using the motion capture cameras. For experiments with obstacles, wood, plastic, and foam were placed in front of the UWB tags in order to disrupt line-of-sight to the UAVs' UWB transceivers.
 
 # Summary of Experiments
 
-![](https://decargroup.github.io/miluv/assets/table.jpg)
+![](https://decargroup.github.io/miluv/assets/experiments.jpg)
 
 # Trajectories
 ![](https://decargroup.github.io/miluv/assets/trajectories.jpg)
