@@ -33,7 +33,7 @@ distro==1.9.0
 contourpy==1.1.1
 opencv-python==4.9.0.80
 seaborn==0.13.2
-pillow==10.2.0
+pillow>=12.3.0
 kiwisolver==1.4.5
 rospkg==1.5.0
 gnupg==2.3.1
